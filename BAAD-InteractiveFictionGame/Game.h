@@ -15,10 +15,10 @@ class Game
 		void init();
 		Room * getCurrentRoom();
 		Parser getParser();
+		void getHelp();
 private:
 		void process(Actions action, string noun);
-		void showHelp();
-		
+		void setCurrentRoom(Room * nextRoom);
 
 		Room * currentRoom;
 		Parser parser;

@@ -8,7 +8,8 @@ enum Actions
 	TAKE,
 	USE,
 	OPEN,
-	GO
+	GO,
+	INVALID //used to avoid uninitalized local var
 	//add more as needed
 };
 
