@@ -8,7 +8,7 @@ bool Parser::parse(string input, Actions action, string noun) {
     //maybe include something that makes it not case sensitive, could also add special cases here for specific two word or one word inputs
     stringstream spaceSplitter(input); //https://www.geeksforgeeks.org/cpp/getline-string-c/
     string word;
-        getline(spaceSplitter, word, ' ');
+        getline(spaceSplitter, word, ' '); //should only check the first two words then return true or false, might not work idk
         action = stringToAction(word);
         getline(spaceSplitter, word, ' ');
         noun = word;

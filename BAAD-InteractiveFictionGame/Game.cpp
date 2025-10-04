@@ -2,11 +2,13 @@
 #include <iostream>
 using namespace std;
 
-void Game::init() {
+void Game::init() { //sets current room to the starting room and initalizes the starting room to exist
 	Room* cryoStart = new Room("cryo01", "Cryo Chamber", "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent. ");
     setCurrentRoom(cryoStart);
+    //will need expansion to include objects in room and all other rooms, all exits and connecting all rooms, etc
 }
 
+//getters for current room and parser and setter for current room 
 Room* Game::getCurrentRoom(){
 	return currentRoom;
 }
@@ -19,7 +21,7 @@ Parser Game::getParser() {
 	return parser;
 }
 
-void Game::getHelp() {
+void Game::getHelp() { //prints out available commands
     cout << "Available commands:" << endl;
     cout << "go <direction>: move between rooms" << endl;
     cout << "take <item>" << endl;

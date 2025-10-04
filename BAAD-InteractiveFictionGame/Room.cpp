@@ -2,10 +2,12 @@
 #include <iostream>
 using namespace std;
 
-Room::Room(string id, string name, string description){
+//constructor
+Room::Room(string id, string name, string description): id(id), name(name), description(description) { //I don't know if using this keyword is better than what I have or not
 
 }
 
+//getters
 string Room::getId() {
 	return id;
 }
