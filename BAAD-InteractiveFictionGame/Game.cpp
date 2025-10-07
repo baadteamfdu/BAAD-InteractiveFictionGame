@@ -4,9 +4,9 @@ using namespace std;
 
 void Game::init() { //sets current room to the starting room and initalizes the starting room to exist
     Room* cryoStart = new Room
-    ("cryo01", "Cryo Chamber", "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n "
+    ("cryo01", "Cryo Chamber", "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
         "On the floor there's a keycard\n"
-        "In the corner of the room there's a sealed door with a card-reader on it\n;"
+        "In the corner of the room there's a sealed door with a card-reader on it\n"
     );
     setCurrentRoom(cryoStart);
     //will need expansion to include objects in room and all other rooms, all exits and connecting all rooms, etc
