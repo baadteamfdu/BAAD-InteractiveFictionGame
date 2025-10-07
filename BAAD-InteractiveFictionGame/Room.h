@@ -1,20 +1,22 @@
 #pragma once
-
+#include <vector>
 #include <string>
 #include "Object.h"
 using namespace std;
 
-
 class Room
 {
-public:
-	Room(string id, string name, string description);
-	string getDescription();
-	string getName();
-	string getId();
-private: 
+private:
+
 	string id;
 	string name;
 	string description;
+
+public:
+
+	Room(string id, string name, string description);
+	string getId();
+	string getName();
+	string getDescription();
 };
 

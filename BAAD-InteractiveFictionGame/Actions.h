@@ -2,15 +2,15 @@
 #include <string>
 using namespace std;
 
-enum Actions
+enum Actions 
 {
 	LOOK,
 	TAKE,
-	USE,
+	USE, 
 	OPEN,
 	GO,
-	INVALID //used to avoid uninitalized local var
-	//add more as needed
+	HELP,
+	INVALID
 };
 
-Actions stringToAction(string action);
+Actions stringToAction(std::string action);

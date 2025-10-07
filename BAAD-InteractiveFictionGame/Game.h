@@ -8,21 +8,16 @@
 #include <string>
 using namespace std;
 
-class Game
-{
-
-	public: 
-		void init();
-		Room * getCurrentRoom();
-		Parser getParser();
-		void getHelp();
+class Game {
 private:
-		void process(Actions action, string noun);
-		void setCurrentRoom(Room * nextRoom);
+    Room* currentRoom = nullptr;
+    Parser parser;
 
-		Room * currentRoom;
-		Parser parser;
+public:
+    void init();
+    void process();
+    void getHelp();
 
-		//eventually add a way to delete all the rooms
+    Room* getCurrentRoom();
+    void setCurrentRoom(Room* nextRoom);
 };
-

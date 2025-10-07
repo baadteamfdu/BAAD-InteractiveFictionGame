@@ -7,6 +7,6 @@ using namespace std;
 class Parser
 {
 	public:
-		bool parse(string input, Actions action, string noun); //boolean to check if the input was valid
+		bool parse(string input, Actions &action, string &noun); //boolean to check if the input was valid
 };
 

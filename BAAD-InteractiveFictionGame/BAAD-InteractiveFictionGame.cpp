@@ -19,21 +19,10 @@ int main()
     cout << "Type \"help\" for a list of commands." << endl;
     cout << "To get started, try using the look command." << endl << endl;
     //cout << game.getCurrentRoom()->getDescription() << endl;
-    string input;
 
     //running the game by repeatedly asking for input
-    while (getline(cin, input)) {
-        cout << endl;
-        Actions action = Actions::INVALID;
-        string noun = "";
-        if (input == "help") { //simple way to handle one word commands
-            game.getHelp();
-            continue;
-        }
-        if (game.getParser().parse(input, action, noun) == false) { //will detect invalid input otherwise process it
-            cout << "Command not understood." << endl;
-            continue;
-        }
+    game.process();
+    return 0;
         //game.process(action, noun);
-    }
-}
+    
+};
