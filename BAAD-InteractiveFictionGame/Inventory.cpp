@@ -1,3 +1,31 @@
 #include "Inventory.h"
 #include <iostream>
 using namespace std;
+
+void Inventory::addObject(Object object) {
+	objects.push_back(object);                     // adds an object in the inventory. by default pushes it back.
+
+}
+
+void Inventory::showInventory() {
+	if (objects.empty()) {
+		cout << "Your Object is empty" << endl;        // Showinventory function... If Empty
+		return;
+	}
+
+	cout << "Objects in your Inventory:" << endl;
+	for (int i = 0; i < objects.size(); i++) {
+
+		cout << objects[i].getName() << ": " << objects[i].getDescription() << endl; // if there are an object. prints the name and description.
+	}
+}
+
+bool Inventory::gotObject(string objectName) {
+	for (int i = 0; i < objects.size(); i++) {
+		if (objects[i].getName() == objectName) {                        //Bool function to check if the inventory has the object player types (e.g. Keycard)
+			return true;
+		}
+		return false;
+	}
+
+}
