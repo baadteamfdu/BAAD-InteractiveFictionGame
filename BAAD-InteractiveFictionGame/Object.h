@@ -21,18 +21,9 @@ public:
 // getters
 
 	Object(string n, string d, bool  iskeycard) { name = n; description = d; bool iskeycard = false; }
-	string getName()
-	{
-		return name;
-	}
-	string getDescription()
-	{
-		return description;
-	}
-	bool iskeyCard()
-	{
-		return iskeyCard;
-	}
+	string getName();
+	string getDescription();
+	bool iskeyCard();
 
 };
 
