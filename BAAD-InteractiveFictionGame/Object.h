@@ -20,7 +20,7 @@ public:
 
 // getters
 
-	Object(string n, string d, bool  iskeycard) { name = n; description = d; bool iskeycard = false; }
+	Object(string n, string d, bool  iskeycard);
 	string getName();
 	string getDescription();
 	bool iskeyCard();
