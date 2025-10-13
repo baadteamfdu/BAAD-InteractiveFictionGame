@@ -22,6 +22,8 @@ Actions stringToAction(string action) { //maybe
 	if (action == "help") {
 		return Actions::HELP;
 	}
+	if (action == "inventory")
+		return Actions::INVENTORY;
 
 	return Actions::INVALID; //not yet sure if I need this
 }

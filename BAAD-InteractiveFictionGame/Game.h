@@ -12,6 +12,7 @@ class Game {
 private:
     Room* currentRoom = nullptr;
     Parser parser;
+    Inventory inventory;
 
 public:
     void init();

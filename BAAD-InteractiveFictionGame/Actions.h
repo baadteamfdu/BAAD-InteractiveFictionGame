@@ -10,6 +10,7 @@ enum Actions
 	OPEN,
 	GO,
 	HELP,
+	INVENTORY,
 	INVALID
 };
 

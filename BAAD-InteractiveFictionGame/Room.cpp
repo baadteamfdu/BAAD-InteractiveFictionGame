@@ -17,4 +17,32 @@ string Room::getDescription() {
 	return description;
 }
 
+Object* Room::getObject(string name) {
+    for (auto* obj : roomObjects) {
+        if (obj && obj->getName() == name) {
+            return obj;
+        }
+    }
+    return nullptr;
+}
+
+// adds an object to the roomObjects vector 
+void Room::addObject(Object* object) {
+    roomObjects.push_back(object);
+}
+
+// removes the object from the roomObjects vector
+void Room::removeObject(string name) {
+    auto it = remove_if(roomObjects.begin(), roomObjects.end(),
+                        [&](Object* obj) { return obj && obj->getName() == name; });
+    roomObjects.erase(it, roomObjects.end());
+}
+
+//couts all objects in the room
+void Room::printAllObjects() {
+    for (Object* obj : roomObjects) {
+        cout << obj->getName() << endl;
+    }
+}
+
 
