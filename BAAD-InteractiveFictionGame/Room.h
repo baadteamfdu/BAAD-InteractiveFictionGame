@@ -12,7 +12,7 @@ private:
 	string name;
 	string description;
 	vector<Object*> roomObjects;
-
+	Room* neighboor; // pointer to another room, could be used for moving between rooms
 public:
 
 	Room(string id, string name, string description);
@@ -24,6 +24,8 @@ public:
 	void addObject(Object* object); //adds an object to the roomObjects vector 
 	void removeObject(string name); //removes the object from the roomObjects vector   
 	void printAllObjects(); // displays all objects in the room
+	void setNeighboor(Room* room); // setter for neighboor
+	Room* getNeighboor(); // getter for neighboor
 };
 
 
