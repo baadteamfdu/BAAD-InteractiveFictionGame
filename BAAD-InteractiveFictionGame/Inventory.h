@@ -1,11 +1,11 @@
 #pragma once
+#include "Object.h"
 #include <string>
 #include <vector>
 using namespace std;
 
-class Object;
 
-class Inventory 
+class Inventory
 {
 
 public:
@@ -17,6 +17,5 @@ public:
 
 private:
 	vector<Object>objects; // a vector list got created all the objects will get stored here.
-	
-};
 
+};

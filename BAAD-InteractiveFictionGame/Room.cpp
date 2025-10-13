@@ -3,18 +3,18 @@
 using namespace std;
 
 //constructor
-Room::Room(string id, string name, string description): id(id), name(name), description(description) { //I don't know if using this keyword is better than what I have or not
+Room::Room(string id, string name, string description) : id(id), name(name), description(description) { //I don't know if using this keyword is better than what I have or not
 }
 
 //getters
 string Room::getId() {
-	return id;
+    return id;
 }
 string Room::getName() {
-	return name;
+    return name;
 }
 string Room::getDescription() {
-	return description;
+    return description;
 }
 
 Object* Room::getObject(string name) {
@@ -34,7 +34,7 @@ void Room::addObject(Object* object) {
 // removes the object from the roomObjects vector
 void Room::removeObject(string name) {
     auto it = remove_if(roomObjects.begin(), roomObjects.end(),
-                        [&](Object* obj) { return obj && obj->getName() == name; });
+        [&](Object* obj) { return obj && obj->getName() == name; });
     roomObjects.erase(it, roomObjects.end());
 }
 
@@ -44,5 +44,3 @@ void Room::printAllObjects() {
         cout << obj->getName() << endl;
     }
 }
-
-
