@@ -1,10 +1,17 @@
 #include "Game.h"
+#include "Room.h"
+#include "Object.h"
+#include "Inventory.h"
+#include "Parser.h"   // make sure this exists; otherwise comment this and use the fallback enum below
 #include <iostream>
 using namespace std;
 
+// If your Actions enum lives elsewhere, include it there.
+// If not, uncomment this fallback:
+// enum class Actions { HELP, LOOK, TAKE, INVENTORY };
+
 void Game::init() { // sets current room to the starting room and initializes the starting room to exist
-    Room* cryoStart = new Room
-    (
+    Room* cryoStart = new Room(
         "cryo01",
         "Cryo Chamber",
         "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
@@ -13,16 +20,11 @@ void Game::init() { // sets current room to the starting room and initializes th
     );
     setCurrentRoom(cryoStart);
 
-    // --- ADD OBJECTS TO ROOM ---
-    // Object* keycard = new Object() // fix constructor:
+    // Add objects to starting room
     Object* keycard = new Object("Keycard", "A Level A access card with a magnetic stripe.", true);
     cryoStart->addObject(keycard);
-
-    // Inventory is a member (Inventory inventory), so nothing else needed to "create" it.
-    // (If you had dynamic allocation, you'd do it here; but not necessary.)
 }
 
-// getters for current room and parser and setter for current room 
 Room* Game::getCurrentRoom() {
     return currentRoom;
 }
@@ -32,15 +34,15 @@ void Game::setCurrentRoom(Room* nextRoom) {
 }
 
 void Game::getHelp() { // prints out available commands
-    cout << "Available commands:" << endl;
-    cout << "go <direction>: move between rooms" << endl;
-    cout << "take <item>" << endl;
-    cout << "use <item>" << endl;
-    cout << "open <object>" << endl;
-    cout << "look <item>" << endl;
-    cout << "look around / look room" << endl;
-    cout << "inventory / look inventory" << endl; // maybe also check inventory at some point
-    cout << "help" << endl;
+    cout << "Available commands:\n";
+    cout << "go <direction>       : move between rooms\n";
+    cout << "take <item>\n";
+    cout << "use <item>\n";
+    cout << "open <object>\n";
+    cout << "look <item>\n";
+    cout << "look around / look room\n";
+    cout << "inventory / look inventory\n";
+    cout << "help\n";
 }
 
 void Game::process() 
@@ -52,7 +54,7 @@ void Game::process()
 
     while (true) {
         cout << "> ";
-        getline(cin, input);
+        if (!getline(cin, input)) break; // handle EOF cleanly
 
         if (!parser.parse(input, action, noun)) {
             cout << "Invalid command. Type 'help' for a list of commands.\n";
@@ -66,21 +68,23 @@ void Game::process()
 
         case Actions::LOOK:
             if (noun == "around" || noun == "room") {
-                cout << currentRoom->getDescription() << endl;
+                if (currentRoom) {
+                    cout << currentRoom->getDescription() << endl;
+                } else {
+                    cout << "There's nothing to see.\n";
+                }
             }
-            // add another if else to LOOK case in process where noun == inventory that also runs show inventory
             else if (noun == "inventory") {
                 inventory.showInventory();
             }
-            // add another if else to LOOK where noun == keycard that gets keycard from inventory
-            // and then gets the description and prints it
             else if (noun == "keycard" || noun == "Keycard") {
                 if (!inventory.gotObject("Keycard")) {
-                    cout << "You don't have the keycard." << endl;
+                    cout << "You don't have the keycard.\n";
                 } else {
+                    // requires Inventory::getObject(string) to be implemented
                     const Object* kc = inventory.getObject("Keycard");
                     if (kc) cout << kc->getDescription() << endl;
-                    else    cout << "You examine the keycard." << endl;
+                    else    cout << "You examine the keycard.\n";
                 }
             }
             else {
@@ -88,46 +92,41 @@ void Game::process()
             }
             break;
 
-        case Actions::TAKE:
-        {
-            // getObject  // add to inventory // removeObject from room
+        case Actions::TAKE: {
             if (noun.empty()) {
-                cout << "Take what?" << endl;
+                cout << "Take what?\n";
                 break;
             }
             if (!currentRoom) {
-                cout << "There's nowhere to take that from." << endl;
+                cout << "There's nowhere to take that from.\n";
                 break;
             }
 
+            // requires Room::getObject(string), removeObject(string)
             Object* obj = currentRoom->getObject(noun);
             if (!obj) {
-                cout << "There is no " << noun << " here." << endl;
+                cout << "There is no " << noun << " here.\n";
                 break;
             }
 
-            // Add by value into inventory (simple approach)
+            // copy into inventory (requires Inventory::addObject(const Object&))
             inventory.addObject(*obj);
 
-            // Remove from room, then free memory (room stored a new'ed pointer)
+            // remove from room and free memory (room owns the pointer)
             currentRoom->removeObject(noun);
             delete obj;
 
-            cout << "You picked up the " << noun << "." << endl;
+            cout << "You picked up the " << noun << ".\n";
             break;
         }
 
         case Actions::INVENTORY:
-            // showInventory
             inventory.showInventory();
             break;
 
         default:
-            cout << "You can't do that right now." << endl;
+            cout << "You can't do that right now.\n";
             break;
         }
     }
-
-    // placeholder it will need handlers for each enum possibility (action from Actions) with each noun
-    // Add a separate 'command not understood' for if the command did nothing (parser covers most of it).
 }
