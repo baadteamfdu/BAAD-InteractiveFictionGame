@@ -38,4 +38,11 @@ void Room::removeObject(string name) {
     roomObjects.erase(it, roomObjects.end());
 }
 
+//couts all objects in the room
+void Room::printAllObjects() {
+    for (Object* obj : roomObjects) {
+        cout << obj->getName() << endl;
+    }
+}
+
 

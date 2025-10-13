@@ -15,8 +15,6 @@ void Game::init() { // sets current room to the starting room and initializes th
         "cryo01",
         "Cryo Chamber",
         "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
-        "On the floor there's a keycard\n"
-        "In the corner of the room there's a sealed door with a card-reader on it\n"
     );
     setCurrentRoom(cryoStart);
 
@@ -71,6 +69,9 @@ void Game::process()
             if (noun == "around" || noun == "room") {
                 if (currentRoom) {
                     cout << currentRoom->getDescription() << endl;
+                    cout << "Objects in room:" << endl;
+                    currentRoom->printAllObjects();
+                    cout << endl;
                 } else {
                     cout << "There's nothing to see.\n";
                 }
