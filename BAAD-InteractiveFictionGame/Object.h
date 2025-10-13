@@ -16,13 +16,16 @@ private:
 	string name;
 	string description;
 	bool takeable;
+	bool isLocked;
 public:
 
 	// getters
 
 	Object(string n, string d, bool  takeable);
+	Object(string n, string d, bool takeable, bool isLocked);
 	string getName();
 	string getDescription();
 	bool isTakeable();
+	bool getIsLocked();
 
 };
