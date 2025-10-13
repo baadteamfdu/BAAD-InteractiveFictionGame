@@ -21,4 +21,6 @@ public:
 
     Room* getCurrentRoom();
     void setCurrentRoom(Room* nextRoom);
+
+	void useKeycard(Object* door);
 };

@@ -16,13 +16,13 @@ private:
 	string name;
 	string description;
 	bool takeable;
-	bool isLocked;
 public:
-
+	//public variables to change the state of the object
+	bool isLocked; //new flag to check if door is locked or unlocked
 	// getters
 
 	Object(string n, string d, bool  takeable);
-	Object(string n, string d, bool takeable, bool isLocked);
+	Object(string n, string d, bool takeable, bool isLocked); //additional constructor for doors and maybe for other locked objects in the future
 	string getName();
 	string getDescription();
 	bool isTakeable();

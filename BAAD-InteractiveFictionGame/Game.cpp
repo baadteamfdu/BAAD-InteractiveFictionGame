@@ -16,7 +16,7 @@ void Game::init() { // sets current room to the starting room and initializes th
         "Cryo Chamber",
         "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
     );
-	Room* cryoHall = new Room(
+	Room* cryoHall = new Room( //new room to work on moving between rooms
 		"cryoHall",
 		"Cryo Hallway",
 		"A long hallway with doors on either side. The lights flicker occasionally.\n"
@@ -26,9 +26,10 @@ void Game::init() { // sets current room to the starting room and initializes th
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
     Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
-    Object* cryoDoor = new Object("door", "A door with a card reader", false);
+	Object* cryoDoor = new Object("door", "A door with a card reader", false, true); //change to true to make it locked
     cryoStart->addObject(keycard);
     cryoStart->addObject(cryoDoor);
+	cryoHall->addObject(cryoDoor); // add the same door object to the other room
 }
 
 Room* Game::getCurrentRoom() {
@@ -49,6 +50,16 @@ void Game::getHelp() { // prints out available commands
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
     cout << "help\n";
+}
+
+void Game::useKeycard(Object* door) {
+    if (door->getIsLocked() == false) {
+		cout << "The door is already unlocked.\n";
+    }
+    else {
+        door->isLocked = false; // unlock the door
+        cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
+    }
 }
 
 void Game::process() 
