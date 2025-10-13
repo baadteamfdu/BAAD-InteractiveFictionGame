@@ -20,8 +20,9 @@ void Game::init() { // sets current room to the starting room and initializes th
     );
     setCurrentRoom(cryoStart);
 
+    //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
-    Object* keycard = new Object("Keycard", "A Level A access card with a magnetic stripe.", true);
+    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
     cryoStart->addObject(keycard);
 }
 
@@ -82,7 +83,7 @@ void Game::process()
                     cout << "You don't have the keycard.\n";
                 } else {
                     // requires Inventory::getObject(string) to be implemented
-                    const Object* kc = inventory.getObject("Keycard");
+                     Object* kc = inventory.getObject("Keycard");
                     if (kc) cout << kc->getDescription() << endl;
                     else    cout << "You examine the keycard.\n";
                 }

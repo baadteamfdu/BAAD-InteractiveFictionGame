@@ -25,8 +25,8 @@ bool Inventory::gotObject(string objectName) {
 		if (objects[i].getName() == objectName) {                        //Bool function to check if the inventory has the object player types (e.g. Keycard)
 			return true;
 		}
-		return false;
 	}
+		return false;
 
 }
 Object* Inventory::getObject(string objectName) {
