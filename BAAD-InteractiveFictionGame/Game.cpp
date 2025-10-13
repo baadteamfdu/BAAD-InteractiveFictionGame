@@ -30,8 +30,8 @@ void Game::init() { // sets current room to the starting room and initializes th
     cryoStart->addObject(keycard);
     cryoStart->addObject(cryoDoor);
 	cryoHall->addObject(cryoDoor); // add the same door object to the other room
-	cryoStart->setNeighboor(cryoHall); // set the neighboor of the starting room to the new room
-	cryoHall->setNeighboor(cryoStart); // set the neighboor of the new room to the starting room
+	cryoStart->setNeighbour(cryoHall); // set the neighbour of the starting room to the new room
+	cryoHall->setNeighbour(cryoStart); // set the neighbour of the new room to the starting room
 }
 
 Room* Game::getCurrentRoom() {
@@ -72,8 +72,9 @@ void Game::goDoor(Object* door) {
 	}
     else {
         cout << "You go through the door to the next room.\n";
-		currentRoom = currentRoom->getNeighboor(); // move to the neighboring room
+		currentRoom = currentRoom->getNeighbour(); // move to the neighbouring room
 		cout << currentRoom->getDescription() << endl; // describe the new room
+		door->setIsLocked(true); // lock the door again after going through
     }
 }
 
@@ -160,7 +161,34 @@ void Game::process()
         case Actions::INVENTORY:
             inventory.showInventory();
             break;
-
+		case Actions::USE:
+			if (noun.empty()) { //check if the user inputted a noun
+                cout << "Use what?\n";
+            }
+			else if (noun == "keycard") { //check if the user inputted keycard
+				if (inventory.gotObject("keycard")) { //check if the user has the keycard
+					Object* door = currentRoom->getObject("door"); //check if there is a door in the room
+					if (door) {
+						useKeycard(door); //use the function
+					}
+					else {
+						cout << "There is no door here to use the keycard on.\n"; //if there is no door in the room
+					}
+				}
+				else {
+					cout << "You don't have a keycard to use.\n"; //if the user does not have the keycard
+				}
+			}
+            break;
+		case Actions::GO:
+		case Actions::OPEN:
+			if (noun.empty()) { //check if the user inputted a noun
+				cout << "Go where?\n";
+			}
+			else if (noun == "door") { //check if the user inputted door
+				goDoor(currentRoom->getObject("door")); //use the  function
+			}
+			break;
         default:
             cout << "You can't do that right now.\n";
             break;
