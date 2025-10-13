@@ -16,9 +16,8 @@ private:
 	string name;
 	string description;
 	bool takeable;
-public:
-	//public variables to change the state of the object
 	bool isLocked; //new flag to check if door is locked or unlocked
+public:
 	// getters
 
 	Object(string n, string d, bool  takeable);
@@ -27,5 +26,8 @@ public:
 	string getDescription();
 	bool isTakeable();
 	bool getIsLocked();
+
+	//setters
+	void setIsLocked(bool lock) { isLocked = lock; } //setter to change the locked state of the door
 
 };

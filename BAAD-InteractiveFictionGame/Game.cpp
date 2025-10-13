@@ -30,6 +30,8 @@ void Game::init() { // sets current room to the starting room and initializes th
     cryoStart->addObject(keycard);
     cryoStart->addObject(cryoDoor);
 	cryoHall->addObject(cryoDoor); // add the same door object to the other room
+	cryoStart->setNeighboor(cryoHall); // set the neighboor of the starting room to the new room
+	cryoHall->setNeighboor(cryoStart); // set the neighboor of the new room to the starting room
 }
 
 Room* Game::getCurrentRoom() {
@@ -52,13 +54,26 @@ void Game::getHelp() { // prints out available commands
     cout << "help\n";
 }
 
+// New method to use a keycard on a door
 void Game::useKeycard(Object* door) {
     if (door->getIsLocked() == false) {
 		cout << "The door is already unlocked.\n";
     }
     else {
-        door->isLocked = false; // unlock the door
+        door->setIsLocked(false); // unlock the door
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
+    }
+}
+
+// New method to go through a door
+void Game::goDoor(Object* door) {
+    if (door->getIsLocked() == true) {
+		cout << "The door is locked. You need to unlock it first.\n";
+	}
+    else {
+        cout << "You go through the door to the next room.\n";
+		currentRoom = currentRoom->getNeighboor(); // move to the neighboring room
+		cout << currentRoom->getDescription() << endl; // describe the new room
     }
 }
 

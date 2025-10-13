@@ -44,3 +44,11 @@ void Room::printAllObjects() {
         cout << obj->getName() << endl;
     }
 }
+//getter for neighboor
+Room* Room::getNeighboor() {
+	return neighboor;
+}
+//setter for neighboor
+void Room::setNeighboor(Room* room) { 
+	neighboor = room;
+}
