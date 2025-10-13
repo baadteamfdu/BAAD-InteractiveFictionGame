@@ -16,6 +16,11 @@ void Game::init() { // sets current room to the starting room and initializes th
         "Cryo Chamber",
         "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
     );
+	Room* cryoHall = new Room(
+		"cryoHall",
+		"Cryo Hallway",
+		"A long hallway with doors on either side. The lights flicker occasionally.\n"
+	);
     setCurrentRoom(cryoStart);
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
