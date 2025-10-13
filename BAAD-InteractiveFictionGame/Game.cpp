@@ -21,7 +21,9 @@ void Game::init() { // sets current room to the starting room and initializes th
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
     Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
+    Object* cryoDoor = new Object("door", "A door with a card reader", false);
     cryoStart->addObject(keycard);
+    cryoStart->addObject(cryoDoor);
 }
 
 Room* Game::getCurrentRoom() {
@@ -79,15 +81,14 @@ void Game::process()
             else if (noun == "inventory") {
                 inventory.showInventory();
             }
-            else if (noun == "keycard" || noun == "Keycard") {
-                if (!inventory.gotObject("Keycard")) {
-                    cout << "You don't have the keycard.\n";
-                } else {
-                    // requires Inventory::getObject(string) to be implemented
-                     Object* kc = inventory.getObject("Keycard");
-                    if (kc) cout << kc->getDescription() << endl;
-                    else    cout << "You examine the keycard.\n";
-                }
+            else if(inventory.gotObject(noun)) {
+                // requires Inventory::getObject(string) to be implemented
+                Object* obj = inventory.getObject(noun);
+                if (obj) cout << obj->getDescription() << endl;
+                else cout << "You examine the keycard.\n";
+            } 
+            else if (!inventory.gotObject(noun)) {
+                cout << "You don't have the " << noun << ".\n";
             }
             else {
                 cout << "Look at what?\n";
@@ -110,7 +111,10 @@ void Game::process()
                 cout << "There is no " << noun << " here.\n";
                 break;
             }
-
+            if (!obj->isTakeable()) {
+                cout << "You cannot take this object" << endl;
+                break;
+            }
             // copy into inventory (requires Inventory::addObject(const Object&))
             inventory.addObject(*obj);
 

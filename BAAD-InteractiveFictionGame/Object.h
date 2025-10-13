@@ -15,15 +15,15 @@ Additionally, setting the keycard to false because its not a regular item and wi
 private:
 	string name;
 	string description;
-	bool iskeycard;
+	bool takeable;
 public:
 
 // getters
 
-	Object(string n, string d, bool  iskeycard);
+	Object(string n, string d, bool  takeable);
 	string getName();
 	string getDescription();
-	bool iskeyCard();
+	bool isTakeable();
 
 };
 
