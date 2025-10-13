@@ -97,6 +97,9 @@ void Game::process()
             else if (noun == "inventory") {
                 inventory.showInventory();
             }
+            else if (noun.empty()) {
+                cout << "Look at what? \n";
+            }
             else if(inventory.gotObject(noun)) {
                 // requires Inventory::getObject(string) to be implemented
                 Object* obj = inventory.getObject(noun);
@@ -105,9 +108,6 @@ void Game::process()
             } 
             else if (!inventory.gotObject(noun)) {
                 cout << "You don't have the " << noun << ".\n";
-            }
-            else {
-                cout << "Look at what?\n";
             }
             break;
 
