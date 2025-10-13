@@ -29,3 +29,11 @@ bool Inventory::gotObject(string objectName) {
 	}
 
 }
+Object* Inventory::getObject(string objectName) {
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i].getName() == objectName) {
+            return &objects[i]; // return pointer to the stored object
+        }
+    }
+    return nullptr; 
+}
