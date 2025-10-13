@@ -9,11 +9,11 @@ void Inventory::addObject(Object object) {
 
 void Inventory::showInventory() {
 	if (objects.empty()) {
-		cout << "Your Object is empty" << endl;        // Showinventory function... If Empty
+		cout << "Your inventory is empty" << endl;        // Showinventory function... If Empty
 		return;
 	}
 
-	cout << "Objects in your Inventory:" << endl;
+	cout << "Objects in your inventory:" << endl;
 	for (int i = 0; i < objects.size(); i++) {
 
 		cout << objects[i].getName() << ": " << objects[i].getDescription() << endl; // if there are an object. prints the name and description.
