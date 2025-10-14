@@ -161,33 +161,47 @@ void Game::process()
         case Actions::INVENTORY:
             inventory.showInventory();
             break;
-		case Actions::USE:
-			if (noun.empty()) { //check if the user inputted a noun
+		
+        case Actions::USE:
+		    if (noun.empty()) { //check if the user inputted a noun
                 cout << "Use what?\n";
+                break;
             }
 			else if (noun == "keycard") { //check if the user inputted keycard
-				if (inventory.gotObject("keycard")) { //check if the user has the keycard
-					Object* door = currentRoom->getObject("door"); //check if there is a door in the room
-					if (door) {
-						useKeycard(door); //use the function
-					}
-					else {
-						cout << "There is no door here to use the keycard on.\n"; //if there is no door in the room
-					}
+                if (!inventory.gotObject("keycard")) { //check if the user has the keycard
+                    cout << "You don't have a keycard to use.\n";
+                    break;
+                }
+                Object* door = currentRoom->getObject("door"); //check if there is a door in the room
+				if (door) {
+				    useKeycard(door); //use the function
 				}
 				else {
-					cout << "You don't have a keycard to use.\n"; //if the user does not have the keycard
+					cout << "There is no door here to use the keycard on.\n"; //if there is no door in the room
 				}
 			}
+			else {
+				cout << "You can't use that.\n"; //if the user does not have the keycard
+			}
             break;
+
 		case Actions::GO:
 		case Actions::OPEN:
 			if (noun.empty()) { //check if the user inputted a noun
 				cout << "Go where?\n";
 			}
-			else if (noun == "door") { //check if the user inputted door
-				goDoor(currentRoom->getObject("door")); //use the  function
-			}
+            else if (noun == "door") {
+                Object* door = currentRoom->getObject("door"); //check if there is a door in the room
+                if (door) {
+                    goDoor(door); //use the function
+                }
+                else {
+                    cout << "There is no door here.\n";
+                }
+            }
+            else{
+                cout << "You can't do that right now." << endl;
+            }
 			break;
         default:
             cout << "You can't do that right now.\n";
