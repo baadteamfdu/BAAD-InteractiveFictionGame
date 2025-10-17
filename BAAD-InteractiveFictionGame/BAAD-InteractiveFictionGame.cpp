@@ -11,7 +11,7 @@ int main()
     //setup for the game
 	Game game;
 	game.init();
-    cout << "Welcome to <BAAD Game>." << endl; //idk what to call it, No Space is Safe? Play on words? BAAD ALIEN? BAAD SPACE?
+    cout << "Welcome to <BAAD Game> Version 1." << endl; //idk what to call it, No Space is Safe? Play on words? BAAD ALIEN? BAAD SPACE?
     cout << "You wake up from cyrostasis, something has gone very wrong." << endl;  
     cout << "An alien egg was in shipment but hatched during transport." << endl; 
     cout << "You have to make your way through the ship to an escape pod." << endl;
