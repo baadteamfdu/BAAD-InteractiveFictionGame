@@ -13,10 +13,10 @@ void Inventory::showInventory() {
 		return;
 	}
 
-	cout << "Objects in your inventory:" << endl;
+	cout << "Objects in your inventory: (use look <object> for description)" << endl;
 	for (int i = 0; i < objects.size(); i++) {
 
-		cout << objects[i].getName() << ": " << objects[i].getDescription() << endl; // if there are an object. prints the name and description.
+		cout << objects[i].getName() << endl; // if there are an object. prints the name.
 	}
 }
 
