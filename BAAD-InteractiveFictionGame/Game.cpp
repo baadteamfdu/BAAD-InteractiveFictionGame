@@ -74,6 +74,22 @@ void Game::init() { // sets current room to the starting room and initializes th
 
     escapePod->addObject(finalRoomDoor);
     finalRoom->addObject(finalRoomDoor);
+
+    //Connect rooms
+    cryoStart->setNeighbour("cryo door", cryoHall);
+    cryoHall->setNeighbour("cryo door", cryoStart);
+
+    cryoHall->setNeighbour("escape pod door", escapePod);
+    escapePod->setNeighbour("escape pod door", cryoHall);
+
+    cryoHall->setNeighbour("workers door", workersRoom);
+    workersRoom->setNeighbour("workers door", cryoHall);
+
+    workersRoom->setNeighbour("bathroom door", bathroom);
+    bathroom->setNeighbour("bathroom door", workersRoom);
+
+    escapePod->setNeighbour("final room door", finalRoom);
+    finalRoom->setNeighbour("final room door", escapePod);
 }
 
 Room* Game::getCurrentRoom() {

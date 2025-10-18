@@ -45,13 +45,13 @@ void Room::printAllObjects() {
     }
 }
 //getter for neighbour
-Room* Room::getNeighbour(string& doorName) { // getter for neighbour
+Room* Room::getNeighbour(const string& doorName) { // getter for neighbour
 	if (neighbours.find(doorName) != neighbours.end()) { // check if doorName exists in the map
 		return neighbours[doorName]; // return the corresponding Room pointer
     }
 	return nullptr; // return nullptr if not found
 }
 //setter for neighboor
-void Room::setNeighbour(string& doorName, Room* room) { // setter for neighbour
+void Room::setNeighbour(const string& doorName, Room* room) { // setter for neighbour
 	neighbours[doorName] = room; // set the Room pointer for the given doorName
 }
