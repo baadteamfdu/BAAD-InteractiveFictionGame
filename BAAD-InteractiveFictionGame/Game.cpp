@@ -123,18 +123,28 @@ void Game::useKeycard(Object* door) {
     }
 }
 
-// New method to go through a door
-//void Game::goDoor(Object* door) {
-//    if (door->getIsLocked() == true) {
-//		cout << "The door is locked. You need to unlock it first.\n";
-//	}
-//    else {
-//        cout << "You go through the door to the next room.\n";
-//		currentRoom = currentRoom->getNeighbour(); // move to the neighbouring room
-//		cout << currentRoom->getDescription() << endl; // describe the new room
-//		door->setIsLocked(true); // lock the door again after going through
-//    }
-//}
+void Game::goDoor(const string& doorName) { // New method to go through a door
+	Object* door = currentRoom->getObject(doorName); //check if the door exists in the current room
+	if (!door) {
+		cout << "There is no " << doorName << " here.\n";
+		return;
+	}
+	if (door->getIsLocked()) {
+		cout << "The door is locked. You need to unlock it first.\n";
+	}
+	else {
+		Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
+		if (nextRoom) {
+			cout << "You go through the" << doorName << "and enter next room.\n";
+			setCurrentRoom(nextRoom); // move to the neighbouring room
+			cout << currentRoom->getDescription() << endl;
+			door->setIsLocked(true); // lock the door again after going through
+		}
+		else {
+			cout << "There is no room connected to this door.\n";
+		}
+	}
+}
 
 void Game::process() 
 {
