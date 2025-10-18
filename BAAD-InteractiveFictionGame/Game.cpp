@@ -11,17 +11,41 @@ using namespace std;
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
 
 void Game::init() { // sets current room to the starting room and initializes the starting room to exist
+	// Create rooms
     Room* cryoStart = new Room(
         "cryo01",
         "Cryo Chamber",
         "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
     );
-	Room* cryoHall = new Room( //new room to work on moving between rooms
+	Room* cryoHall = new Room( 
 		"cryoHall",
 		"Cryo Hallway",
 		"A long hallway with doors on either side. The lights flicker occasionally.\n"
 	);
+	Room* escapePod = new Room(
+		"escapePod",
+		"Escape Pod Chamber",
+		"A small room with blinking lights and a sealed escape pod.\n"
+	);
+	Room* workersRoom = new Room(
+		"workersRoom",
+		"Worker's Room",
+		"A small room with bunks and personal lockers for the station's crew.\n"
+	);
+	Room* bathroom = new Room(
+		"bathroom",
+		"Bathroom",
+		"A small, sterile bathroom with a sink and a mirror.\n"
+	);
+	Room* finalRoom = new Room(
+		"finalRoom",
+		"Abandoned Control Room",
+		"The control room is dark and silent, with flickering monitors and empty chairs.\n"
+	);
+
     setCurrentRoom(cryoStart);
+
+    // Add objects to starting room
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
@@ -30,8 +54,7 @@ void Game::init() { // sets current room to the starting room and initializes th
     cryoStart->addObject(keycard);
     cryoStart->addObject(cryoDoor);
 	cryoHall->addObject(cryoDoor); // add the same door object to the other room
-	cryoStart->setNeighbour(cryoHall); // set the neighbour of the starting room to the new room
-	cryoHall->setNeighbour(cryoStart); // set the neighbour of the new room to the starting room
+	
 }
 
 Room* Game::getCurrentRoom() {
@@ -66,17 +89,17 @@ void Game::useKeycard(Object* door) {
 }
 
 // New method to go through a door
-void Game::goDoor(Object* door) {
-    if (door->getIsLocked() == true) {
-		cout << "The door is locked. You need to unlock it first.\n";
-	}
-    else {
-        cout << "You go through the door to the next room.\n";
-		currentRoom = currentRoom->getNeighbour(); // move to the neighbouring room
-		cout << currentRoom->getDescription() << endl; // describe the new room
-		door->setIsLocked(true); // lock the door again after going through
-    }
-}
+//void Game::goDoor(Object* door) {
+//    if (door->getIsLocked() == true) {
+//		cout << "The door is locked. You need to unlock it first.\n";
+//	}
+//    else {
+//        cout << "You go through the door to the next room.\n";
+//		currentRoom = currentRoom->getNeighbour(); // move to the neighbouring room
+//		cout << currentRoom->getDescription() << endl; // describe the new room
+//		door->setIsLocked(true); // lock the door again after going through
+//    }
+//}
 
 void Game::process() 
 {
