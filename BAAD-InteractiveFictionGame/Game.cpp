@@ -79,8 +79,8 @@ void Game::init() { // sets current room to the starting room and initializes th
     cryoStart->setNeighbour("cryo door", cryoHall);
     cryoHall->setNeighbour("cryo door", cryoStart);
 
-    cryoHall->setNeighbour("pod door", escapePod);
-    escapePod->setNeighbour("pod door", cryoHall);
+    cryoHall->setNeighbour("chamber door", escapePod);
+    escapePod->setNeighbour("chamber door", cryoHall);
 
     cryoHall->setNeighbour("worker door", workersRoom);
     workersRoom->setNeighbour("worker door", cryoHall);
@@ -267,7 +267,7 @@ void Game::process()
 		case Actions::GO:
 		case Actions::OPEN:
 			if (noun.empty()) { //check if the user inputted a noun
-				cout << "Go where?\n";
+				cout << "Where?\n";
 			}
             else {
                 goDoor(noun); //use the function
