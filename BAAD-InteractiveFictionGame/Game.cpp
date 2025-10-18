@@ -50,11 +50,30 @@ void Game::init() { // sets current room to the starting room and initializes th
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
     Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
-	Object* cryoDoor = new Object("door", "A door with a card reader", false, true); //change to true to make it locked
     cryoStart->addObject(keycard);
-    cryoStart->addObject(cryoDoor);
-	cryoHall->addObject(cryoDoor); // add the same door object to the other room
+
+    // Creating doors
+    Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true);
+    Object* escapePodDoor = new Object("escape pod door", "A door to the Escape Pod Chamber", false, false);
+    Object* workersDoor = new Object("workers door", "A door to the Worker’s Room", false, false);
+    Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
+    Object* finalRoomDoor = new Object("final room door", "A door to the Final Room", false, false);
 	
+	// Adding doors to rooms
+    cryoStart->addObject(cryoDoor);
+    cryoHall->addObject(cryoDoor);
+
+    cryoHall->addObject(escapePodDoor);
+    escapePod->addObject(escapePodDoor);
+
+    cryoHall->addObject(workersDoor);
+    workersRoom->addObject(workersDoor);
+
+    workersRoom->addObject(bathroomDoor);
+    bathroom->addObject(bathroomDoor);
+
+    escapePod->addObject(finalRoomDoor);
+    finalRoom->addObject(finalRoomDoor);
 }
 
 Room* Game::getCurrentRoom() {
