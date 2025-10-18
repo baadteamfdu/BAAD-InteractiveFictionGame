@@ -25,7 +25,7 @@ public:
 	void addObject(Object* object); //adds an object to the roomObjects vector 
 	void removeObject(string name); //removes the object from the roomObjects vector   
 	void printAllObjects(); // displays all objects in the room
-	void setNeighbour(Room* room); // setter for neighbour
+	void setNeighbour(string& doorName, Room* room); // setter for neighbour
 	Room* getNeighbour(); // getter for neighbour
 };
 

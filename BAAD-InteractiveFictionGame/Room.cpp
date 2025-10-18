@@ -49,6 +49,6 @@ Room* Room::getNeighbour() {
 	return neighbour;
 }
 //setter for neighboor
-void Room::setNeighbour(Room* room) { 
-	neighbour = room;
+void Room::setNeighbour(string& doorName, Room* room) {
+	neighbours[doorName] = room;
 }
