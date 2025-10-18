@@ -25,7 +25,7 @@ void Game::init() { // sets current room to the starting room and initializes th
 	Room* escapePod = new Room(
 		"escapePod",
 		"Escape Pod Chamber",
-		"A small room with blinking lights and a sealed escape pod.\n"
+		"A small room with blinking lights and a sealed escape pod. The others appear broken. \n"
 	);
 	Room* workersRoom = new Room(
 		"workersRoom",
@@ -54,10 +54,10 @@ void Game::init() { // sets current room to the starting room and initializes th
 
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true);
-    Object* escapePodDoor = new Object("escape pod door", "A door to the Escape Pod Chamber", false, false);
-    Object* workersDoor = new Object("workers door", "A door to the Worker’s Room", false, false);
+    Object* escapePodDoor = new Object("chamber door", "A door to the Escape Pod Chamber", false, true);
+    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, true);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
-    Object* finalRoomDoor = new Object("final room door", "A door to the Final Room", false, false);
+    Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
 	
 	// Adding doors to rooms
     cryoStart->addObject(cryoDoor);
@@ -79,17 +79,17 @@ void Game::init() { // sets current room to the starting room and initializes th
     cryoStart->setNeighbour("cryo door", cryoHall);
     cryoHall->setNeighbour("cryo door", cryoStart);
 
-    cryoHall->setNeighbour("escape pod door", escapePod);
-    escapePod->setNeighbour("escape pod door", cryoHall);
+    cryoHall->setNeighbour("pod door", escapePod);
+    escapePod->setNeighbour("pod door", cryoHall);
 
-    cryoHall->setNeighbour("workers door", workersRoom);
-    workersRoom->setNeighbour("workers door", cryoHall);
+    cryoHall->setNeighbour("worker door", workersRoom);
+    workersRoom->setNeighbour("worker door", cryoHall);
 
     workersRoom->setNeighbour("bathroom door", bathroom);
     bathroom->setNeighbour("bathroom door", workersRoom);
 
-    escapePod->setNeighbour("final room door", finalRoom);
-    finalRoom->setNeighbour("final room door", escapePod);
+    escapePod->setNeighbour("pod door", finalRoom);
+    finalRoom->setNeighbour("pod door", escapePod);
 }
 
 Room* Game::getCurrentRoom() {
@@ -102,10 +102,10 @@ void Game::setCurrentRoom(Room* nextRoom) {
 
 void Game::getHelp() { // prints out available commands
     cout << "Available commands:\n";
-    cout << "go <direction>       : move between rooms\n";
+    cout << "go <door name>       : move between rooms\n";
     cout << "take <item>\n";
-    cout << "use <item>\n";
-    cout << "open <object>\n";
+    cout << "use <item> <door name> \n";
+    cout << "open <door name> (or <object name>) \n";
     cout << "look <item>\n";
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
@@ -129,17 +129,24 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 		cout << "There is no " << doorName << " here.\n";
 		return;
 	}
+    if (door->isTakeable()) { //stop player trying to open or go a keycard
+        cout << "You cannot open this or go through it. \n";
+        return;
+    }
 	if (door->getIsLocked()) {
 		cout << "The door is locked. You need to unlock it first.\n";
 	}
 	else {
 		Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
 		if (nextRoom) {
-			cout << "You go through the" << doorName << "and enter next room.\n";
+			cout << "You go through the " << doorName << " and enter the next room.\n";
 			setCurrentRoom(nextRoom); // move to the neighbouring room
 			cout << currentRoom->getDescription() << endl;
-			door->setIsLocked(true); // lock the door again after going through
-		}
+            door->setIsLocked(true); // lock the door again after going through
+            if ((door->getName()) == "bathroom door") { //don't lock player in bathroom 
+                door->setIsLocked(false);
+            }
+        }
 		else {
 			cout << "There is no room connected to this door.\n";
 		}
@@ -148,7 +155,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 
 void Game::process() 
 {
-    string input, noun;
+    string input, noun, whatToUseOn;
     Actions action;
 
     cout << "Type 'help' for a list of commands.\n";
@@ -157,7 +164,7 @@ void Game::process()
         cout << "> ";
         if (!getline(cin, input)) break; // handle EOF cleanly
 
-        if (!parser.parse(input, action, noun)) {
+        if (!parser.parse(input, action, noun, whatToUseOn)) {
             cout << "Invalid command. Type 'help' for a list of commands.\n";
             continue;
         }
@@ -240,12 +247,16 @@ void Game::process()
                     cout << "You don't have a keycard to use.\n";
                     break;
                 }
-                Object* door = currentRoom->getObject("door"); //check if there is a door in the room
-				if (door) {
+                Object* door = currentRoom->getObject(whatToUseOn); //check if there is a door in the room
+                if (whatToUseOn.empty()) {
+                    cout << "Use on what?\n";
+                    break;
+                }
+                else if (door) {
 				    useKeycard(door); //use the function
 				}
 				else {
-					cout << "There is no door here to use the keycard on.\n"; //if there is no door in the room
+					cout << "There is no door by that name here to use the keycard on.\n"; //if there is no door whose name matches in the room
 				}
 			}
 			else {
@@ -258,19 +269,10 @@ void Game::process()
 			if (noun.empty()) { //check if the user inputted a noun
 				cout << "Go where?\n";
 			}
-            else if (noun == "door") {
-                Object* door = currentRoom->getObject("door"); //check if there is a door in the room
-                if (door) {
-                    goDoor(door); //use the function
-                }
-                else {
-                    cout << "There is no door here.\n";
-                }
+            else {
+                goDoor(noun); //use the function
+                break;
             }
-            else{
-                cout << "You can't do that right now." << endl;
-            }
-			break;
         default:
             cout << "You can't do that right now.\n";
             break;
