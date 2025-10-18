@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <map>
 #include "Object.h"
 using namespace std;
 
@@ -12,7 +13,7 @@ private:
 	string name;
 	string description;
 	vector<Object*> roomObjects;
-	Room* neighbour; // pointer to another room, could be used for moving between rooms
+	map<string, Room*> neighbours; // map of direction to neighbouring Room pointers
 public:
 
 	Room(string id, string name, string description);
