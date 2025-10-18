@@ -26,7 +26,7 @@ public:
 	void removeObject(string name); //removes the object from the roomObjects vector   
 	void printAllObjects(); // displays all objects in the room
 	void setNeighbour(string& doorName, Room* room); // setter for neighbour
-	Room* getNeighbour(); // getter for neighbour
+	Room* getNeighbour(string& doorName); // getter for neighbour
 };
 
 
