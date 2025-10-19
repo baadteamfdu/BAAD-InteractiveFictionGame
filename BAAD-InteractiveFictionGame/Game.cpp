@@ -61,6 +61,11 @@ void Game::init() {
     Object* book = new Object("book", "An old logbook", true); // creating a book object
     workersRoom->addObject(book); //placing that book in the workers woom. Offcourse is takeable
 
+    // stall in bathroom
+
+    Object* stall = new Object("stall", "Looks like it has been dead for a while It might open", false, true);  // creating a stall object.
+    bathroom->addObject(stall); // Placing in the bathroom.
+
 
 
     // Creating doors
@@ -70,7 +75,16 @@ void Game::init() {
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
 	
+    // passcode door
+    Object* passcodeDoor = new Object("passcode door", "A door with a keypad lock", false, true); // added the passcode door object.
+    passcodeDoor->setIsPasscodeLocked(true); // door is locked
+    passcodeDoor->setPasscode(passcode);  
+   
 	// Adding doors to rooms
+
+    cryoHall->addObject(passcodeDoor);          // adding the passcode door between cryohall & escapePod.
+    escapePod->addObject(passcodeDoor);
+
     cryoStart->addObject(cryoDoor);
     cryoHall->addObject(cryoDoor);
 
@@ -133,6 +147,8 @@ void Game::useKeycard(Object* door) {
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
     }
 }
+
+// New m
 
 void Game::goDoor(const string& doorName) { // New method to go through a door
 	Object* door = currentRoom->getObject(doorName); //check if the door exists in the current room
