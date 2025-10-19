@@ -10,8 +10,13 @@ using namespace std;
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
 
-void Game::init() { // sets current room to the starting room and initializes the starting room to exist
+void Game::init() { 
+    
+    // sets current room to the starting room and initializes the starting room to exist
 	// Create rooms
+
+    srand(time(0));  // initialize random seed.
+    passcode = rand() % 9000 + 1000; // since there could be 9000 possible odds for a four digit passcode and it would start from 1000.
     Room* cryoStart = new Room(
         "cryo01",
         "Cryo Chamber",
@@ -51,6 +56,12 @@ void Game::init() { // sets current room to the starting room and initializes th
     // Add objects to starting room
     Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
     cryoStart->addObject(keycard);
+
+    // Book in worker's room
+    Object* book = new Object("book", "An old logbook", true); // creating a book object
+    workersRoom->addObject(book); //placing that book in the workers woom. Offcourse is takeable
+
+
 
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true);

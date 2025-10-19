@@ -13,6 +13,9 @@ private:
     Room* currentRoom = nullptr;
     Parser parser;
     Inventory inventory;
+    bool foundcode1 = false;             // code in bathroom set to false by default.
+    bool foundcode2 = false;             // code found in book set to false by default.
+    int passcode;                        // random 4 digit passcode
 
 public:
     void init();
@@ -24,4 +27,5 @@ public:
 
 	void useKeycard(Object* door);
 	void goDoor(const string& doorName);
+    void typeCode(int enteredCode); 
 };
