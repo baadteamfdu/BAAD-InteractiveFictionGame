@@ -13,9 +13,12 @@ private:
     Room* currentRoom = nullptr;
     Parser parser;
     Inventory inventory;
-    bool foundcode1 = false;             // code in bathroom set to false by default.
-    bool foundcode2 = false;             // code found in book set to false by default.
-    int passcode;                        // random 4 digit passcode
+    
+    bool foundcode1 = false;             // code in bathroom set to false by default. to check of the player got the first half.
+    bool foundcode2 = false;             // code found in book set to false by default.to check of the player got the second half.
+    int passcode;                        // random 4 digit passocde.
+    int passcode1;                       //variable to store first half of the passcode.
+    int passcode2;                       // varuiable to store second half of the passcode.
 
 public:
     void init();

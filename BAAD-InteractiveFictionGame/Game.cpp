@@ -16,7 +16,16 @@ void Game::init() {
 	// Create rooms
 
     srand(time(0));  // initialize random seed.
-    passcode = rand() % 9000 + 1000; // since there could be 9000 possible odds for a four digit passcode and it would start from 1000.
+    passcode = rand() % 9000 + 1000; // since there could only be 9000 odds for a four digit passcode and it would start from 1000.
+    passcode1 = passcode / 100;      // stores the first two digits for passcode1
+    passcode2 = passcode % 100;      // stores the last two digits for passcode 2
+
+
+    // assigning the booleans false by default. obviously passcode would not be found at the begining.
+    foundcode1 = false;              
+    foundcode2 = false;
+
+    // Create rooms
     Room* cryoStart = new Room(
         "cryo01",
         "Cryo Chamber",
@@ -64,7 +73,15 @@ void Game::init() {
     // stall in bathroom
 
     Object* stall = new Object("stall", "Looks like it has been dead for a while It might open", false, true);  // creating a stall object.
+    stall->setIsOpen(false);
     bathroom->addObject(stall); // Placing in the bathroom.
+
+    //code halves inside objects 
+  //  Object* codePart1 = new Object("code part 1", "Half of the passcode: '--" + to_string(passcode % 100) + "'", true);
+  //  Object* codePart2 = new Object("code part 2", "Half of the passcode: '" + to_string(passcode / 100) + "--'", true);
+  //  stall->addContainedObject(codePart1);
+  //  book->addContainedObject(codePart2);
+
 
 
 
@@ -82,14 +99,13 @@ void Game::init() {
    
 	// Adding doors to rooms
 
-    cryoHall->addObject(passcodeDoor);          // adding the passcode door between cryohall & escapePod.
-    escapePod->addObject(passcodeDoor);
+  
 
     cryoStart->addObject(cryoDoor);
     cryoHall->addObject(cryoDoor);
 
-    cryoHall->addObject(escapePodDoor);
-    escapePod->addObject(escapePodDoor);
+    cryoHall->addObject(passcodeDoor);    //adding the passcode door
+    escapePod->addObject(passcodeDoor);
 
     cryoHall->addObject(workersDoor);
     workersRoom->addObject(workersDoor);
@@ -104,8 +120,8 @@ void Game::init() {
     cryoStart->setNeighbour("cryo door", cryoHall);
     cryoHall->setNeighbour("cryo door", cryoStart);
 
-    cryoHall->setNeighbour("chamber door", escapePod);
-    escapePod->setNeighbour("chamber door", cryoHall);
+    cryoHall->setNeighbour("passcode door", escapePod);
+    escapePod->setNeighbour("passcode door", cryoHall);
 
     cryoHall->setNeighbour("worker door", workersRoom);
     workersRoom->setNeighbour("worker door", cryoHall);
@@ -139,14 +155,21 @@ void Game::getHelp() { // prints out available commands
 
 // New method to use a keycard on a door
 void Game::useKeycard(Object* door) {
-    if (door->getIsLocked() == false) {
-		cout << "The door is already unlocked.\n";
+    if (!door) {
+        cout << "There's no such door here.\n";
+        return;
     }
-    else {
+
+    if (door->getIsLocked()) {
         door->setIsLocked(false); // unlock the door
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
+      
+    }
+    else {
+        cout << "The door is already unlocked.\n";
     }
 }
+
 
 // New method to check if the current room has the passcodedoor.
 
@@ -159,16 +182,16 @@ void Game::typeCode(int enteredCode)
         cout << "There is no keypad door here.\n";
         return;
     }
+    if (!foundcode1 ||!foundcode2) {
+        cout << "You don't have both halves of the passcode yet.\n";
+        return;
+    }
 
-    if (door->getPasscode() == enteredCode)
-    {
+    if (enteredCode == passcode) {
         cout << "The keypad flashes green. The door unlocks.\n";
         door->setIsLocked(false);
     }
-    else
-    {
-        cout << "Incorrect code. Try again.\n";
-    }
+    else { cout << "Incorrect code. Try again.\n"; }
 }
 
 
@@ -182,46 +205,40 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
         cout << "You cannot open this or go through it. \n";
         return;
     }
+
+    // check for passcode locked door
     if (door->getIsPasscodeLocked()) {
         if (door->getIsLocked()) {
-            cout<<"The door is locked. You need to unlock it first.\n"; 
+            std::cout << "The door is locked. You must enter the passcode.\n";
             return;
         }
-        else {
-            Room* nextRoom = currentRoom->getNeighbour(doorName);
-            if (nextRoom)
-            {
-                cout << "You pass through the door.\n";
-                setCurrentRoom(nextRoom);
-                cout << currentRoom->getDescription() << endl;
-                door->setIsLocked(true); // lock again when passing back
-            }
-            return;
-        }
-     
     }
-	if (door->getIsLocked()) {
-		cout << "The door is locked. You need to unlock it first.\n";
+    // check for usual keycard doors
+    if (door->getIsLocked()) {
+        cout << "The door is locked.\n";
         return;
-	}
-	else {
-		Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
-		if (nextRoom) {
-			cout << "You go through the " << doorName << " and enter the next room.\n";
-			setCurrentRoom(nextRoom); // move to the neighbouring room
-			cout << currentRoom->getDescription() << endl;
-            door->setIsLocked(true); // lock the door again after going through
-            if ((door->getName()) == "bathroom door") { //don't lock player in bathroom 
-                door->setIsLocked(false);
-            }
-        }
-		else {
-			cout << "There is no room connected to this door.\n";
-		}
-	}
+    }
+
+     Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
+     if (nextRoom) {
+         cout << "You go through the " << doorName << " and enter the next room.\n";
+         setCurrentRoom(nextRoom); // move to the neighbouring room
+         cout << currentRoom->getDescription() << endl;
+         door->setIsLocked(true); // lock the door again after going through
+         if ((door->getName()) == "bathroom door") { //don't lock player in bathroom 
+             door->setIsLocked(false);
+         }
+                 
+     }
+     else {
+         cout << "There is no room connected to this door.\n";
+     }
+     
+    
+	
 }
 
-void Game::process() 
+void Game::process()
 {
     string input, noun, whatToUseOn;
     Actions action;
@@ -238,6 +255,7 @@ void Game::process()
         }
 
         switch (action) {
+
         case Actions::HELP:
             getHelp();
             break;
@@ -249,7 +267,38 @@ void Game::process()
                     cout << "Objects in room:" << endl;
                     currentRoom->printAllObjects();
                     cout << endl;
-                } else {
+  
+                }
+                if (currentRoom->getName() == "bathroom") {
+                    Object* stall = currentRoom->getObject("stall");
+                    if (stall && stall->getIsOpen()) {
+                        cout << "Inside the stall, you notice something scratched into the wall: '--"
+                            << passcode2 << "'\n";
+                    }
+                }
+            }
+            else if (noun == "stall") {
+                Object* stall = currentRoom->getObject("stall");
+                if (stall) {
+                    if (stall->getIsOpen()) {
+                        cout << "Inside the stall, you see part of a passcode: '--"
+                            << passcode2 << "'\n";
+                    }
+                    else {
+                        cout << "It's a closed stall.\n";
+                    }
+                }
+                else {
+                    cout << "There's no stall here.\n";
+                }
+            }
+            else if (noun == "book") {
+                if (inventory.gotObject("book")) {
+                    foundcode2 = true;
+                    cout << "You flip through the book and find half a passcode: '" << passcode1 << "--'.\n";
+                    foundcode2 = true;
+                }
+                else {
                     cout << "There's nothing to see.\n";
                 }
             }
@@ -257,16 +306,21 @@ void Game::process()
                 inventory.showInventory();
             }
             else if (noun.empty()) {
-                cout << "Look at what? \n";
+                cout << "Look at what?\n";
             }
-            else if(inventory.gotObject(noun)) {
-                // requires Inventory::getObject(string) to be implemented
-                Object* obj = inventory.getObject(noun);
-                if (obj) cout << obj->getDescription() << endl;
-                else cout << "You examine the keycard.\n";
-            } 
-            else if (!inventory.gotObject(noun)) {
-                cout << "You don't have the " << noun << ".\n";
+            else {
+                Object* obj = currentRoom->getObject(noun);
+                if (obj) {
+                    cout << obj->getDescription() << endl;
+                }
+                else if (inventory.gotObject(noun)) {
+                    Object* invobj = inventory.getObject(noun);
+                    if (invobj) cout << invobj->getDescription() << endl;
+                    else cout << "You examine the keycard.\n";
+                }
+                else {
+                    cout << "You don't have the " << noun << ".\n";
+                }
             }
             break;
 
@@ -275,42 +329,42 @@ void Game::process()
                 cout << "Take what?\n";
                 break;
             }
+
             if (!currentRoom) {
                 cout << "There's nowhere to take that from.\n";
                 break;
             }
 
-            // requires Room::getObject(string), removeObject(string)
-            Object* obj = currentRoom->getObject(noun);
-            if (!obj) {
-                cout << "There is no " << noun << " here.\n";
-                break;
-            }
-            if (!obj->isTakeable()) {
-                cout << "You cannot take this object" << endl;
-                break;
-            }
-            // copy into inventory (requires Inventory::addObject(const Object&))
-            inventory.addObject(*obj);
+            {
+                Object* obj = currentRoom->getObject(noun);
+                if (!obj) {
+                    cout << "There is no " << noun << " here.\n";
+                    break;
+                }
 
-            // remove from room and free memory (room owns the pointer)
-            currentRoom->removeObject(noun);
-            delete obj;
+                if (!obj->isTakeable()) {
+                    cout << "You cannot take this object.\n";
+                    break;
+                }
 
-            cout << "You picked up the " << noun << ".\n";
+                inventory.addObject(obj);
+                currentRoom->removeObject(noun);
+                cout << "You picked up the " << noun << ".\n";
+                delete obj;
+            }
             break;
         }
-
         case Actions::INVENTORY:
             inventory.showInventory();
             break;
-		
+
         case Actions::USE:
-		    if (noun.empty()) { //check if the user inputted a noun
+            if (noun.empty()) {
                 cout << "Use what?\n";
                 break;
             }
-			else if (noun == "keycard") { //check if the user inputted keycard
+
+            else if (noun == "keycard") { //check if the user inputted keycard
                 if (!inventory.gotObject("keycard")) { //check if the user has the keycard
                     cout << "You don't have a keycard to use.\n";
                     break;
@@ -321,29 +375,60 @@ void Game::process()
                     break;
                 }
                 else if (door) {
-				    useKeycard(door); //use the function
-				}
-				else {
-					cout << "There is no door by that name here to use the keycard on.\n"; //if there is no door whose name matches in the room
-				}
-			}
-			else {
-				cout << "You can't use that.\n"; //if the user does not have the keycard
-			}
-            break;
-
-		case Actions::GO:
-		case Actions::OPEN:
-			if (noun.empty()) { //check if the user inputted a noun
-				cout << "Where?\n";
-			}
+                    useKeycard(door); //use the function
+                }
+                else {
+                    cout << "There is no door by that name here to use the keycard on.\n"; //if there is no door whose name matches in the room
+                }
+            }
             else {
-                goDoor(noun); //use the function
+                cout << "You can't use that.\n"; //if the user does not have the keycard
+            }
+            break;
+        case Actions::GO:
+        case Actions::OPEN:
+            if (noun.empty()) {
+                cout << "Where?\n";
                 break;
             }
+
+            if (noun == "stall") {
+                Object* obj = currentRoom->getObject("stall");
+                if (obj) {
+                    if (!obj->getIsOpen()) {
+                        obj->setIsOpen(true);
+                        foundcode1 = true;
+                        cout << "You open the stall.\n";
+                    }
+                    else cout << "Thestall is already open.\n";
+                }
+                else {
+                    cout << "There's no stall here.\n";
+                }
+            }
+            else {
+                goDoor(noun);
+            }
+            break;
+
+
+        case Actions::TYPE:
+            if (noun.empty()) {
+                cout << "Enter a code.\n";
+                break;
+            }
+            try {
+                int entered = std::stoi(noun);
+                typeCode(entered);
+            }
+            catch (...) {
+                cout << "Invalid code format.\n";
+            }
+            break;
+
         default:
             cout << "You can't do that right now.\n";
             break;
-        }
-    }
-}
+        } 
+    } 
+} 

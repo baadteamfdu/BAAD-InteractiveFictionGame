@@ -1,6 +1,7 @@
 #pragma once
 #include "Actions.h"
 #include <string>
+#include <vector>
 using namespace std;
 
 class Object
@@ -19,6 +20,8 @@ private:
 	bool isLocked;								 //new flag to check if door is locked or unlocked.
 	bool isPasscodeLocked;						 //new flag for doors that can be unlocked by a passcode. 
 	int passcode;                                //variable to store randomly generated 4 digit passcode.
+	vector<Object*> containedObjects; // objects inside this object
+	bool isOpen;                      // for containers like stall, book, etc.
 public:
 	
 
@@ -33,10 +36,16 @@ public:
 	bool getIsLocked();
 	bool getIsPasscodeLocked();
 	int getPasscode();
+	bool getIsOpen();
+	const vector<Object*>& getContainedObjects(); // stores objects inside another object, maybe a book containg a passcode.
 
 	//setters
-	void setPasscode(int code)			{ passcode = code; }
-	void setIsLocked(bool lock)			{ isLocked = lock; } //setter to change the locked state of the door
-	void setIsPasscodeLocked(bool lock) { isPasscodeLocked = lock; }
+	void setIsLocked(bool lock);
+	void setIsPasscodeLocked(bool lock);
+	void setPasscode(int code);
+	void setIsOpen(bool open);
+
+	void addContainedObject(Object* obj);
+	Object* getContainedObject(string name);
 
 };

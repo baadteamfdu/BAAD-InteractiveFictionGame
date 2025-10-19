@@ -3,7 +3,7 @@
 using namespace std;
 
 Actions stringToAction(string action) { //maybe 
-	
+
 	if (action == "look") { //could allow for maybe eventual lists of synonyms
 		return Actions::LOOK;
 	}
@@ -18,7 +18,7 @@ Actions stringToAction(string action) { //maybe
 	}
 	if (action == "go") {      //saving for later
 		return Actions::GO;
-	}	
+	}
 	if (action == "type") {
 		return Actions::TYPE;   //to return the type functionality
 	}
