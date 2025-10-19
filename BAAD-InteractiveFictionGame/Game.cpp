@@ -148,7 +148,29 @@ void Game::useKeycard(Object* door) {
     }
 }
 
-// New m
+// New method to check if the current room has the passcodedoor.
+
+void Game::typeCode(int enteredCode)
+{
+    // check current room for passcode door
+    Object* door = currentRoom->getObject("passcode door");
+    if (!door)
+    {
+        cout << "There is no keypad door here.\n";
+        return;
+    }
+
+    if (door->getPasscode() == enteredCode)
+    {
+        cout << "The keypad flashes green. The door unlocks.\n";
+        door->setIsLocked(false);
+    }
+    else
+    {
+        cout << "Incorrect code. Try again.\n";
+    }
+}
+
 
 void Game::goDoor(const string& doorName) { // New method to go through a door
 	Object* door = currentRoom->getObject(doorName); //check if the door exists in the current room
@@ -160,8 +182,27 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
         cout << "You cannot open this or go through it. \n";
         return;
     }
+    if (door->getIsPasscodeLocked()) {
+        if (door->getIsLocked()) {
+            cout<<"The door is locked. You need to unlock it first.\n"; 
+            return;
+        }
+        else {
+            Room* nextRoom = currentRoom->getNeighbour(doorName);
+            if (nextRoom)
+            {
+                cout << "You pass through the door.\n";
+                setCurrentRoom(nextRoom);
+                cout << currentRoom->getDescription() << endl;
+                door->setIsLocked(true); // lock again when passing back
+            }
+            return;
+        }
+     
+    }
 	if (door->getIsLocked()) {
 		cout << "The door is locked. You need to unlock it first.\n";
+        return;
 	}
 	else {
 		Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
