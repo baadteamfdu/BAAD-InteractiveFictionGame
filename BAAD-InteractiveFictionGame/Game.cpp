@@ -150,6 +150,7 @@ void Game::getHelp() { // prints out available commands
     cout << "look <item>\n";
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
+    cout << "type <passcode>\n";
     cout << "help\n";
 }
 
@@ -401,9 +402,9 @@ void Game::process()
                     if (!obj->getIsOpen()) {
                         obj->setIsOpen(true);
                         foundcode1 = true;
-                        cout << "You open the stall.\n";
+                        cout << "You open the stall. Maybe there is something inside? Maybe I should take a closer look? \n";
                     }
-                    else cout << "Thestall is already open.\n";
+                    else cout << "The stall is already open. Maybe there is something inside? Maybe I should take a closer look? \n";
                 }
                 else {
                     cout << "There's no stall here.\n";
