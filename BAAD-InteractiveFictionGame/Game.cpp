@@ -154,18 +154,25 @@ void Game::getHelp() { // prints out available commands
     cout << "help\n";
 }
 
-// New method to use a keycard on a door
+// New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
-    if (!door) {
+    if (!door) {                                      
         cout << "There's no such door here.\n";
+        return;  // stops the function if door is not found
+    }
+    // Prevent unlocking passcode doors with the keycard
+    if (door->getIsPasscodeLocked()) {
+        cout << "The keycard doesn’t work on this type of door. It requires a passcode.\n";
         return;
     }
 
+    // check if the door is locked
     if (door->getIsLocked()) {
         door->setIsLocked(false); // unlock the door
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
       
     }
+    // if the door wasnt locked inform the player
     else {
         cout << "The door is already unlocked.\n";
     }
@@ -179,14 +186,17 @@ void Game::typeCode(int enteredCode)
     // check current room for passcode door
     Object* door = currentRoom->getObject("passcode door");
     if (!door)
-    {
+    {   
+        // if there are no such doors inform the player.
         cout << "There is no keypad door here.\n";
         return;
     }
+    // Check if the player has discovered both halves of the passcode
     if (!foundcode1 ||!foundcode2) {
         cout << "You don't have both halves of the passcode yet.\n";
         return;
     }
+    // Compare the entered code with the actual stored passcode
 
     if (enteredCode == passcode) {
         cout << "The keypad flashes green. The door unlocks.\n";
@@ -215,9 +225,9 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
         }
     }
     // check for usual keycard doors
-    if (door->getIsLocked()) {
-        cout << "The door is locked.\n";
-        return;
+    if (door->getIsLocked()) {           // Check if this door is a passcode-type door
+        cout << "The door is locked.\n"; 
+        return;                          // Stop further execution (player can’t go through yet)
     }
 
      Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
@@ -271,34 +281,34 @@ void Game::process()
                     cout << endl;
   
                 }
-                if (currentRoom->getName() == "bathroom") {
-                    Object* stall = currentRoom->getObject("stall");
+                if (currentRoom->getName() == "bathroom") {              // Find the stall object in the current room
+
+                    Object* stall = currentRoom->getObject("stall");     // Make sure the stall exists AND is open
                     if (stall && stall->getIsOpen()) {
                         cout << "Inside the stall, you notice something scratched into the wall: '--"
-                            << passcode2 << "'\n";
+                            << passcode2 << "'\n";                      // show the second half of the passxode
                     }
                 }
             }
             else if (noun == "stall") {
-                Object* stall = currentRoom->getObject("stall");
+                Object* stall = currentRoom->getObject("stall");        // find the stall object in the room
                 if (stall) {
                     if (stall->getIsOpen()) {
-                        cout << "Inside the stall, you see part of a passcode: '--"
+                        cout << "Inside the stall, you see part of a passcode: '--"  // if the stall is open show the passcode
                             << passcode2 << "'\n";
                     }
                     else {
-                        cout << "It's a closed stall.\n";
+                        cout << "It's a closed stall.\n";                            // if its not open yet, show theres no stall here
                     }
                 }
                 else {
                     cout << "There's no stall here.\n";
                 }
             }
-            else if (noun == "book") {
-                if (inventory.gotObject("book")) {
-                    foundcode2 = true;
+            else if (noun == "book") {                                                // handle look book
+                if (inventory.gotObject("book")) {                                    //  checks if the player has the book already. If found then checks and discover the first half of the code
+                    foundcode1 = true;
                     cout << "You flip through the book and find half a passcode: '" << passcode1 << "--'.\n";
-                    foundcode2 = true;
                 }
                 else {
                     cout << "There's nothing to see.\n";
@@ -310,6 +320,13 @@ void Game::process()
             else if (noun.empty()) {
                 cout << "Look at what?\n";
             }
+            /*
+            If none of the special 'look' cases matched (like book or stall),
+            this block handles generic "look <object>" commands.
+            the object exists in the current room, print its description.
+            If the object is not in the room, check if it's in the player's inventory
+            
+            */
             else {
                 Object* obj = currentRoom->getObject(noun);
                 if (obj) {
@@ -317,7 +334,7 @@ void Game::process()
                 }
                 else if (inventory.gotObject(noun)) {
                     Object* invobj = inventory.getObject(noun);
-                    if (invobj) cout << invobj->getDescription() << endl;
+                    if (invobj) cout << invobj->getDescription() << endl;  //If the object exists in inventory, show its description
                     else cout << "You examine the keycard.\n";
                 }
                 else {
@@ -401,7 +418,7 @@ void Game::process()
                 if (obj) {
                     if (!obj->getIsOpen()) {
                         obj->setIsOpen(true);
-                        foundcode1 = true;
+                        foundcode2 = true;
                         cout << "You open the stall. Maybe there is something inside? Maybe I should take a closer look? \n";
                     }
                     else cout << "The stall is already open. Maybe there is something inside? Maybe I should take a closer look? \n";
@@ -415,9 +432,16 @@ void Game::process()
             }
             break;
 
+            /*
+             usually when the player types the code it interprets as string since we have a string to action parser.
+             to fix it the input gets converted to integer using stoi methodology .
+             also cathes for any wrong entered format.
+
+            */
+
         case Actions::TYPE:
             if (noun.empty()) {
-                cout << "Enter a code.\n";
+                cout << "Enter a code.\n"; 
                 break;
             }
             try {
