@@ -323,7 +323,7 @@ void Game::process()
             /*
             If none of the special 'look' cases matched (like book or stall),
             this block handles generic "look <object>" commands.
-            the object exists in the current room, print its description.
+            if the object exists in the current room, print its description.
             If the object is not in the room, check if it's in the player's inventory
             
             */
