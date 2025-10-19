@@ -431,6 +431,6 @@ void Game::process()
         default:
             cout << "You can't do that right now.\n";
             break;
-        } // end switch
-    } // end while
-} // end function
+        } 
+    } 
+} 
