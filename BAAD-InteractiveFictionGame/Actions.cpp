@@ -19,6 +19,9 @@ Actions stringToAction(string action) { //maybe
 	if (action == "go") {      //saving for later
 		return Actions::GO;
 	}	
+	if (action == "type") {
+		return Actions::TYPE;   //to return the type functionality
+	}
 	if (action == "help") {
 		return Actions::HELP;
 	}

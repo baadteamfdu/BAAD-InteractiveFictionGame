@@ -2,16 +2,17 @@
 #include <string>
 using namespace std;
 
-enum Actions 
+enum Actions
 {
 	LOOK,
 	TAKE,
-	USE, 
+	USE,
 	OPEN,
 	GO,
 	HELP,
 	INVENTORY,
+	TYPE,           //for typing passcode
 	INVALID
 };
 
-Actions stringToAction(std::string action);
+Actions stringToAction(string action);
