@@ -226,7 +226,8 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
          cout << currentRoom->getDescription() << endl;
          door->setIsLocked(true); // lock the door again after going through
          if ((door->getName()) == "bathroom door") { //don't lock player in bathroom 
-             door->setIsLocked(false);
+                door->setIsLocked(false);
+            
          }
                  
      }
@@ -324,7 +325,7 @@ void Game::process()
             }
             break;
 
-        case Actions::TAKE: {
+        case Actions::TAKE:
             if (noun.empty()) {
                 cout << "Take what?\n";
                 break;
@@ -350,10 +351,9 @@ void Game::process()
                 inventory.addObject(obj);
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
-                delete obj;
             }
             break;
-        }
+
         case Actions::INVENTORY:
             inventory.showInventory();
             break;
@@ -364,27 +364,30 @@ void Game::process()
                 break;
             }
 
-            else if (noun == "keycard") { //check if the user inputted keycard
-                if (!inventory.gotObject("keycard")) { //check if the user has the keycard
+            if (noun == "keycard") {
+                if (!inventory.gotObject("keycard")) {
                     cout << "You don't have a keycard to use.\n";
                     break;
                 }
-                Object* door = currentRoom->getObject(whatToUseOn); //check if there is a door in the room
+
                 if (whatToUseOn.empty()) {
                     cout << "Use on what?\n";
                     break;
                 }
-                else if (door) {
-                    useKeycard(door); //use the function
+
+                Object* door = currentRoom->getObject(whatToUseOn);
+                if (door) {
+                    useKeycard(door);
                 }
                 else {
-                    cout << "There is no door by that name here to use the keycard on.\n"; //if there is no door whose name matches in the room
+                    cout << "There is no door by that name here to use the keycard on.\n";
                 }
             }
             else {
-                cout << "You can't use that.\n"; //if the user does not have the keycard
+                cout << "You can't use that.\n";
             }
             break;
+
         case Actions::GO:
         case Actions::OPEN:
             if (noun.empty()) {
@@ -411,7 +414,6 @@ void Game::process()
             }
             break;
 
-
         case Actions::TYPE:
             if (noun.empty()) {
                 cout << "Enter a code.\n";
@@ -429,6 +431,6 @@ void Game::process()
         default:
             cout << "You can't do that right now.\n";
             break;
-        } 
-    } 
-} 
+        } // end switch
+    } // end while
+} // end function
