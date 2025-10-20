@@ -350,23 +350,23 @@ void Game::process()
             }
 
             if (!currentRoom) {
-                cout << "There's nowhere to take that from.\n";
+                cout << "There's nowhere to take that from.\n"; //if player somehow not in room
                 break;
             }
 
             {
-                Object* obj = currentRoom->getObject(noun);
+                Object* obj = currentRoom->getObject(noun); //objct not in room
                 if (!obj) {
                     cout << "There is no " << noun << " here.\n";
                     break;
                 }
 
                 if (!obj->isTakeable()) {
-                    cout << "You cannot take this object.\n";
+                    cout << "You cannot take this object.\n"; //object not takeable
                     break;
                 }
 
-                inventory.addObject(obj);
+                inventory.addObject(obj); //add to inventory remove from room tell player
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
             }
@@ -378,22 +378,22 @@ void Game::process()
 
         case Actions::USE:
             if (noun.empty()) {
-                cout << "Use what?\n";
+                cout << "Use what?\n"; //just typed use
                 break;
             }
 
             if (noun == "keycard") {
-                if (!inventory.gotObject("keycard")) {
+                if (!inventory.gotObject("keycard")) {//don't have keycard
                     cout << "You don't have a keycard to use.\n";
                     break;
                 }
 
-                if (whatToUseOn.empty()) {
+                if (whatToUseOn.empty()) { //no specified door or object to use the keycard on
                     cout << "Use on what?\n";
                     break;
                 }
 
-                Object* door = currentRoom->getObject(whatToUseOn);
+                Object* door = currentRoom->getObject(whatToUseOn); //check if door the keycard is going to be used on exists
                 if (door) {
                     useKeycard(door);
                 }
