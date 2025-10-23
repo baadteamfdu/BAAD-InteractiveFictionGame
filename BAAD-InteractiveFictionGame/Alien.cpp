@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Alien.h"
+
 using namespace std;
 
 
@@ -26,24 +27,24 @@ bool Alien::getSawPlayer() {
 
 void Alien:: increaseTurnCounter(Room * playerCurrentRoom) {
 	turnCounter++;
-	if (alienCurrentRoom == playerCurrentRoom && sawPlayer == true) {
+	if (alienCurrentRoom == playerCurrentRoom && sawPlayer != true) {
+		sawPlayer = true;
+		cout << "The alien notices you... run!" << endl;
+	}
+	if (alienCurrentRoom == playerCurrentRoom && sawPlayer == true) {	
 		idleCounter++;
 		if (idleCounter > killThreshold) {
 			killPlayer();
 			}
 	}
-	if (turnCounter > moveThreshold && isActive == true) {
-		move(playerCurrentRoom);
+	if (turnCounter > moveThreshold && isActive == true && sawPlayer == false) {
+		move();
 	}
 }
-void Alien::move(Room* playerCurrentRoom) {
+void Alien::move() {
 	if (alienCurrentRoom == nullptr) {
 		alienCurrentRoom = roomList[1]; //should always be cryohall
-		sawPlayer = true;
-		return;
-	}
-	if (alienCurrentRoom == playerCurrentRoom) {
-		sawPlayer = true;
+		return; //so they don't leave early
 	}
 	leave();
 }
@@ -55,15 +56,15 @@ void Alien:: killPlayer() {
 }
 
 void Alien::leave() {
+	Room* moveRoom = alienCurrentRoom;
+	while (moveRoom == alienCurrentRoom) {
+		moveRoom = roomList[(rand() % roomList.size())];
+	}
 	sawPlayer = false;
 	idleCounter = 0;
 	turnCounter = 0;
 	moveThreshold = (rand() % 5 + 1);
 	killThreshold = rand() % 3 + 1;
-	Room* moveRoom = alienCurrentRoom;
-	while (moveRoom == alienCurrentRoom) {
-		moveRoom = roomList[(rand() % roomList.size())];
-	}
 	alienCurrentRoom = moveRoom;
 }
  

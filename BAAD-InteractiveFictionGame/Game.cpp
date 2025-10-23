@@ -17,7 +17,6 @@ void Game::init() {
     // sets current room to the starting room and initializes the starting room to exist
 	// Create rooms
 
-    srand(time(0));  // initialize random seed.
     passcode = rand() % 9000 + 1000; // since there could only be 9000 odds for a four digit passcode and it would start from 1000.
     passcode1 = passcode / 100;      // stores the first two digits for passcode1
     passcode2 = passcode % 100;      // stores the last two digits for passcode 2
@@ -151,6 +150,11 @@ Room* Game::getCurrentRoom() {
 
 void Game::setCurrentRoom(Room* nextRoom) {
     currentRoom = nextRoom;
+    //activates alien once player enters cryohall for the first time, I don't know a better way
+    if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
+        alien.setActive(true);
+        alien.move();
+    }
 }
 
 void Game::getHelp() { // prints out available commands

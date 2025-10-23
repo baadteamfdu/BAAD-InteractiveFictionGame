@@ -12,7 +12,7 @@ class Alien {
         void setSawPlayer(bool seen); //sets state of alien
         bool getSawPlayer(); //returns bool sawPlayer
         void increaseTurnCounter(Room* playerCurrentRoom); //increases value of turns counters
-        void move(Room * playerCurrentRoom); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom if player currentRoom = alienCurrentRoom run sawPlayer() else leave()
+        void move(); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom else leave()
         void killPlayer(); //tell player they lost and exit game
         void leave(); //leave setSawPlayer(false) and determine new slightly random threshold and what the new room will eventually be(maybe dont make it able to enter the same exact room twice in a row)
         void addRoom(Room* newRoom);

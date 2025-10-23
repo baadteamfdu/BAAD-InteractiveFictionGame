@@ -8,6 +8,8 @@ using namespace std;
 
 int main()
 {
+
+    srand(time(0));  // initialize random seed.
     //setup for the game
 	Game game;
 	game.init();
