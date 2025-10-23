@@ -6,9 +6,7 @@ using namespace std;
 
 Alien::Alien() {
 	moveThreshold = rand() % 5 + 2;
-	cout << moveThreshold << endl;
-	killThreshold = rand() % 3 + 1;
-	cout << killThreshold << endl;
+	killThreshold = rand() % 3 + 2;
 }
 
 void Alien::setActive(bool active) {
