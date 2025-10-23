@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actions.cpp" />
+    <ClCompile Include="Alien.cpp" />
     <ClCompile Include="BAAD-InteractiveFictionGame.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Inventory.cpp" />
@@ -133,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actions.h" />
+    <ClInclude Include="Alien.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Object.h" />

@@ -3,7 +3,9 @@
 #include "Object.h"
 #include "Inventory.h"
 #include "Parser.h"   // make sure this exists; otherwise comment this and use the fallback enum below
+#include "Alien.h"
 #include <iostream>
+#include <vector>
 using namespace std;
 
 // If your Actions enum lives elsewhere, include it there.
@@ -57,8 +59,16 @@ void Game::init() {
 		"The control room is dark and silent, with flickering monitors and empty chairs.\n"
 	);
 
-    setCurrentRoom(cryoStart);
+    //let Alien Access rooms
+    alien.addRoom(cryoStart);
+    alien.addRoom(cryoHall);
+    alien.addRoom(escapePod);
+    alien.addRoom(workersRoom);
+    alien.addRoom(bathroom);
+    alien.addRoom(finalRoom);
 
+    setCurrentRoom(cryoStart);
+    
     // Add objects to starting room
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
@@ -131,7 +141,9 @@ void Game::init() {
 
     escapePod->setNeighbour("pod door", finalRoom);
     finalRoom->setNeighbour("pod door", escapePod);
-}
+
+
+    }
 
 Room* Game::getCurrentRoom() {
     return currentRoom;
@@ -456,6 +468,7 @@ void Game::process()
         default:
             cout << "You can't do that right now.\n";
             break;
-        } 
+        }
+        alien.increaseTurnCounter(currentRoom);
     } 
 } 
