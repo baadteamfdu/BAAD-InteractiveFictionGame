@@ -163,7 +163,7 @@ void Game::getHelp() { // prints out available commands
     cout << "take <item>\n";
     cout << "use <item> <door name> \n";
     cout << "open <door name> (or <object name>) \n";
-    cout << "look <item>\n";
+    cout << "look <item> (must be inside inventory)\n";
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
     cout << "type <passcode>\n";

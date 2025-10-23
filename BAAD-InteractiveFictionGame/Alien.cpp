@@ -6,7 +6,7 @@ using namespace std;
 
 Alien::Alien() {
 	moveThreshold = rand() % 5 + 2;
-	killThreshold = rand() % 3 + 2;
+	killThreshold = rand() % 3 + 3;
 }
 
 void Alien::setActive(bool active) {
@@ -25,6 +25,11 @@ bool Alien::getSawPlayer() {
 
 void Alien:: increaseTurnCounter(Room * playerCurrentRoom) {
 	turnCounter++;
+	if (alienCurrentRoom != playerCurrentRoom && sawPlayer == true) {
+		sawPlayer = false;
+		idleCounter = 0;
+	}
+
 	if (alienCurrentRoom == playerCurrentRoom && sawPlayer != true) {
 		sawPlayer = true;
 		cout << "The alien notices you... run!" << endl;
@@ -35,7 +40,7 @@ void Alien:: increaseTurnCounter(Room * playerCurrentRoom) {
 			killPlayer();
 			}
 	}
-	if (turnCounter > moveThreshold && isActive == true && sawPlayer == false) {
+	if (turnCounter > moveThreshold && isActive == true && alienCurrentRoom != playerCurrentRoom && sawPlayer != true) { //these might be overkill but it works
 		move();
 	}
 }
@@ -61,8 +66,8 @@ void Alien::leave() {
 	sawPlayer = false;
 	idleCounter = 0;
 	turnCounter = 0;
-	moveThreshold = (rand() % 5 + 1);
-	killThreshold = rand() % 3 + 1;
+	moveThreshold = (rand() % 5 + 2);
+	killThreshold = rand() % 3 + 3;
 	alienCurrentRoom = moveRoom;
 }
  
