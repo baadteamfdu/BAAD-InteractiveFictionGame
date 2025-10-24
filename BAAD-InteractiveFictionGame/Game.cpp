@@ -6,6 +6,7 @@
 #include "Alien.h"
 #include <iostream>
 #include <vector>
+
 using namespace std;
 
 // If your Actions enum lives elsewhere, include it there.
@@ -151,9 +152,9 @@ Room* Game::getCurrentRoom() {
 void Game::setCurrentRoom(Room* nextRoom) {
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
-    if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
-        alien.setActive(true);
-        alien.move();
+    if (currentRoom->getId() == "cryoHall" && (alien.isAlienActive() == false)) {
+        alien.setAlienIsACtive(true);
+        alien.moveAlienToANewRoom();   // LV - only works if # of rooms greater than one, likely benign bug
     }
 }
 
@@ -272,6 +273,7 @@ void Game::process()
     Actions action;
 
     cout << "Type 'help' for a list of commands.\n";
+
 
     while (true) {
         cout << "> ";
@@ -476,3 +478,5 @@ void Game::process()
         alien.increaseTurnCounter(currentRoom);
     } 
 } 
+
+
