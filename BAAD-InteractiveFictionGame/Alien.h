@@ -9,7 +9,7 @@ class Alien {
         Alien();
         void setActive(bool active); //returns a bool called isActive
         bool getIsActive(); //returns state of alien
-        void increaseTurnCounter(Room* playerCurrentRoom); //increases value of turns counters
+        void increaseTurnCounter(Room* playerCurrentRoom, bool isHidden); //increases value of turns counters
         void addRoom(Room* newRoom);
         void move(); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom else leave()
 private:
@@ -25,5 +25,5 @@ private:
         void setSawPlayer(bool seen); //sets state of alien
         bool getSawPlayer(); //returns bool sawPlayer
         void leave(); //leave setSawPlayer(false) and determine new slightly random threshold and what the new room will eventually be(maybe dont make it able to enter the same exact room twice in a row)
-
+		
 };

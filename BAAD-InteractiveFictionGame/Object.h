@@ -22,22 +22,23 @@ private:
 	int passcode;                                //variable to store randomly generated 4 digit passcode.
 	vector<Object*> containedObjects; // objects inside this object
 	bool isOpen;                      // for containers like stall, book, etc.
+	bool isSafeZone;                  // for objects that are safe zones
 public:
-	
 
 	Object(string n, string d, bool  takeable);
 	Object(string n, string d, bool takeable, bool isLocked); //additional constructor for doors and maybe for other locked objects in the future
+	Object(string n, string d, bool takeable, bool isLocked, bool isSafe); //additional constructor for safe zone objects
 	string getName();
 	string getDescription();
 	bool isTakeable();
 
 	// getters
-
 	bool getIsLocked();
 	bool getIsPasscodeLocked();
 	int getPasscode();
 	bool getIsOpen();
 	const vector<Object*>& getContainedObjects(); // stores objects inside another object, maybe a book containg a passcode.
+	bool getIsSafeZone(); // to check if the object is a safe zone.
 
 	//setters
 	void setIsLocked(bool lock);
@@ -48,4 +49,5 @@ public:
 	void addContainedObject(Object* obj);
 	Object* getContainedObject(string name);
 
+	void setIsSafeZone(bool safe); // setter for safe zone. After implementing new constructor I do not know if this is needed, however leaving it here for now.
 };
