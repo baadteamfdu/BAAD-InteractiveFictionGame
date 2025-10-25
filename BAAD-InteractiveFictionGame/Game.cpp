@@ -143,7 +143,10 @@ void Game::init() {
     escapePod->setNeighbour("pod door", finalRoom);
     finalRoom->setNeighbour("pod door", escapePod);
 
+    // Hiding Object
+	Object* safeZone = new Object("locker", "A metal locker large enough to hide inside", false, false, true); // creating a locker object as a safe zone
 
+	workersRoom->addObject(safeZone); // placing the locker in the worker's room
     }
 
 Room* Game::getCurrentRoom() {
