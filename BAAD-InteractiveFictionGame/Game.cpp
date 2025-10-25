@@ -26,6 +26,8 @@ void Game::init() {
     foundcode1 = false;              
     foundcode2 = false;
 
+	playerIsHidden = false;          // player is not hidden at the start of the game.
+
     // Create rooms
     Room* cryoStart = new Room(
         "cryo01",
@@ -194,7 +196,6 @@ void Game::useKeycard(Object* door) {
     }
 }
 
-
 // New method to check if the current room has the passcodedoor.
 
 void Game::typeCode(int enteredCode)
@@ -264,6 +265,14 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
      
     
 	
+}
+
+void Game :: setIsHidden(bool hidden) {
+	playerIsHidden = hidden;
+}
+
+bool Game :: getIsHidden() {
+	return playerIsHidden;
 }
 
 void Game::process()

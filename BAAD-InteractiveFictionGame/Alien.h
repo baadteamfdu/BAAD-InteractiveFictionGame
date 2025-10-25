@@ -25,5 +25,5 @@ private:
         void setSawPlayer(bool seen); //sets state of alien
         bool getSawPlayer(); //returns bool sawPlayer
         void leave(); //leave setSawPlayer(false) and determine new slightly random threshold and what the new room will eventually be(maybe dont make it able to enter the same exact room twice in a row)
-
+		
 };

@@ -51,6 +51,8 @@ void Alien:: increaseTurnCounter(Room * playerCurrentRoom) {
 	if (turnCounter > moveThreshold && isActive == true && alienCurrentRoom != playerCurrentRoom && sawPlayer != true) { //these might be overkill but it works, basically if not having seen player or in same room and the threshold is passed and the first forced encounter has occured, it can move
 		move();
 	}
+	if(alienCurrentRoom == playerCurrentRoom && getIsHidden()){
+	}
 }
 
 //really just a hardcoded method that makes the inital encounter always cryohall, otherwise makes the alien move. This could be one function and not split into leave, in all honesty.

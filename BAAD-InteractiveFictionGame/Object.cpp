@@ -14,7 +14,7 @@ Object::Object(string name, string description, bool takeable, bool isLocked)
     isLocked(isLocked), isPasscodeLocked(false), passcode(0),isOpen(false) {
 }
 
-Object::Object(string name, string description, bool takeable, bool isLocked, bool isSafe)
+Object::Object(string name, string description, bool takeable, bool isLocked, bool isSafe) //new constructor for safe zone objects
 	: name(name), description(description), takeable(takeable),
 	isLocked(isLocked), isPasscodeLocked(false), passcode(0), isOpen(false), isSafeZone(isSafe) {
 }

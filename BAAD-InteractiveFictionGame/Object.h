@@ -38,7 +38,7 @@ public:
 	int getPasscode();
 	bool getIsOpen();
 	const vector<Object*>& getContainedObjects(); // stores objects inside another object, maybe a book containg a passcode.
-	bool getIsSafeZone(); // to check if the object is a safe zone
+	bool getIsSafeZone(); // to check if the object is a safe zone.
 
 	//setters
 	void setIsLocked(bool lock);
@@ -49,5 +49,5 @@ public:
 	void addContainedObject(Object* obj);
 	Object* getContainedObject(string name);
 
-	void setIsSafeZone(bool safe); // setter for safe zone
+	void setIsSafeZone(bool safe); // setter for safe zone. After implementing new constructor I do not know if this is needed, however leaving it here for now.
 };
