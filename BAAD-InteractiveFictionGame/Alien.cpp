@@ -31,7 +31,7 @@ bool Alien::getSawPlayer() {
 }
 
 //increases the turn counter and accounts for conditions of where player and alien are and if player is at risk: 
-void Alien:: increaseTurnCounter(Room * playerCurrentRoom) {
+void Alien:: increaseTurnCounter(Room * playerCurrentRoom, bool isHidden) {
 	turnCounter++;
 	if (alienCurrentRoom != playerCurrentRoom && sawPlayer == true) { //first, alien and player not in same room but sawPlayer = true, this means player left room with alien in it
 		sawPlayer = false; //no longer sees player they left
@@ -51,7 +51,9 @@ void Alien:: increaseTurnCounter(Room * playerCurrentRoom) {
 	if (turnCounter > moveThreshold && isActive == true && alienCurrentRoom != playerCurrentRoom && sawPlayer != true) { //these might be overkill but it works, basically if not having seen player or in same room and the threshold is passed and the first forced encounter has occured, it can move
 		move();
 	}
-	if(alienCurrentRoom == playerCurrentRoom && getIsHidden()){
+	if(alienCurrentRoom == playerCurrentRoom && isHidden){
+		cout << "The Alien enters the room, look around.... then leaves" << endl;
+		leave(); //if alien and player in same room but player is hidden, alien leaves
 	}
 }
 

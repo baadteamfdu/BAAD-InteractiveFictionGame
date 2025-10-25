@@ -482,6 +482,6 @@ void Game::process()
             cout << "You can't do that right now.\n";
             break;
         }
-        alien.increaseTurnCounter(currentRoom);
+        alien.increaseTurnCounter(currentRoom, playerIsHidden);
     } 
 } 
