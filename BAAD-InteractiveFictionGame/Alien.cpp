@@ -52,7 +52,7 @@ void Alien:: increaseTurnCounter(Room * playerCurrentRoom, bool isHidden) {
 		move();
 	}
 	if(alienCurrentRoom == playerCurrentRoom && isHidden){
-		cout << "The Alien enters the room, looks around.... then leaves" << endl;
+		cout << "The alien enters the room, looks around.... then leaves" << endl;
 		leave(); //if alien and player in same room but player is hidden, alien leaves
 	}
 }

@@ -99,7 +99,7 @@ void Game::init() {
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true);
     Object* escapePodDoor = new Object("chamber door", "A door to the Escape Pod Chamber", false, true);
-    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, true);
+    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
 	
@@ -159,6 +159,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
         alien.setActive(true);
         alien.move();
+        cout << "You see a passcode door on one side, and an ajar, unlocked keycard door on the other." << endl; //hint to tell player to hide and they don't need to use keycard
     }
 }
 
