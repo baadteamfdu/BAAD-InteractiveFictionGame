@@ -20,7 +20,7 @@ private:
     int passcode;                        // random 4 digit passocde.
     int passcode1;                       //variable to store first half of the passcode.
     int passcode2;                       // varuiable to store second half of the passcode.
-    bool playerIsHidden;     // flag to check if the player is hidden. Consider creating new player class later.
+    bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
     
 public:
 
@@ -38,4 +38,5 @@ public:
 	void setIsHidden(bool hidden); // setter for playerIsHidden
 
 	bool getIsHidden(); // getter for playerIsHidden
+
 };

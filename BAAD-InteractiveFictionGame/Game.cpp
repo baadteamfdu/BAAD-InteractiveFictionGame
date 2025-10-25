@@ -252,6 +252,10 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 
      Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
      if (nextRoom) {
+         if (playerIsHidden) {
+			 playerIsHidden = false; // unhide player when they go through a door
+			 cout << "You step out from your hiding spot.\n";
+         }
          cout << "You go through the " << doorName << " and enter the next room.\n";
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
@@ -265,9 +269,6 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
      else {
          cout << "There is no room connected to this door.\n";
      }
-     
-    
-	
 }
 
 void Game :: setIsHidden(bool hidden) {
