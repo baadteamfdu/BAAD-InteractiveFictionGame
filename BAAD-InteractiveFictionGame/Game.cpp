@@ -172,6 +172,8 @@ void Game::getHelp() { // prints out available commands
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
     cout << "type <passcode>\n";
+	cout << "hide <object name>\n";
+	cout << "unhide\n";
     cout << "help\n";
 }
 
@@ -269,6 +271,27 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
      else {
          cout << "There is no room connected to this door.\n";
      }
+}
+
+void Game :: Hide(string noun) {
+    Object* hideSpot = currentRoom->getObject(noun);
+    if (hideSpot && hideSpot->getIsSafeZone()) {
+        playerIsHidden = true;
+        cout << "You hide inside the " << noun << ". Stay quiet...\n";
+    }
+    else {
+        cout << "You can't hide there.\n";
+    }
+}
+
+void Game::Unhide() {
+	if (playerIsHidden) {
+		playerIsHidden = false;
+		cout << "You step out from your hiding spot.\n";
+	}
+	else {
+		cout << "You are not hiding.\n";
+	}
 }
 
 void Game :: setIsHidden(bool hidden) {
@@ -481,7 +504,18 @@ void Game::process()
                 cout << "Invalid code format.\n";
             }
             break;
-
+        case Actions :: HIDE:
+			if(noun.empty()) {
+				cout << "Hide where?\n";
+				break;
+			}
+            else {
+                Hide(noun);
+            }
+            break;
+		case Actions::UHIDE:
+			Unhide();
+			break;
         default:
             cout << "You can't do that right now.\n";
             break;
