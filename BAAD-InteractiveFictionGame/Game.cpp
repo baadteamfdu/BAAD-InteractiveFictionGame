@@ -189,6 +189,11 @@ void Game::useKeycard(Object* door) {
         return;
     }
 
+    if (playerIsHidden) {
+        playerIsHidden = false; // unhide player when they use keycard
+        cout << "You step out from your hiding spot.\n";
+    }
+
     // check if the door is locked
     if (door->getIsLocked()) {
         door->setIsLocked(false); // unlock the door
