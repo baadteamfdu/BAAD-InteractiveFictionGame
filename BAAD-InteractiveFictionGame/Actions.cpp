@@ -22,6 +22,9 @@ Actions stringToAction(string action) { //maybe
 	if (action == "type") {
 		return Actions::TYPE;   //to return the type functionality
 	}
+	if (action == 'map')
+	{
+		return Actions::MAP;
 	if (action == "help") {
 		return Actions::HELP;
 	}
