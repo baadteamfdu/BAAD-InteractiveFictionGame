@@ -13,6 +13,12 @@ Object::Object(string name, string description, bool takeable, bool isLocked)
     : name(name), description(description), takeable(takeable),
     isLocked(isLocked), isPasscodeLocked(false), passcode(0),isOpen(false) {
 }
+
+Object::Object(string name, string description, bool takeable, bool isLocked, bool isSafe)
+	: name(name), description(description), takeable(takeable),
+	isLocked(isLocked), isPasscodeLocked(false), passcode(0), isOpen(false), isSafeZone(isSafe) {
+}
+
 //getters	
 string Object::getName()			{return name;}
 string Object::getDescription()		{return description;}
@@ -22,12 +28,14 @@ bool Object::getIsPasscodeLocked()	{return isPasscodeLocked;}
 int Object::getPasscode()			{return passcode;}
 bool Object::getIsOpen() { return isOpen; }
 const vector<Object*>& Object::getContainedObjects() { return containedObjects; }
+bool Object::getIsSafeZone() { return isSafeZone; } // returns if the object is a safe zone
 
 //setters
 void Object::setIsLocked(bool lock) { isLocked = lock; }
 void Object::setIsPasscodeLocked(bool lock) { isPasscodeLocked = lock; }
 void Object::setPasscode(int code) { passcode = code; }
 void Object::setIsOpen(bool open) { isOpen = open; }
+void Object::setIsSafeZone(bool safe) { isSafeZone = safe; } // setter for safe zone
 
 // containment
 void Object::addContainedObject(Object* obj) {
