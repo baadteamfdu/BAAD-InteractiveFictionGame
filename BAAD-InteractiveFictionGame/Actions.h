@@ -13,7 +13,9 @@ enum Actions
 	MAP,
 	INVENTORY,
 	TYPE,           //for typing passcode
-	INVALID
+	INVALID,
+	HIDE,
+	UHIDE
 };
 
 Actions stringToAction(string action);
