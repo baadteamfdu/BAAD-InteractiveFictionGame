@@ -273,7 +273,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
      }
 }
 
-void Game :: Hide(string noun) {
+void Game::hide(string noun) {
     Object* hideSpot = currentRoom->getObject(noun);
     if (hideSpot && hideSpot->getIsSafeZone()) {
         playerIsHidden = true;
@@ -284,7 +284,7 @@ void Game :: Hide(string noun) {
     }
 }
 
-void Game::Unhide() {
+void Game::unhide() {
 	if (playerIsHidden) {
 		playerIsHidden = false;
 		cout << "You step out from your hiding spot.\n";
@@ -294,11 +294,11 @@ void Game::Unhide() {
 	}
 }
 
-void Game :: setIsHidden(bool hidden) {
+void Game::setIsHidden(bool hidden) {
 	playerIsHidden = hidden;
 }
 
-bool Game :: getIsHidden() {
+bool Game::getIsHidden() {
 	return playerIsHidden;
 }
 
@@ -510,11 +510,16 @@ void Game::process()
 				break;
 			}
             else {
-                Hide(noun);
+                if (getIsHidden() == false) {
+                    hide(noun);
+                }
+                else {
+                    cout << "You are already hidden.\n";
+                }
             }
             break;
-		case Actions::UHIDE:
-			Unhide();
+		case Actions::UNHIDE:
+			unhide();
 			break;
         default:
             cout << "You can't do that right now.\n";

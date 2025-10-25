@@ -32,7 +32,7 @@ Actions stringToAction(string action) { //maybe
 		return Actions::HIDE;
 	}
 	if (action == "unhide") {
-		return Actions::UHIDE;
+		return Actions::UNHIDE;
 	}
 	return Actions::INVALID; //not yet sure if I need this
 }

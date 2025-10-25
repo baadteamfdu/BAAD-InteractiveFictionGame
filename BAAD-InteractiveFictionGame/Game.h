@@ -34,8 +34,8 @@ public:
 	void useKeycard(Object* door);
 	void goDoor(const string& doorName);
     void typeCode(int enteredCode); 
-    void Hide(string noun);
-	void Unhide();
+    void hide(string noun);
+	void unhide();
 
 	void setIsHidden(bool hidden); // setter for playerIsHidden
 
