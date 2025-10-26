@@ -11,6 +11,7 @@ enum Actions
 	GO,
 	HELP,
 	INVENTORY,
+	MAP,
 	TYPE,           //for typing passcode
 	INVALID
 };

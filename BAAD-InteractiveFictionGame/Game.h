@@ -20,7 +20,8 @@ private:
     int passcode;                        // random 4 digit passocde.
     int passcode1;                       //variable to store first half of the passcode.
     int passcode2;                       // varuiable to store second half of the passcode.
-    
+    vector<Room*> allRooms;             //this vector stores all rooms for the map
+
 public:
     void init();
     void process();

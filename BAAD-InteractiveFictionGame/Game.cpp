@@ -170,6 +170,15 @@ void Game::getHelp() { // prints out available commands
     cout << "help\n";
 }
 
+void Game::displayMap(bool useId) const
+{
+    if (allRooms.empty())
+    {
+        cout << "No map available";
+        return;
+    }
+}
+
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
     if (!door) {                                      
