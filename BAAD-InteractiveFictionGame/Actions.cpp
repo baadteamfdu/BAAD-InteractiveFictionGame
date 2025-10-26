@@ -24,8 +24,9 @@ Actions stringToAction(string action) { //maybe
 	}
 	if (action == "map")
 	{
-		return Actions::MAP;
+		return Actions::MAP; 
 	}
+
 	if (action == "help") {
 		return Actions::HELP;
 	}

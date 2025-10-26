@@ -29,8 +29,11 @@ public:
 
     Room* getCurrentRoom();
     void setCurrentRoom(Room* nextRoom);
+  
 
 	void useKeycard(Object* door);
 	void goDoor(const string& doorName);
     void typeCode(int enteredCode); 
+
+    void displayMap(bool useId = false) const; //this code will display the map for the game
 };

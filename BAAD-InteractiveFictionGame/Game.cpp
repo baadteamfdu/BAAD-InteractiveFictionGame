@@ -169,12 +169,12 @@ void Game::getHelp() { // prints out available commands
     cout << "type <passcode>\n";
     cout << "help\n";
 }
-
+//this functions displays the map that is used for the game.
 void Game::displayMap(bool useId) const
 {
     if (allRooms.empty())
     {
-        cout << "No map available";
+        cout << "No map available"; 
         return;
     }
 }
