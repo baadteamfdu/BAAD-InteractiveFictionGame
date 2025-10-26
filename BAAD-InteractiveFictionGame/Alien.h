@@ -17,13 +17,15 @@ private:
         bool sawPlayer = false;//store if alien has seen the player
         int turnCounter = 0;   //store a counter for turns to move
         int idleCounter = 0;   //store a counter for idle turns
+        int chaseCounter = 0; //counter for turns spent chasing
         int moveThreshold = 1; //store a threshold for movement will be set randomly later
         int killThreshold = 1; //store a threshold for kills will be set randomly later
+        int chaseThreshold = 1; //store a threshold for chasing before killing that will be set randomly later
         Room* alienCurrentRoom = nullptr; //store aliens current Room
         vector<Room*> roomList;
         void killPlayer(); //tell player they lost and exit game
         void setSawPlayer(bool seen); //sets state of alien
         bool getSawPlayer(); //returns bool sawPlayer
         void leave(); //leave setSawPlayer(false) and determine new slightly random threshold and what the new room will eventually be(maybe dont make it able to enter the same exact room twice in a row)
-		
+        void resetAlienState(); // resets thresholds and counters
 };

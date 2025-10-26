@@ -5,9 +5,7 @@ using namespace std;
 
 
 Alien::Alien() {
-	//random starting thresholds
-	moveThreshold = rand() % 5 + 2;
-	killThreshold = rand() % 3 + 3;
+	resetAlienState();
 }
 
 //sets isActive to active
@@ -79,14 +77,20 @@ void Alien::leave() {
 	while (moveRoom == alienCurrentRoom) { //picks a random index until it picks one that isn't the room it is already in to guarantee it moves around to a different room
 		moveRoom = roomList[(rand() % roomList.size())];
 	}
-	sawPlayer = false; //this is kind of a given
-	idleCounter = 0;
-	turnCounter = 0;
-	moveThreshold = (rand() % 5 + 2); //I could skip constructor if I merged move with leave?
-	killThreshold = rand() % 3 + 3;
+	resetAlienState();
 	alienCurrentRoom = moveRoom;
 }
  
 void Alien::addRoom(Room* newRoom) { //add a room to the list of rooms the alien can see
 	roomList.push_back(newRoom);
+}
+
+void Alien::resetAlienState() { //taken from professor's recommendation
+	moveThreshold = (rand() % 5) + 2;
+	killThreshold = (rand() % 3) + 3;
+	chaseThreshold = (rand() % 3) + 6;
+	idleCounter = 0;
+	turnCounter = 0;
+	chaseCounter = 0;
+	sawPlayer = false;
 }
