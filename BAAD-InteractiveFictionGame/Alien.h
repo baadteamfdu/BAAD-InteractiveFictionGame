@@ -16,10 +16,8 @@ private:
         bool isActive = false; //store if alien is active
         bool sawPlayer = false;//store if alien has seen the player
         int turnCounter = 0;   //store a counter for turns to move
-        int idleCounter = 0;   //store a counter for idle turns
         int chaseCounter = 0; //counter for turns spent chasing
         int moveThreshold = 1; //store a threshold for movement will be set randomly later
-        int killThreshold = 1; //store a threshold for kills will be set randomly later
         int chaseThreshold = 1; //store a threshold for chasing before killing that will be set randomly later
         Room* alienCurrentRoom = nullptr; //store aliens current Room
         vector<Room*> roomList;
