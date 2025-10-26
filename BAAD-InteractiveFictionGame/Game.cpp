@@ -401,6 +401,12 @@ void Game::process()
             inventory.showInventory();
             break;
 
+        case Actions::MAP:
+        {
+            displayMap(false);
+            break;
+        }
+
         case Actions::USE:
             if (noun.empty()) {
                 cout << "Use what?\n"; //just typed use
