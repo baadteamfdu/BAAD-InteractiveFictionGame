@@ -30,8 +30,6 @@ bool Alien::getSawPlayer() {
 
 //increases the turn counter and accounts for conditions of where player and alien are and if player is at risk: 
 void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden) {
-	cout << chaseCounter << endl;
-	cout << chaseThreshold << endl;
 	if (isActive == true) {
 		turnCounter++;
 
