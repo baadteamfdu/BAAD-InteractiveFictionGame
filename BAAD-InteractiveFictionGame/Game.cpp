@@ -21,7 +21,6 @@ void Game::init() {
     passcode1 = passcode / 100;      // stores the first two digits for passcode1
     passcode2 = passcode % 100;      // stores the last two digits for passcode 2
 
-
     // assigning the booleans false by default. obviously passcode would not be found at the begining.
     foundcode1 = false;              
     foundcode2 = false;
@@ -160,6 +159,12 @@ void Game::setCurrentRoom(Room* nextRoom) {
         alien.setActive(true);
         alien.move();
         cout << "You see a passcode door on one side, and an ajar, unlocked keycard door on the other." << endl; //hint to tell player to hide and they don't need to use keycard
+    }
+    if (currentRoom->getId() == "finalRoom") { //added winning for the deliverable
+        cout << "You see one last working escape pod." << endl; 
+        cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
+        cout << "You win!" << endl;
+        exit(0);
     }
 }
 
