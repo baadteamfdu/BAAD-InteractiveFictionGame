@@ -22,10 +22,11 @@ void Game::init() {
     passcode1 = passcode / 100;      // stores the first two digits for passcode1
     passcode2 = passcode % 100;      // stores the last two digits for passcode 2
 
-
     // assigning the booleans false by default. obviously passcode would not be found at the begining.
     foundcode1 = false;              
     foundcode2 = false;
+
+	playerIsHidden = false;          // player is not hidden at the start of the game.
 
     // Create rooms
     Room* cryoStart = new Room(
@@ -98,7 +99,7 @@ void Game::init() {
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true);
     Object* escapePodDoor = new Object("chamber door", "A door to the Escape Pod Chamber", false, true);
-    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, true);
+    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
 	
@@ -142,7 +143,10 @@ void Game::init() {
     escapePod->setNeighbour("pod door", finalRoom);
     finalRoom->setNeighbour("pod door", escapePod);
 
+    // Hiding Object
+	Object* safeZone = new Object("locker", "A metal locker large enough to hide inside", false, false, true); // creating a locker object as a safe zone
 
+	workersRoom->addObject(safeZone); // placing the locker in the worker's room
     }
 
 Room* Game::getCurrentRoom() {
@@ -152,9 +156,16 @@ Room* Game::getCurrentRoom() {
 void Game::setCurrentRoom(Room* nextRoom) {
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
-    if (currentRoom->getId() == "cryoHall" && (alien.isAlienActive() == false)) {
-        alien.setAlienIsACtive(true);
-        alien.moveAlienToANewRoom();   // LV - only works if # of rooms greater than one, likely benign bug
+    if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
+        alien.setActive(true);
+        alien.move();
+        cout << "You see a passcode door on one side, and an ajar, unlocked keycard door on the other." << endl; //hint to tell player to hide and they don't need to use keycard
+    }
+    if (currentRoom->getId() == "finalRoom") { //added winning for the deliverable
+        cout << "You see one last working escape pod." << endl; 
+        cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
+        cout << "You win!" << endl;
+        exit(0);
     }
 }
 
@@ -168,6 +179,8 @@ void Game::getHelp() { // prints out available commands
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
     cout << "type <passcode>\n";
+	cout << "hide <object name>\n";
+	cout << "unhide\n";
     cout << "help\n";
 }
 
@@ -183,6 +196,11 @@ void Game::useKeycard(Object* door) {
         return;
     }
 
+    if (playerIsHidden) {
+        playerIsHidden = false; // unhide player when they use keycard
+        cout << "You step out from your hiding spot.\n";
+    }
+
     // check if the door is locked
     if (door->getIsLocked()) {
         door->setIsLocked(false); // unlock the door
@@ -194,7 +212,6 @@ void Game::useKeycard(Object* door) {
         cout << "The door is already unlocked.\n";
     }
 }
-
 
 // New method to check if the current room has the passcodedoor.
 
@@ -249,6 +266,10 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 
      Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
      if (nextRoom) {
+         if (playerIsHidden) {
+			 playerIsHidden = false; // unhide player when they go through a door
+			 cout << "You step out from your hiding spot.\n";
+         }
          cout << "You go through the " << doorName << " and enter the next room.\n";
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
@@ -262,9 +283,35 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
      else {
          cout << "There is no room connected to this door.\n";
      }
-     
-    
-	
+}
+
+void Game::hide(string noun) {
+    Object* hideSpot = currentRoom->getObject(noun);
+    if (hideSpot && hideSpot->getIsSafeZone()) {
+        playerIsHidden = true;
+        cout << "You hide inside the " << noun << ". Stay quiet...\n";
+    }
+    else {
+        cout << "You can't hide there.\n";
+    }
+}
+
+void Game::unhide() {
+	if (playerIsHidden) {
+		playerIsHidden = false;
+		cout << "You step out from your hiding spot.\n";
+	}
+	else {
+		cout << "You are not hiding.\n";
+	}
+}
+
+void Game::setIsHidden(bool hidden) {
+	playerIsHidden = hidden;
+}
+
+bool Game::getIsHidden() {
+	return playerIsHidden;
 }
 
 void Game::process()
@@ -470,12 +517,28 @@ void Game::process()
                 cout << "Invalid code format.\n";
             }
             break;
-
+        case Actions :: HIDE:
+			if(noun.empty()) {
+				cout << "Hide where?\n";
+				break;
+			}
+            else {
+                if (getIsHidden() == false) {
+                    hide(noun);
+                }
+                else {
+                    cout << "You are already hidden.\n";
+                }
+            }
+            break;
+		case Actions::UNHIDE:
+			unhide();
+			break;
         default:
             cout << "You can't do that right now.\n";
             break;
         }
-        alien.increaseTurnCounter(currentRoom);
+        alien.increaseTurnCounter(currentRoom, playerIsHidden);
     } 
 } 
 

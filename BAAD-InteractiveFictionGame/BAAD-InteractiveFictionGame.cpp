@@ -12,8 +12,8 @@ int main()
 
     srand(time(0));  // initialize random seed.
     //setup for the game
-	// Game game;
-	// game.init();
+	Game game;
+	game.init();
     cout << "Welcome to BAAD Alien Version 1." << endl; 
     cout << "You wake up from cyrostasis, something has gone very wrong." << endl;  
     cout << "An alien egg was in shipment but hatched during transport." << endl; 
@@ -24,12 +24,8 @@ int main()
     //cout << game.getCurrentRoom()->getDescription() << endl;
 
 
-    UnitTest testing123;
-    testing123.alienTest();
-
     //running the game by repeatedly asking for input
-    // game.process();
+    game.process();
     return 0;
-        //game.process(action, noun);
-    
+ 
 };
