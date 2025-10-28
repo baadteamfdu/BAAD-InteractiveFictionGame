@@ -14,6 +14,9 @@ private:
 	string description;
 	vector<Object*> roomObjects;
 	map<string, Room*> neighbours; // map of direction to neighbouring Room pointers
+
+	int nX = 0;
+	int nY = 0;
 public:
 
 	Room(string id, string name, string description);
@@ -27,6 +30,21 @@ public:
 	void printAllObjects(); // displays all objects in the room
 	void setNeighbour(const string& doorName, Room* room); // setter for neighbour
 	Room* getNeighbour(const string& doorName); // getter for neighbour
+
+	//this code sets the positions for where the rooms are and the player
+	void setPosition(int x, int y)
+	{
+		nX = x;
+		nY = y;
+	}
+	int getX()
+	{
+		return nX;
+	}
+	int getY()
+	{
+		return nY;
+	}
 };
 
 

@@ -32,15 +32,18 @@ void Room::addObject(Object* object) {
 }
 
 // removes the object from the roomObjects vector
-void Room::removeObject(string name) {
+void Room::removeObject(string name) 
+{
     auto it = remove_if(roomObjects.begin(), roomObjects.end(),
         [&](Object* obj) { return obj && obj->getName() == name; });
     roomObjects.erase(it, roomObjects.end());
 }
 
 //couts all objects in the room
-void Room::printAllObjects() {
-    for (Object* obj : roomObjects) {
+void Room::printAllObjects() 
+{
+    for (Object* obj : roomObjects) 
+    {
         cout << obj->getName() << endl;
     }
 }

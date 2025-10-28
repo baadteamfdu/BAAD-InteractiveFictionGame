@@ -6,6 +6,8 @@
 #include "Alien.h"
 #include <iostream>
 #include <vector>
+#include <cctype>
+#include <string>
 using namespace std;
 
 // If your Actions enum lives elsewhere, include it there.
@@ -177,6 +179,47 @@ void Game::displayMap(bool useId) const
         cout << "No map available"; 
         return;
     }
+    //this is the grid size of the map (10 x 10)
+    const int rows = 10;
+    const int cols = 10;
+
+    // Create grid filled with spaces
+    vector<vector<char>> grid(rows, vector<char>(cols, ' '));
+
+    // Go through all rooms and mark them on the grid
+    for (const Room* room : allRooms) 
+    {
+        if (!room) continue;
+
+        int x = room->getX();
+        int y = room->getY();
+
+        // make sure it's inside grid range
+        if (x >= 0 && x < cols && y >= 0 && y < rows) 
+        {
+            // current room = '*', others = first letter of room name
+            char mark = (room == currentRoom) ? '*' : toupper(room->getName()[0]);
+            grid[y][x] = mark;
+        }
+    }
+
+    // Print grid
+    cout << "\n--- MAP (10x10) ---\n";
+    for (int r = rows - 1; r >= 0; r--) 
+    {   // print top to bottom
+        for (int c = 0; c < cols; c++) 
+        {
+            cout << (grid[r][c] == ' ' ? '.' : grid[r][c]) << ' ';
+        }
+        cout << '\n';
+    }
+    cout << "(* = You)\n";
+    
+
+        
+
+
+
 }
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
