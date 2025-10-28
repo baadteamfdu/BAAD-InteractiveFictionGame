@@ -170,7 +170,16 @@ void Game::getHelp() { // prints out available commands
     cout << "inventory / look inventory\n";
     cout << "type <passcode>\n";
     cout << "help\n";
+
+    allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom }
+    cryoStart->setPosition(4, 1);
+    cryoHall->setPosition(4, 2);
+    workersRoom->setPosition(3, 2);
+    bathroom->setPosition(2, 2);
+    escapePod->setPosition(5, 2);
+    finalRoom->setPosition(6, 2);
 }
+
 //this functions displays the map that is used for the game.
 void Game::displayMap(bool useId) const
 {
@@ -191,15 +200,17 @@ void Game::displayMap(bool useId) const
     {
         if (!room) continue;
 
-        int x = room->getX();
-        int y = room->getY();
+        int x = room.getX();
+        int y = room.getY();
 
         // make sure it's inside grid range
-        if (x >= 0 && x < cols && y >= 0 && y < rows) 
+        if (x >= 0 && x < cols && y >= 0 && y < rows)
         {
-            // current room = '*', others = first letter of room name
-            char mark = (room == currentRoom) ? '*' : toupper(room->getName()[0]);
-            grid[y][x] = mark;
+            char mark = toupper(room.getName()[0]);
+            if (room == currentRoom)
+            {
+                grid[y][x] = mark;
+            }
         }
     }
 

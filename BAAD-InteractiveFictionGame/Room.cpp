@@ -10,6 +10,7 @@ Room::Room(string id, string name, string description) : id(id), name(name), des
 string Room::getId() {
     return id;
 }
+
 string Room::getName() {
     return name;
 }
@@ -25,6 +26,9 @@ Object* Room::getObject(string name) {
     }
     return nullptr;
 }
+
+
+
 
 // adds an object to the roomObjects vector 
 void Room::addObject(Object* object) {
