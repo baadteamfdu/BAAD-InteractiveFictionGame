@@ -27,7 +27,19 @@ Object* Room::getObject(string name) {
     return nullptr;
 }
 
-
+void Room::setPosition(int x, int y)
+{
+    nX = x;
+    nY = y;
+}
+int Room::getX()
+{
+    return nX;
+}
+int Room::getY()
+{
+    return nY;
+}
 
 
 // adds an object to the roomObjects vector 

@@ -143,7 +143,13 @@ void Game::init() {
     escapePod->setNeighbour("pod door", finalRoom);
     finalRoom->setNeighbour("pod door", escapePod);
 
-
+    allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom };
+    cryoStart->setPosition(4, 1);
+    cryoHall->setPosition(4, 2);
+    workersRoom->setPosition(3, 2);
+    bathroom->setPosition(2, 2);
+    escapePod->setPosition(5, 2);
+    finalRoom->setPosition(6, 2);
     }
 
 Room* Game::getCurrentRoom() {
@@ -171,13 +177,6 @@ void Game::getHelp() { // prints out available commands
     cout << "type <passcode>\n";
     cout << "help\n";
 
-    allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom }
-    cryoStart->setPosition(4, 1);
-    cryoHall->setPosition(4, 2);
-    workersRoom->setPosition(3, 2);
-    bathroom->setPosition(2, 2);
-    escapePod->setPosition(5, 2);
-    finalRoom->setPosition(6, 2);
 }
 
 //this functions displays the map that is used for the game.
@@ -196,17 +195,17 @@ void Game::displayMap(bool useId) const
     vector<vector<char>> grid(rows, vector<char>(cols, ' '));
 
     // Go through all rooms and mark them on the grid
-    for (const Room* room : allRooms) 
+    for (Room* room : allRooms) 
     {
-        if (!room) continue;
+        if (!room) continue; //this will skip any invalid pointers
 
-        int x = room.getX();
-        int y = room.getY();
+        int x = room->getX(); //column position
+        int y = room->getY(); //row position
 
         // make sure it's inside grid range
         if (x >= 0 && x < cols && y >= 0 && y < rows)
         {
-            char mark = toupper(room.getName()[0]);
+            char mark = toupper(room->getName()[0]);
             if (room == currentRoom)
             {
                 grid[y][x] = mark;
