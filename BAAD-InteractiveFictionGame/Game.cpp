@@ -183,6 +183,12 @@ void Game::getHelp() { // prints out available commands
 //
 void Game::displayMap(bool /*useId*/) const
 {
+    string finalRoom = "[Pod";
+    if (currentRoom && currentRoom->getId() == "finalRoom")
+        finalRoom += "*]";
+    else
+        finalRoom += "]";
+
     string chamber = "[Chamber"; //this is the label 
     if (currentRoom && currentRoom->getId() == "escapePod") //with all of the code below it asks if the player is in that specified room
         chamber += "*]";                                    //if it is true, it prints it with the star, signaling that the player is there                             
@@ -213,10 +219,10 @@ void Game::displayMap(bool /*useId*/) const
     else
         cryo += "]";
 
-    cout << "\n--- MAP ---\n\n";
-    cout << chamber << " " << hall << worker << "\n\n";
-    cout << bathroom << "\n\n";
-    cout << cryo << "\n\n";
+    cout << "           \n--- MAP ---\n\n";
+    cout << finalRoom << " " << "              " << bathroom << "\n\n";
+    cout << chamber << "   " << hall << "  " << worker << "\n\n";
+    cout << "          " << cryo << "\n\n";
     cout << "* = You\n\n";
 }
 
