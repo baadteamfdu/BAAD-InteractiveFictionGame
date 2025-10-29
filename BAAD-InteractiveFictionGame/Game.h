@@ -35,5 +35,5 @@ public:
 	void goDoor(const string& doorName);
     void typeCode(int enteredCode); 
 
-    void displayMap(bool useId = false) const; //this code will display the map for the game
+    void displayMap() const; //this code will display the map for the game
 };

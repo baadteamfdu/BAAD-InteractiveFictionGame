@@ -83,6 +83,6 @@ void Alien::leave() {
 	alienCurrentRoom = moveRoom;
 }
  
-void Alien::addRoom(Room* newRoom) { //add a room to the list of rooms the alien can see
-	roomList.push_back(newRoom);
-}
+void Alien::addAllRooms(vector <Room*> allRooms) { //add a room to the list of rooms the alien can see
+	roomList = allRooms;
+	}
