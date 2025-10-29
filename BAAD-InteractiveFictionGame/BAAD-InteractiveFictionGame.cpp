@@ -13,7 +13,7 @@ int main()
     //setup for the game
 	Game game;
 	game.init();
-    cout << "Welcome to BAAD Alien Version 1." << endl; 
+    cout << "Welcome to BAAD Alien Version 2." << endl; 
     cout << "You wake up from cyrostasis, something has gone very wrong." << endl;  
     cout << "An alien egg was in shipment but hatched during transport." << endl; 
     cout << "You have to make your way through the ship to an escape pod." << endl;
