@@ -180,63 +180,44 @@ void Game::getHelp() { // prints out available commands
 }
 
 //this functions displays the map that is used for the game.
-void Game::displayMap(bool useId) const
+//
+void Game::displayMap(bool /*useId*/) const
 {
-    if (allRooms.empty()) 
-    {
-        cout << "No map available\n";
-        return;
-    }
+    string chamber = "[Chamber"; //this is the label 
+    if (currentRoom && currentRoom->getId() == "escapePod") //with all of the code below it asks if the player is in that specified room
+        chamber += "*]";                                    //if it is true, it prints it with the star, signaling that the player is there                             
+    else
+        chamber += "]";                                     //otherwise it is just going to print the room.
 
-    const int rows = 10;
-    const int cols = 10;
-    vector<vector<string>> grid(rows, vector<string>(cols, "."));
+    string hall = "[Hall";
+    if (currentRoom && currentRoom->getId() == "cryoHall")
+        hall += "*]";
+    else
+        hall += "]";
 
-    // Label helper (kept simple)
-    auto getLabel = [&](Room* r) 
-        {
-            //this code labels each room to its correct ID
-        string id = r->getId();
-        if (id == "cryo01") 
-            return string("Cryo");
-        if (id == "cryoHall") 
-            return string("Hall");
-        if (id == "workersRoom") 
-            return string("Worker");
-        if (id == "bathroom") 
-            return string("Bath");
-        if (id == "escapePod") 
-            return string("Chamber");
-        if (id == "finalRoom") 
-            return string("Pod");
-        return string("Room");
-        };
+    string worker = "[Worker";
+    if (currentRoom && currentRoom->getId() == "workersRoom")
+        worker += "*]";
+    else
+        worker += "]";
 
-    // Mark rooms
-    for (Room* r : allRooms)
-    {
-        int x = r->getX();
-        int y = r->getY();
-        if (x < 0 || x >= cols || y < 0 || y >= rows) 
-            continue;
+    string bathroom = "[Bathroom";
+    if (currentRoom && currentRoom->getId() == "bathroom")
+        bathroom += "*]";
+    else
+        bathroom += "]";
 
-        string label = getLabel(r);
-        if (r == currentRoom) 
-            label += "*"; //this marks the player's location
+    string cryo = "[Cryo";
+    if (currentRoom && currentRoom->getId() == "cryo01")
+        cryo += "*]";
+    else
+        cryo += "]";
 
-        grid[y][x] = label;
-    }
-
-    cout << "\n--- MAP ---\n";
-    for (int r = rows - 1; r >= 0; --r) 
-    {
-        for (int c = 0; c < cols; ++c) 
-        {
-            cout << grid[r][c] << " ";
-        }
-        cout << "\n";
-    }
-    cout << "* = You\n";
+    cout << "\n--- MAP ---\n\n";
+    cout << chamber << " " << hall << worker << "\n\n";
+    cout << bathroom << "\n\n";
+    cout << cryo << "\n\n";
+    cout << "* = You\n\n";
 }
 
 
