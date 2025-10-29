@@ -6,6 +6,7 @@
 #include "Alien.h"
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -13,17 +14,17 @@ using namespace std;
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
 
-void Game::init() { 
-    
+void Game::init() {
+
     // sets current room to the starting room and initializes the starting room to exist
-	// Create rooms
+    // Create rooms
 
     passcode = rand() % 9000 + 1000; // since there could only be 9000 odds for a four digit passcode and it would start from 1000.
     passcode1 = passcode / 100;      // stores the first two digits for passcode1
     passcode2 = passcode % 100;      // stores the last two digits for passcode 2
 
     // assigning the booleans false by default. obviously passcode would not be found at the begining.
-    foundcode1 = false;              
+    foundcode1 = false;
     foundcode2 = false;
 
 	playerIsHidden = false;          // player is not hidden at the start of the game.
@@ -34,42 +35,34 @@ void Game::init() {
         "Cryo Chamber",
         "The air is cold. Behind the glass of the other cryo pods rests people, frozen and silent.\n"
     );
-	Room* cryoHall = new Room( 
-		"cryoHall",
-		"Cryo Hallway",
-		"A long hallway with doors on either side. The lights flicker occasionally.\n"
-	);
-	Room* escapePod = new Room(
-		"escapePod",
-		"Escape Pod Chamber",
-		"A small room with blinking lights and a sealed escape pod. The others appear broken. \n"
-	);
-	Room* workersRoom = new Room(
-		"workersRoom",
-		"Worker's Room",
-		"A small room with bunks and personal lockers for the station's crew.\n"
-	);
-	Room* bathroom = new Room(
-		"bathroom",
-		"Bathroom",
-		"A small, sterile bathroom with a sink and a mirror.\n"
-	);
-	Room* finalRoom = new Room(
-		"finalRoom",
-		"Abandoned Control Room",
-		"The control room is dark and silent, with flickering monitors and empty chairs.\n"
-	);
-
-    //let Alien Access rooms
-    alien.addRoom(cryoStart);
-    alien.addRoom(cryoHall);
-    alien.addRoom(escapePod);
-    alien.addRoom(workersRoom);
-    alien.addRoom(bathroom);
-    alien.addRoom(finalRoom);
+    Room* cryoHall = new Room(
+        "cryoHall",
+        "Cryo Hallway",
+        "A long hallway with doors on either side. The lights flicker occasionally.\n"
+    );
+    Room* escapePod = new Room(
+        "escapePod",
+        "Escape Pod Bay",
+        "A small room with blinking lights and a sealed escape pod. The others appear broken. \n"
+    );
+    Room* workersRoom = new Room(
+        "workersRoom",
+        "Worker's Room",
+        "A small room with bunks and personal lockers for the station's crew.\n"
+    );
+    Room* bathroom = new Room(
+        "bathroom",
+        "Bathroom",
+        "A small, sterile bathroom with a sink and a mirror.\n"
+    );
+    Room* finalRoom = new Room(
+        "finalRoom",
+        "Escape Pod",
+        "The control room is dark and silent, with flickering monitors and empty chairs.\n"
+    );
 
     setCurrentRoom(cryoStart);
-    
+
     // Add objects to starting room
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
@@ -102,15 +95,15 @@ void Game::init() {
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
-	
+
     // passcode door
     Object* passcodeDoor = new Object("passcode door", "A door with a keypad lock", false, true); // added the passcode door object.
     passcodeDoor->setIsPasscodeLocked(true); // door is locked
-    passcodeDoor->setPasscode(passcode);  
-   
-	// Adding doors to rooms
+    passcodeDoor->setPasscode(passcode);
 
-  
+    // Adding doors to rooms
+
+
 
     cryoStart->addObject(cryoDoor);
     cryoHall->addObject(cryoDoor);
@@ -143,10 +136,19 @@ void Game::init() {
     escapePod->setNeighbour("pod door", finalRoom);
     finalRoom->setNeighbour("pod door", escapePod);
 
+    allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom };
+    cryoStart->setPosition(10, 1);
+    cryoHall->setPosition(3, 2);
+    workersRoom->setPosition(4, 2);
+    bathroom->setPosition(13, 3);
+    escapePod->setPosition(2, 2);
+    finalRoom->setPosition(2, 3);
     // Hiding Object
 	Object* safeZone = new Object("locker", "A metal locker large enough to hide inside", false, false, true); // creating a locker object as a safe zone
 
 	workersRoom->addObject(safeZone); // placing the locker in the worker's room
+    //let Alien Access rooms
+    alien.addAllRooms(allRooms);
     }
 
 Room* Game::getCurrentRoom() {
@@ -182,7 +184,74 @@ void Game::getHelp() { // prints out available commands
 	cout << "hide <object name>\n";
 	cout << "unhide\n";
     cout << "help\n";
+
 }
+
+//this functions displays the map that is used for the game.
+//
+void Game::displayMap() const
+{
+    if (allRooms.empty()) 
+    {
+        cout << "No map available\n";
+        return;
+    }
+
+  
+    //builds the label for the room
+    auto labelFor = [&](Room* r) 
+        {
+        if (currentRoom && currentRoom->getId() == r->getId())
+            return "[" + r->getName() + "*]"; //adds the star if the player is in the room
+        else
+            return "[" + r->getName() + "]"; //no star means player is not in room
+        };
+
+    // Find the smallest and largest X & Y positions
+    // so the map prints only a little bit of used space
+    int minX = 1000000, minY = 1000000;
+    int maxX = -1000000, maxY = -1000000;
+    for (Room* r : allRooms) 
+    {
+        if (!r) continue;
+        if (r->getX() < minX) minX = r->getX();
+        if (r->getX() > maxX) maxX = r->getX();
+        if (r->getY() < minY) minY = r->getY();
+        if (r->getY() > maxY) maxY = r->getY();
+    }
+
+    //This code tells us how many rows and columns are needed for the grid
+    int rows = maxY - minY + 1;
+    int cols = maxX - minX + 1;
+
+    //This is the grid itself!
+    vector<vector<string>> grid(rows, vector<string>(cols, "."));
+
+    // --- place labels ---
+    for (Room* r : allRooms) 
+    {
+        if (!r) continue;
+        // Convert actual game coordinates into grid indexes
+        int gx = r->getX() - minX;
+        int gy = r->getY() - minY;
+        if (gx < 0 || gx >= cols || gy < 0 || gy >= rows) continue;
+        grid[gy][gx] = labelFor(r);
+    }
+
+    // This prints the grid from top to bottom!
+    cout << "\n--- MAP ---\n\n";
+    for (int rr = rows - 1; rr >= 0; --rr) 
+    {
+        for (int cc = 0; cc < cols; ++cc) 
+        {
+            cout << grid[rr][cc] << " ";
+        }
+        cout << "\n";
+    }
+    cout << "\n* = You\n\n";
+}
+
+
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
@@ -440,6 +509,12 @@ void Game::process()
         case Actions::INVENTORY:
             inventory.showInventory();
             break;
+
+        case Actions::MAP:
+        {
+            displayMap();
+            break;
+        }
 
         case Actions::USE:
             if (noun.empty()) {

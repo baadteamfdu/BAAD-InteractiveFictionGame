@@ -10,6 +10,7 @@ Room::Room(string id, string name, string description) : id(id), name(name), des
 string Room::getId() {
     return id;
 }
+
 string Room::getName() {
     return name;
 }
@@ -26,21 +27,39 @@ Object* Room::getObject(string name) {
     return nullptr;
 }
 
+void Room::setPosition(int x, int y)
+{
+    nX = x;
+    nY = y;
+}
+int Room::getX()
+{
+    return nX;
+}
+int Room::getY()
+{
+    return nY;
+}
+
+
 // adds an object to the roomObjects vector 
 void Room::addObject(Object* object) {
     roomObjects.push_back(object);
 }
 
 // removes the object from the roomObjects vector
-void Room::removeObject(string name) {
+void Room::removeObject(string name) 
+{
     auto it = remove_if(roomObjects.begin(), roomObjects.end(),
         [&](Object* obj) { return obj && obj->getName() == name; });
     roomObjects.erase(it, roomObjects.end());
 }
 
 //couts all objects in the room
-void Room::printAllObjects() {
-    for (Object* obj : roomObjects) {
+void Room::printAllObjects() 
+{
+    for (Object* obj : roomObjects) 
+    {
         cout << obj->getName() << endl;
     }
 }
