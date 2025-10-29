@@ -189,31 +189,14 @@ void Game::displayMap(bool /*useId*/) const
         return;
     }
 
-    // This helper returns a short name for each room
-    // so we don’t print long strings on the map
-    auto shortName = [](const string& id) -> string 
-        {
-        if (id == "escapePod")   
-            return "Chamber";
-        if (id == "cryoHall")    
-            return "Hall";
-        if (id == "workersRoom") 
-            return "Worker";
-        if (id == "bathroom")    
-            return "Bathroom";
-        if (id == "cryo01")      
-            return "Cryo";
-        if (id == "finalRoom")   
-            return "Pod";
-        return "Room";
-        };
+  
     //builds the label for the room
     auto labelFor = [&](Room* r) 
         {
         if (currentRoom && currentRoom->getId() == r->getId())
-            return "[" + shortName(r->getId()) + "*]"; //adds the star if the player is in the room
+            return "[" + r->getId() + "*]"; //adds the star if the player is in the room
         else
-            return "[" + shortName(r->getId()) + "]"; //no star means player is not in room
+            return "[" + r->getId() + "]"; //no star means player is not in room
         };
 
     // Find the smallest and largest X & Y positions
