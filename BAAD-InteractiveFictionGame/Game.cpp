@@ -182,55 +182,63 @@ void Game::getHelp() { // prints out available commands
 //this functions displays the map that is used for the game.
 void Game::displayMap(bool useId) const
 {
-    if (allRooms.empty())
+    if (allRooms.empty()) 
     {
-        cout << "No map available"; 
+        cout << "No map available\n";
         return;
     }
-    //this is the grid size of the map (10 x 10)
+
     const int rows = 10;
     const int cols = 10;
+    vector<vector<string>> grid(rows, vector<string>(cols, "."));
 
-    // Create grid filled with spaces
-    vector<vector<char>> grid(rows, vector<char>(cols, ' '));
+    // Label helper (kept simple)
+    auto getLabel = [&](Room* r) 
+        {
+            //this code labels each room to its correct ID
+        string id = r->getId();
+        if (id == "cryo01") 
+            return string("Cryo");
+        if (id == "cryoHall") 
+            return string("Hall");
+        if (id == "workersRoom") 
+            return string("Worker");
+        if (id == "bathroom") 
+            return string("Bath");
+        if (id == "escapePod") 
+            return string("Chamber");
+        if (id == "finalRoom") 
+            return string("Pod");
+        return string("Room");
+        };
 
-    // Go through all rooms and mark them on the grid
-    for (Room* room : allRooms) 
+    // Mark rooms
+    for (Room* r : allRooms)
     {
-        if (!room) continue; //this will skip any invalid pointers
+        int x = r->getX();
+        int y = r->getY();
+        if (x < 0 || x >= cols || y < 0 || y >= rows) 
+            continue;
 
-        int x = room->getX(); //column position
-        int y = room->getY(); //row position
+        string label = getLabel(r);
+        if (r == currentRoom) 
+            label += "*"; //this marks the player's location
 
-        // make sure it's inside grid range
-        if (x >= 0 && x < cols && y >= 0 && y < rows)
-        {
-            char mark = toupper(room->getName()[0]);
-            if (room == currentRoom)
-            {
-                grid[y][x] = mark;
-            }
-        }
+        grid[y][x] = label;
     }
 
-    // Print grid
-    cout << "\n--- MAP (10x10) ---\n";
-    for (int r = rows - 1; r >= 0; r--) 
-    {   // print top to bottom
-        for (int c = 0; c < cols; c++) 
+    cout << "\n--- MAP ---\n";
+    for (int r = rows - 1; r >= 0; --r) 
+    {
+        for (int c = 0; c < cols; ++c) 
         {
-            cout << (grid[r][c] == ' ' ? '.' : grid[r][c]) << ' ';
+            cout << grid[r][c] << " ";
         }
-        cout << '\n';
+        cout << "\n";
     }
-    cout << "(* = You)\n";
-    
-
-        
-
-
-
+    cout << "* = You\n";
 }
+
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
