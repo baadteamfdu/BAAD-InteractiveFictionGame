@@ -144,12 +144,12 @@ void Game::init() {
     finalRoom->setNeighbour("pod door", escapePod);
 
     allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom };
-    cryoStart->setPosition(4, 1);
+    cryoStart->setPosition(6, 1);
     cryoHall->setPosition(4, 2);
     workersRoom->setPosition(3, 2);
-    bathroom->setPosition(2, 2);
+    bathroom->setPosition(8, 3);
     escapePod->setPosition(5, 2);
-    finalRoom->setPosition(6, 2);
+    finalRoom->setPosition(2, 3);
     }
 
 Room* Game::getCurrentRoom() {
@@ -183,48 +183,83 @@ void Game::getHelp() { // prints out available commands
 //
 void Game::displayMap(bool /*useId*/) const
 {
-    string finalRoom = "[Pod";
-    if (currentRoom && currentRoom->getId() == "finalRoom")
-        finalRoom += "*]";
-    else
-        finalRoom += "]";
+    if (allRooms.empty()) 
+    {
+        cout << "No map available\n";
+        return;
+    }
 
-    string chamber = "[Chamber"; //this is the label 
-    if (currentRoom && currentRoom->getId() == "escapePod") //with all of the code below it asks if the player is in that specified room
-        chamber += "*]";                                    //if it is true, it prints it with the star, signaling that the player is there                             
-    else
-        chamber += "]";                                     //otherwise it is just going to print the room.
+    // This helper returns a short name for each room
+    // so we don’t print long strings on the map
+    auto shortName = [](const string& id) -> string 
+        {
+        if (id == "escapePod")   
+            return "Chamber";
+        if (id == "cryoHall")    
+            return "Hall";
+        if (id == "workersRoom") 
+            return "Worker";
+        if (id == "bathroom")    
+            return "Bathroom";
+        if (id == "cryo01")      
+            return "Cryo";
+        if (id == "finalRoom")   
+            return "Pod";
+        return "Room";
+        };
+    //builds the label for the room
+    auto labelFor = [&](Room* r) 
+        {
+        if (currentRoom && currentRoom->getId() == r->getId())
+            return "[" + shortName(r->getId()) + "*]"; //adds the star if the player is in the room
+        else
+            return "[" + shortName(r->getId()) + "]"; //no star means player is not in room
+        };
 
-    string hall = "[Hall";
-    if (currentRoom && currentRoom->getId() == "cryoHall")
-        hall += "*]";
-    else
-        hall += "]";
+    // Find the smallest and largest X & Y positions
+    // so the map prints only a little bit of used space
+    int minX = 1000000, minY = 1000000;
+    int maxX = -1000000, maxY = -1000000;
+    for (Room* r : allRooms) 
+    {
+        if (!r) continue;
+        if (r->getX() < minX) minX = r->getX();
+        if (r->getX() > maxX) maxX = r->getX();
+        if (r->getY() < minY) minY = r->getY();
+        if (r->getY() > maxY) maxY = r->getY();
+    }
 
-    string worker = "[Worker";
-    if (currentRoom && currentRoom->getId() == "workersRoom")
-        worker += "*]";
-    else
-        worker += "]";
+    //This code tells us how many rows and columns are needed for the grid
+    int rows = maxY - minY + 1;
+    int cols = maxX - minX + 1;
 
-    string bathroom = "[Bathroom";
-    if (currentRoom && currentRoom->getId() == "bathroom")
-        bathroom += "*]";
-    else
-        bathroom += "]";
+    //This is the grid itself!
+    vector<vector<string>> grid(rows, vector<string>(cols, "."));
 
-    string cryo = "[Cryo";
-    if (currentRoom && currentRoom->getId() == "cryo01")
-        cryo += "*]";
-    else
-        cryo += "]";
+    // --- place labels ---
+    for (Room* r : allRooms) 
+    {
+        if (!r) continue;
+        // Convert actual game coordinates into grid indexes
+        int gx = r->getX() - minX;
+        int gy = r->getY() - minY;
+        if (gx < 0 || gx >= cols || gy < 0 || gy >= rows) continue;
+        grid[gy][gx] = labelFor(r);
+    }
 
-    cout << "           \n--- MAP ---\n\n";
-    cout << finalRoom << " " << "              " << bathroom << "\n\n";
-    cout << chamber << "   " << hall << "  " << worker << "\n\n";
-    cout << "          " << cryo << "\n\n";
-    cout << "* = You\n\n";
+    // This prints the grid from top to bottom!
+    cout << "\n--- MAP ---\n\n";
+    for (int rr = rows - 1; rr >= 0; --rr) 
+    {
+        for (int cc = 0; cc < cols; ++cc) 
+        {
+            cout << grid[rr][cc] << " ";
+        }
+        cout << "\n";
+    }
+    cout << "\n* = You\n\n";
 }
+
 
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
