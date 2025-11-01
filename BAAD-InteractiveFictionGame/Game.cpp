@@ -40,7 +40,7 @@ void Game::init() {
         "Cryo Hallway",
         "A long hallway with doors on either side. The lights flicker occasionally.\n"
     );
-    Room* escapePod = new Room(
+    Room* Dock = new Room(
         "escapePod",
         "Escape Pod Bay",
         "A small room with blinking lights and a sealed escape pod. The others appear broken. \n"
@@ -59,6 +59,26 @@ void Game::init() {
         "finalRoom",
         "Escape Pod",
         "The control room is dark and silent, with flickering monitors and empty chairs.\n"
+    );
+    Room* darkRoom = new Room(
+        "darkRoom",
+        "Dark Room",
+        "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
+    );
+    Room* storageArea = new Room(
+        "storageArea",
+        "Storage Bay",
+        "Crates and metal containers are stacked neatly, though a few have been forced open. The air smells faintly of oil and dust.\n"
+    );
+    Room* cafeteria = new Room(
+        "cafeteria",
+        "Cafeteria",
+        "Rows of metal tables fill the room. Trays and utensils lie scattered, as if everyone left in a hurry.\n"
+    );
+    Room* kitchen = new Room(
+        "kitchen",
+        "Galley Kitchen",
+        "Metal counters are smeared with dried food paste. A broken vent hisses softly, filling the air with the smell of burnt plastic.\n"
     );
 
     setCurrentRoom(cryoStart);
