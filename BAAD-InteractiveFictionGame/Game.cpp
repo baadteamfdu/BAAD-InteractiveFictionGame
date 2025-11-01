@@ -188,15 +188,23 @@ void Game::init() {
     kitchen->setNeighbour("kitchen door", cafeteria);
 
     cafeteria->setNeighbour("dark door", darkRoom);
-    darkRoom->setNeighbour("dark door", cafeteria)
+    darkRoom->setNeighbour("dark door", cafeteria);
 
-    allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom };
-    cryoStart->setPosition(10, 1);
-    cryoHall->setPosition(3, 2);
-    workersRoom->setPosition(4, 2);
-    bathroom->setPosition(13, 3);
-    escapePod->setPosition(2, 2);
-    finalRoom->setPosition(2, 3);
+    allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom };
+    cryoStart->setPosition(24, 0);
+
+    cryoHall->setPosition(7, 2);
+    workersRoom->setPosition(8, 2);
+    storageArea->setPosition(6, 2);
+    dock->setPosition(5, 2);
+
+    cafeteria->setPosition(12, 4);
+    bathroom->setPosition(13, 4);
+    kitchen->setPosition(11, 4);
+    escapePodChamber->setPosition(5, 3);
+
+    darkRoom->setPosition(25, 5);
+    finalRoom->setPosition(2, 4);
     // Hiding Object
 	Object* safeZone = new Object("locker", "A metal locker large enough to hide inside", false, false, true); // creating a locker object as a safe zone
 
