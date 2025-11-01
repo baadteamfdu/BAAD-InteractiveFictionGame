@@ -40,7 +40,7 @@ void Game::init() {
         "Cryo Hallway",
         "A long hallway with doors on either side. The lights flicker occasionally.\n"
     );
-    Room* Dock = new Room(
+    Room* dock = new Room(
         "escapePod",
         "Escape Pod Bay",
         "A small room with blinking lights and a sealed escape pod. The others appear broken. \n"
@@ -111,7 +111,7 @@ void Game::init() {
 
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true); //cryo card door
-    Object* storageAreaDoor = new Object("storage area door", "A door to the storage area", false, true); //passcode door
+    //Object* storageAreaDoor = new Object("storage area door", "A door to the storage area", false, true); //passcode door
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
@@ -127,22 +127,34 @@ void Game::init() {
 
     // Adding doors to rooms
 
-
-
     cryoStart->addObject(cryoDoor);
     cryoHall->addObject(cryoDoor);
 
     cryoHall->addObject(passcodeDoor);    //adding the passcode door
-    escapePod->addObject(passcodeDoor);
+    storageArea->addObject(passcodeDoor);
 
     cryoHall->addObject(workersDoor);
     workersRoom->addObject(workersDoor);
 
+    cryoHall->addObject(cafeteriaDoor);
+    cafeteria->addObject(cafeteriaDoor);
+
+    cafeteria->addObject(kitchenDoor);
+    kitchen->addObject(kitchenDoor);
+
+    cafeteria->addObject(darkDoor);
+    darkRoom->addObject(darkDoor);
+
     workersRoom->addObject(bathroomDoor);
     bathroom->addObject(bathroomDoor);
 
-    escapePod->addObject(finalRoomDoor);
+    storageArea->addObject(dockDoor);
+    dock->addObject(dockDoor);
+
+    dock->addObject(finalRoomDoor)
     finalRoom->addObject(finalRoomDoor);
+
+
 
     //Connect rooms
     cryoStart->setNeighbour("cryo door", cryoHall);
