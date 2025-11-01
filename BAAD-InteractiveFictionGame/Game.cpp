@@ -111,24 +111,21 @@ void Game::init() {
   //  stall->addContainedObject(codePart1);
   //  book->addContainedObject(codePart2);
 
-
-
-
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true); //cryo card door
-    //Object* storageAreaDoor = new Object("storage area door", "A door to the storage area", false, true); //passcode door
-    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
-    Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
-    Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
-    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, false);
-    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, false);
-    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, false);
-    Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, false);
-
     // passcode door
     Object* passcodeDoor = new Object("passcode door", "A door with a keypad lock", false, true); // added the passcode door object.
     passcodeDoor->setIsPasscodeLocked(true); // door is locked
     passcodeDoor->setPasscode(passcode);
+
+    Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, false);
+    Object* escPodChamDoor new Object("escape pod door", "A door to the Escape Pod Door", false, false);
+    Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
+    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
+    Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
+    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, false);
+    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, false);
+    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, false);
 
     // Adding doors to rooms
 
