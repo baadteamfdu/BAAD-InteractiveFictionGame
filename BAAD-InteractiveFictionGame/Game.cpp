@@ -135,8 +135,20 @@ void Game::init() {
     cryoHall->addObject(passcodeDoor);    //adding the passcode door
     storageArea->addObject(passcodeDoor);
 
+    storageArea->addObject(dockDoor);
+    dock->addObject(dockDoor);
+
+    dock->addObject(escPodChamDoor);
+    escapePodChamber->addObject(escPodChamDoor);
+
+    escapePodChamber->addObject(finalRoomDoor);
+    finalRoom->addObject(finalRoomDoor);
+
     cryoHall->addObject(workersDoor);
     workersRoom->addObject(workersDoor);
+
+    workersRoom->addObject(bathroomDoor);
+    bathroom->addObject(bathroomDoor);
 
     cryoHall->addObject(cafeteriaDoor);
     cafeteria->addObject(cafeteriaDoor);
@@ -146,17 +158,6 @@ void Game::init() {
 
     cafeteria->addObject(darkDoor);
     darkRoom->addObject(darkDoor);
-
-    workersRoom->addObject(bathroomDoor);
-    bathroom->addObject(bathroomDoor);
-
-    storageArea->addObject(dockDoor);
-    dock->addObject(dockDoor);
-
-    dock->addObject(finalRoomDoor)
-    finalRoom->addObject(finalRoomDoor);
-
-
 
     //Connect rooms
     cryoStart->setNeighbour("cryo door", cryoHall);
