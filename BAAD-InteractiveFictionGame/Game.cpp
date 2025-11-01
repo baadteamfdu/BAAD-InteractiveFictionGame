@@ -40,10 +40,25 @@ void Game::init() {
         "Cryo Hallway",
         "A long hallway with doors on either side. The lights flicker occasionally.\n"
     );
+    Room* storageArea = new Room(
+        "storageArea",
+        "Storage Bay",
+        "Crates and metal containers are stacked neatly, though a few have been forced open. The air smells faintly of oil and dust.\n"
+    );
     Room* dock = new Room(
-        "escapePod",
-        "Escape Pod Bay",
-        "A small room with blinking lights and a sealed escape pod. The others appear broken. \n"
+        "dock",
+        "Docking Control Room",
+        "A narrow control chamber with terminals and broken screens.\n"
+    );
+    Room* escapePodChamber = new Room(
+        "escapePodChamber",
+        "Escape Pod Chamber",
+        "A large bay leading to the final escape pod door.The control panel beside it is screwed shut.\n"
+    );
+    Room* finalRoom = new Room(
+        "finalRoom",
+        "Escape Pod",
+        "The control room is dark and silent, with flickering monitors and empty chairs.\n"
     );
     Room* workersRoom = new Room(
         "workersRoom",
@@ -55,21 +70,6 @@ void Game::init() {
         "Bathroom",
         "A small, sterile bathroom with a sink and a mirror.\n"
     );
-    Room* finalRoom = new Room(
-        "finalRoom",
-        "Escape Pod",
-        "The control room is dark and silent, with flickering monitors and empty chairs.\n"
-    );
-    Room* darkRoom = new Room(
-        "darkRoom",
-        "Dark Room",
-        "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
-    );
-    Room* storageArea = new Room(
-        "storageArea",
-        "Storage Bay",
-        "Crates and metal containers are stacked neatly, though a few have been forced open. The air smells faintly of oil and dust.\n"
-    );
     Room* cafeteria = new Room(
         "cafeteria",
         "Cafeteria",
@@ -79,6 +79,11 @@ void Game::init() {
         "kitchen",
         "Galley Kitchen",
         "Metal counters are smeared with dried food paste. A broken vent hisses softly, filling the air with the smell of burnt plastic.\n"
+    );
+    Room* darkRoom = new Room(
+        "darkRoom",
+        "Dark Room",
+        "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
     );
 
     setCurrentRoom(cryoStart);
@@ -118,7 +123,7 @@ void Game::init() {
     Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, false);
     Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, false);
     Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, false);
-    Object* dockDoor = new Object("Dock door", "A door to the Dock Room", false, false);
+    Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, false);
 
     // passcode door
     Object* passcodeDoor = new Object("passcode door", "A door with a keypad lock", false, true); // added the passcode door object.
@@ -160,8 +165,8 @@ void Game::init() {
     cryoStart->setNeighbour("cryo door", cryoHall);
     cryoHall->setNeighbour("cryo door", cryoStart);
 
-    cryoHall->setNeighbour("passcode door", escapePod);
-    escapePod->setNeighbour("passcode door", cryoHall);
+    cryoHall->setNeighbour("passcode door", storageArea);
+    storageArea->setNeighbour("passcode door", cryoHall);
 
     cryoHall->setNeighbour("worker door", workersRoom);
     workersRoom->setNeighbour("worker door", cryoHall);
@@ -169,8 +174,11 @@ void Game::init() {
     workersRoom->setNeighbour("bathroom door", bathroom);
     bathroom->setNeighbour("bathroom door", workersRoom);
 
-    escapePod->setNeighbour("pod door", finalRoom);
-    finalRoom->setNeighbour("pod door", escapePod);
+    storageArea->setNeighbour("dock door", Dock);
+    Dock->setNeighbour("pod door", storageArea);
+
+    Dock->setNeighbour("pod door", finalRoom);
+    finalRoom->setNeighbour("", )
 
     allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom };
     cryoStart->setPosition(10, 1);
