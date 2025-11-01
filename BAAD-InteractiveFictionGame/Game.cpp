@@ -119,7 +119,7 @@ void Game::init() {
     passcodeDoor->setPasscode(passcode);
 
     Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, false);
-    Object* escPodChamDoor new Object("escape pod door", "A door to the Escape Pod Door", false, false);
+    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
@@ -166,17 +166,29 @@ void Game::init() {
     cryoHall->setNeighbour("passcode door", storageArea);
     storageArea->setNeighbour("passcode door", cryoHall);
 
+    storageArea->setNeighbour("dock door", dock);
+    dock->setNeighbour("dock door", storageArea);
+
+    dock->setNeighbour("escape pod door", escapePodChamber);
+    escapePodChamber->setNeighbour("escape pod door", dock);
+
+    escapePodChamber->setNeighbour("pod door", finalRoom);
+    finalRoom->setNeighbour("pod door", escapePodChamber);
+
     cryoHall->setNeighbour("worker door", workersRoom);
     workersRoom->setNeighbour("worker door", cryoHall);
 
     workersRoom->setNeighbour("bathroom door", bathroom);
     bathroom->setNeighbour("bathroom door", workersRoom);
 
-    storageArea->setNeighbour("dock door", Dock);
-    Dock->setNeighbour("pod door", storageArea);
+    cryoHall->setNeighbour("cafeteria door", cafeteria);
+    cafeteria->setNeighbour("cafeteria door", cryoHall);
 
-    Dock->setNeighbour("pod door", finalRoom);
-    finalRoom->setNeighbour("", )
+    cafeteria->setNeighbour("kitchen door", kitchen);
+    kitchen->setNeighbour("kitchen door", cafeteria);
+
+    cafeteria->setNeighbour("dark door", darkRoom);
+    darkRoom->setNeighbour("dark door", cafeteria)
 
     allRooms = { cryoStart, cryoHall, escapePod, workersRoom, bathroom, finalRoom };
     cryoStart->setPosition(10, 1);
