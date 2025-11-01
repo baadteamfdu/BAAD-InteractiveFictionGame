@@ -12,6 +12,7 @@ enum Actions
 	HELP,
 	MAP,
 	INVENTORY,
+	PEEK,
 	TYPE,           //for typing passcode
 	INVALID,
 	HIDE,

@@ -4,29 +4,31 @@ using namespace std;
 
 Actions stringToAction(string action) { //maybe 
 
-	if (action == "look") { //could allow for maybe eventual lists of synonyms
+	if (action == "look" || action == "view" || action == "inspect") { //could allow for maybe eventual lists of synonyms
 		return Actions::LOOK;
 	}
-	if (action == "take") {
+	if (action == "take" || action == "grab" || action == "get") {
 		return Actions::TAKE; //saving for later
 	}
-	if (action == "use") {
+	if (action == "use" || action == "utilize" || action == "apply" || action == "operate" || action == "wield" || action == "manipulate") {
 		return Actions::USE; // saving for later
 	}
 	if (action == "open") {
-		return Actions::OPEN; // saving for later
+		return Actions::OPEN; //don't think much would work for synonyms for open
 	}
-	if (action == "go") {      //saving for later
+	if (action == "go" || action == "travel" || action == "move" || action == "proceed" || action == "walk" || action == "journey" || action == "advance") {
 		return Actions::GO;
 	}
-	if (action == "type") {
+	if (action == "type" || action == "input") {
 		return Actions::TYPE;   //to return the type functionality
 	}
 	if (action == "map")
 	{
-		return Actions::MAP; 
+		return Actions::MAP;
 	}
-
+	if (action == "peek") {
+		return Actions::PEEK;
+	}
 	if (action == "help") {
 		return Actions::HELP;
 	}
