@@ -330,7 +330,37 @@ void Game::displayMap() const
     cout << "\n* = You\n\n";
 }
 
+// new function to use a screwdriver on a vent.
+void Game::useScrewdriver(Object* vent)
+{
+    if (!vent)
+    {
+        cout << "There's nothing like that to use the screwdriver on.\n"; // stops the function if vent is not found
+        return;
+    }
 
+    // if not a vent 
+
+    if (vent->getName() != "vent")
+    {
+        cout << "You can't use the screwdriver on that.\n";   
+        return;
+    }
+
+    // if locked
+
+    if (!vent->getIsLocked())
+    {
+        cout << "The vent is already open.\n";
+        return;
+    }
+
+    // updated flags if the player is able to pass through those cases
+
+    vent->setIsLocked(false);
+    vent->setIsSafeZone(true);
+    cout << "You unscrew the vent cover quietly. You could probably hide inside now.\n";
+}
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
@@ -596,34 +626,75 @@ void Game::process()
         }
 
         case Actions::USE:
+        {
             if (noun.empty()) {
-                cout << "Use what?\n"; //just typed use
+                cout << "Use what?\n";
                 break;
             }
 
+            // Keycard usage
             if (noun == "keycard") {
-                if (!inventory.gotObject("keycard")) {//don't have keycard
+                if (!inventory.gotObject("keycard")) {
                     cout << "You don't have a keycard to use.\n";
                     break;
                 }
 
-                if (whatToUseOn.empty()) { //no specified door or object to use the keycard on
+                if (whatToUseOn.empty()) {
                     cout << "Use on what?\n";
                     break;
                 }
 
-                Object* door = currentRoom->getObject(whatToUseOn); //check if door the keycard is going to be used on exists
+                Object* door = currentRoom->getObject(whatToUseOn);
                 if (door) {
                     useKeycard(door);
                 }
                 else {
                     cout << "There is no door by that name here to use the keycard on.\n";
                 }
+                break;
             }
-            else {
-                cout << "You can't use that.\n";
+
+            // Screwdriver usage
+            if (noun == "screwdriver") {
+                if (!inventory.gotObject("screwdriver")) {
+                    cout << "You don't have a screwdriver.\n";
+                    break;
+                }
+
+                if (whatToUseOn.empty()) {
+                    cout << "Use on what?\n";
+                    break;
+                }
+
+                Object* vent = currentRoom->getObject(whatToUseOn);
+                if (!vent) {
+                    cout << "There is no " << whatToUseOn << " here.\n";
+                    break;
+                }
+
+                // If the object is a vent, unlock it and mark it as safe
+                if (vent->getName() == "vent") {
+                    if (!vent->getIsLocked()) {
+                        cout << "The vent is already open.\n";
+                        break;
+                    }
+                    useScrewdriver(vent); 
+
+                    // change the flag
+                    vent->setIsLocked(false);
+                    vent->setIsSafeZone(true);
+                    cout << "You unscrew the vent cover quietly.\n";
+                }
+                else {
+                    cout << "You can't use the screwdriver on that.\n";
+                }
+                break;
             }
+
+            //  by default
+            cout << "You can't use that.\n";
             break;
+        }
 
         case Actions::GO:
         case Actions::OPEN:

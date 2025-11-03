@@ -35,6 +35,7 @@ public:
   
 
 	void useKeycard(Object* door);
+    void useScrewdriver(Object* vent);
 	void goDoor(const string& doorName);
     void typeCode(int enteredCode); 
 
