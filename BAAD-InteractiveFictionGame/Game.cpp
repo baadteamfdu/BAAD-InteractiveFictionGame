@@ -680,10 +680,7 @@ void Game::process()
                     }
                     useScrewdriver(vent); 
 
-                    // change the flag
-                    vent->setIsLocked(false);
-                    vent->setIsSafeZone(true);
-                    cout << "You unscrew the vent cover quietly.\n";
+                   
                 }
                 else {
                     cout << "You can't use the screwdriver on that.\n";
