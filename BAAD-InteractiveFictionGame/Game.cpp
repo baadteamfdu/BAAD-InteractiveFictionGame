@@ -53,7 +53,7 @@ void Game::init() {
     Room* escapePodChamber = new Room(
         "escapePodChamber",
         "Escape Pod Chamber",
-        "A large bay leading to the final escape pod door.The control panel beside it is screwed shut.\n"
+        "A large bay leading to the final escape pod door. The control panel beside it is screwed shut.\n"
     );
     Room* finalRoom = new Room(
         "finalRoom",
