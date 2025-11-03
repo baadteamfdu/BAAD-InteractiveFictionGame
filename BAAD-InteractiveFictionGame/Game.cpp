@@ -99,6 +99,23 @@ void Game::init() {
     Object* book = new Object("book", "An old logbook", true); // creating a book object
     workersRoom->addObject(book); //placing that book in the workers woom. Offcourse is takeable
 
+    //Screwdriver in storage area
+    Object* screwdriver = new Object("screwdriver", "A small screwdriver. Could be handy.", true);
+    storageArea->addObject(screwdriver);
+
+    //vent in storage area (locked by default)
+    Object* vent = new Object("vent", "A metal vent cover, screwed & shut.", false, true);
+    storageArea->addObject(vent);
+
+    //locker in kitchen
+    Object* kitchenLocker = new Object("locker", "A tall kitchen locker with enough space to hide inside.", false, false, true);
+    kitchen->addObject(kitchenLocker);
+
+
+
+
+
+
     // stall in bathroom
 
     Object* stall = new Object("stall", "Looks like it has been dead for a while It might open", false, true);  // creating a stall object.
