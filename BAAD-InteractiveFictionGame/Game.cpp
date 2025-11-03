@@ -499,7 +499,6 @@ void Game::process()
 
     cout << "Type 'help' for a list of commands.\n";
 
-
     while (true) {
         cout << "> ";
         if (!getline(cin, input)) break; // handle EOF cleanly
@@ -522,14 +521,12 @@ void Game::process()
                     cout << "Objects in room:" << endl;
                     currentRoom->printAllObjects();
                     cout << endl;
-  
                 }
                 if (currentRoom->getName() == "bathroom") {              // Find the stall object in the current room
-
                     Object* stall = currentRoom->getObject("stall");     // Make sure the stall exists AND is open
                     if (stall && stall->getIsOpen()) {
                         cout << "Inside the stall, you notice something scratched into the wall: '--"
-                            << passcode2 << "'\n";                      // show the second half of the passxode
+                            << passcode2 << "'\n";                      // show the second half of the passcode
                     }
                 }
             }
@@ -541,15 +538,15 @@ void Game::process()
                             << passcode2 << "'\n";
                     }
                     else {
-                        cout << "It's a closed stall.\n";                            // if its not open yet, show theres no stall here
+                        cout << "It's a closed stall.\n";                  // if its not open yet, show there's no stall here
                     }
                 }
                 else {
                     cout << "There's no stall here.\n";
                 }
             }
-            else if (noun == "book") {                                                // handle look book
-                if (inventory.gotObject("book")) {                                    //  checks if the player has the book already. If found then checks and discover the first half of the code
+            else if (noun == "book") {                                  // handle look book
+                if (inventory.gotObject("book")) {                      // checks if the player has the book already. If found then checks and discovers the first half of the code
                     foundcode1 = true;
                     cout << "You flip through the book and find half a passcode: '" << passcode1 << "--'.\n";
                 }
@@ -568,7 +565,6 @@ void Game::process()
             this block handles generic "look <object>" commands.
             if the object exists in the current room, print its description.
             If the object is not in the room, check if it's in the player's inventory
-            
             */
             else {
                 Object* obj = currentRoom->getObject(noun);
@@ -577,7 +573,7 @@ void Game::process()
                 }
                 else if (inventory.gotObject(noun)) {
                     Object* invobj = inventory.getObject(noun);
-                    if (invobj) cout << invobj->getDescription() << endl;  //If the object exists in inventory, show its description
+                    if (invobj) cout << invobj->getDescription() << endl;  // If the object exists in inventory, show its description
                     else cout << "You examine the keycard.\n";
                 }
                 else {
@@ -593,23 +589,23 @@ void Game::process()
             }
 
             if (!currentRoom) {
-                cout << "There's nowhere to take that from.\n"; //if player somehow not in room
+                cout << "There's nowhere to take that from.\n"; // if player somehow not in room
                 break;
             }
 
             {
-                Object* obj = currentRoom->getObject(noun); //objct not in room
+                Object* obj = currentRoom->getObject(noun); // object not in room
                 if (!obj) {
                     cout << "There is no " << noun << " here.\n";
                     break;
                 }
 
                 if (!obj->isTakeable()) {
-                    cout << "You cannot take this object.\n"; //object not takeable
+                    cout << "You cannot take this object.\n"; // object not takeable
                     break;
                 }
 
-                inventory.addObject(obj); //add to inventory remove from room tell player
+                inventory.addObject(obj); // add to inventory, remove from room, tell player
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
             }
@@ -620,13 +616,10 @@ void Game::process()
             break;
 
         case Actions::MAP:
-        {
             displayMap();
             break;
-        }
 
         case Actions::USE:
-        {
             if (noun.empty()) {
                 cout << "Use what?\n";
                 break;
@@ -678,9 +671,7 @@ void Game::process()
                         cout << "The vent is already open.\n";
                         break;
                     }
-                    useScrewdriver(vent); 
-
-                   
+                    useScrewdriver(vent);
                 }
                 else {
                     cout << "You can't use the screwdriver on that.\n";
@@ -688,10 +679,8 @@ void Game::process()
                 break;
             }
 
-            //  by default
             cout << "You can't use that.\n";
             break;
-        }
 
         case Actions::GO:
         case Actions::OPEN:
@@ -700,8 +689,21 @@ void Game::process()
                 break;
             }
 
-            if (noun == "stall") {
-                Object* obj = currentRoom->getObject("stall");
+            if (noun == "vent") {
+                Object* vent = currentRoom->getObject("vent");
+                if (!vent) {
+                    cout << "There is no vent here.\n";
+                }
+                else if (vent->getIsLocked()) {
+                    cout << "The vent is locked. Maybe you need a tool to open it.\n";
+                }
+                else {
+                    cout << "The vent is open now.\n";
+                }
+            }
+
+            else if (noun == "stall") {
+            Object* obj = currentRoom->getObject("stall");
                 if (obj) {
                     if (!obj->getIsOpen()) {
                         obj->setIsOpen(true);
@@ -719,16 +721,9 @@ void Game::process()
             }
             break;
 
-            /*
-             usually when the player types the code it interprets as string since we have a string to action parser.
-             to fix it the input gets converted to integer using stoi methodology .
-             also cathes for any wrong entered format.
-
-            */
-
         case Actions::TYPE:
             if (noun.empty()) {
-                cout << "Enter a code.\n"; 
+                cout << "Enter a code.\n";
                 break;
             }
             try {
@@ -739,29 +734,50 @@ void Game::process()
                 cout << "Invalid code format.\n";
             }
             break;
-        case Actions :: HIDE:
-			if(noun.empty()) {
-				cout << "Hide where?\n";
-				break;
-			}
+
+        case Actions::HIDE: { // hide in vent or locker
+            if (noun.empty()) {
+                cout << "Hide where?\n";
+                break;
+            }
+
+            Object* obj = currentRoom->getObject(noun);
+            if (!obj) {
+                cout << "That object doesn't exist.\n";
+                break;
+            }
+
+            // Only allow hiding in vent or locker
+            if (obj->getName() != "vent" && obj->getName() != "locker") {
+                cout << "You can't hide there.\n";
+                break;
+            }
+
+            if (obj->getIsLocked()) {
+                cout << "The " << obj->getName() << " is locked. You can't hide in it yet.\n";
+                break;
+            }
+
+            if (!getIsHidden()) {
+                hide(noun);  // call existing hide() function
+           
+            }
             else {
-                if (getIsHidden() == false) {
-                    hide(noun);
-                }
-                else {
-                    cout << "You are already hidden.\n";
-                }
+                cout << "You are already hidden.\n";
             }
             break;
-		case Actions::UNHIDE:
-			unhide();
-			break;
+        }
+
+        case Actions::UNHIDE: // unhide anywhere
+            unhide();
+            break;
+
         default:
             cout << "You can't do that right now.\n";
             break;
         }
-        alien.increaseTurnCounter(currentRoom, playerIsHidden);
-    } 
-} 
 
+        alien.increaseTurnCounter(currentRoom, playerIsHidden);
+    }
+}
 

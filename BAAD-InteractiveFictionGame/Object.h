@@ -33,6 +33,7 @@ public:
 	bool isTakeable();
 
 	// getters
+	
 	bool getIsLocked();
 	bool getIsPasscodeLocked();
 	int getPasscode();
@@ -41,6 +42,7 @@ public:
 	bool getIsSafeZone(); // to check if the object is a safe zone.
 
 	//setters
+	
 	void setIsLocked(bool lock);
 	void setIsPasscodeLocked(bool lock);
 	void setPasscode(int code);
