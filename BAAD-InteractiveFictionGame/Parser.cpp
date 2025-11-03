@@ -22,9 +22,20 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
     else {
         noun = "";
     }
-    if (getline(spaceSplitter, word)) //added what the keycard will be used on to allow for use keycard cryo door
+    if (getline(spaceSplitter, word, ' ')) //added what the keycard will be used on to allow for use keycard cryo door
     {
-        whatToUseOn = word;
+        if (word == "on") { //if the word is on it will ignore it and then read the rest of the line
+            word = "";
+            if (getline(spaceSplitter, word)) {
+                whatToUseOn = word;
+            }    
+        }
+        else { //if the word is not on add the word that wasn't on and then just add everything else too.
+            whatToUseOn = word;
+            if (getline(spaceSplitter, word)) {
+                whatToUseOn += " " + word;
+            }
+        }
     }
     else {
         whatToUseOn = "";
