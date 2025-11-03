@@ -18,6 +18,13 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
     if (getline(spaceSplitter, word, ' '))
     {
         noun = word;
+        if (action == Actions::HIDE && word == "in") { //if the word is in it will ignore it and then read the rest of the line
+            word = "";
+            if (getline(spaceSplitter, word)) {
+                noun = word;
+            }
+        }
+    
     }
     else {
         noun = "";

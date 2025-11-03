@@ -223,7 +223,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
         alien.setActive(true);
         alien.move();
-        cout << "You see a passcode door on one side, and an ajar, unlocked keycard door on the other." << endl; //hint to tell player to hide and they don't need to use keycard
+        cout << "You see a passcode door on one side, and an ajar, unlocked door leading to a room for workers on the other." << endl; //hint to tell player to hide and they don't need to use keycard
     }
     if (currentRoom->getId() == "finalRoom") { //added winning for the deliverable
         cout << "You see one last working escape pod." << endl; 
@@ -247,7 +247,7 @@ void Game::getHelp() { // prints out available commands
 	cout << "hide <object name>\n";
 	cout << "unhide\n";
     cout << "help\n";
-
+    cout << "note, some common synonyms are supported \n";
 }
 
 //this functions displays the map that is used for the game.
