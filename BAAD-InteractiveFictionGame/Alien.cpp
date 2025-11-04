@@ -60,7 +60,7 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden) {
 				cout << "You hear the alien close behind you... run and hide!" << endl;
 			}
 			if (alienCurrentRoom == playerCurrentRoom && chaseCounter >= chaseThreshold && isHidden) {	//keep increasing chase counter if player doesn't leave but if they hide on the last turn possible they die
-				cout << "The alien pulls you out of the locker, if only you had hidden sooner." << endl;
+				cout << "The alien pulls you out of your hiding spot, if only you had hidden sooner." << endl;
 				killPlayer(); //past threshold kill player
 				return;
 			}

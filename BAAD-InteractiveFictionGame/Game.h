@@ -33,7 +33,7 @@ public:
     Room* getCurrentRoom();
     void setCurrentRoom(Room* nextRoom);
   
-
+    void peekDoor(const string & doorName); //peek that just checks if next room has alien in it or not and notifies player
 	void useKeycard(Object* door);
     void useScrewdriver(Object* vent);
 	void goDoor(const string& doorName);

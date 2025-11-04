@@ -53,7 +53,7 @@ void Game::init() {
     Room* escapePodChamber = new Room(
         "escapePodChamber",
         "Escape Pod Chamber",
-        "A large bay leading to the final escape pod door.The control panel beside it is screwed shut.\n"
+        "A large bay leading to the final escape pod door. The control panel beside it is screwed shut.\n"
     );
     Room* finalRoom = new Room(
         "finalRoom",
@@ -240,7 +240,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
         alien.setActive(true);
         alien.move();
-        cout << "You see a passcode door on one side, and an ajar, unlocked keycard door on the other." << endl; //hint to tell player to hide and they don't need to use keycard
+        cout << "You see a passcode door on one side, and an ajar, unlocked door leading to a room for workers on the other." << endl; //hint to tell player to hide and they don't need to use keycard
     }
     if (currentRoom->getId() == "finalRoom") { //added winning for the deliverable
         cout << "You see one last working escape pod." << endl; 
@@ -260,10 +260,41 @@ void Game::getHelp() { // prints out available commands
     cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
     cout << "type <passcode>\n";
+    cout << "peek <door name>\n";
 	cout << "hide <object name>\n";
 	cout << "unhide\n";
     cout << "help\n";
+    cout << "note, some common synonyms are supported \n";
+}
 
+void Game::peekDoor(const string& doorName) { //borrowed goDoor code
+
+    Object* door = currentRoom->getObject(doorName); //check if the door exists in the current room
+    if (!door) {
+        cout << "There is no " << doorName << " here.\n";
+        return;
+    }
+    if (door->isTakeable()) { //stop player trying to open or go a keycard
+        cout << "You cannot peek through this. \n";
+        return;
+    }
+    if (alien.getSawPlayer()) {
+        cout << "There is no time for that now!" << endl;
+        return;
+    }
+
+    Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
+    if (nextRoom) {
+        if (alien.isAlienInRoom(nextRoom)) { //if alien is in the next room, warn player
+            cout << "You peek through the door, only to see something moving on the other side! Wait for it to leave!" << endl;
+        }
+        else {
+            cout << "You peek through the door, there is nothing there and it is safe." << endl; //otherwise tell them there is nothing there
+        }
+    }
+    else {
+        cout << "There is no room connected to this door." << endl; //this is a silly check why do we have this in goDoor?
+    }
 }
 
 //this functions displays the map that is used for the game.
@@ -272,7 +303,7 @@ void Game::displayMap() const
 {
     if (allRooms.empty()) 
     {
-        cout << "No map available\n";
+        cout << "No map available.\n";
         return;
     }
 
@@ -521,6 +552,7 @@ void Game::process()
                     cout << "Objects in room:" << endl;
                     currentRoom->printAllObjects();
                     cout << endl;
+
                 }
                 if (currentRoom->getName() == "bathroom") {              // Find the stall object in the current room
                     Object* stall = currentRoom->getObject("stall");     // Make sure the stall exists AND is open
@@ -565,6 +597,7 @@ void Game::process()
             this block handles generic "look <object>" commands.
             if the object exists in the current room, print its description.
             If the object is not in the room, check if it's in the player's inventory
+
             */
             else {
                 Object* obj = currentRoom->getObject(noun);
@@ -718,6 +751,22 @@ void Game::process()
             }
             else {
                 goDoor(noun);
+            }
+            break;
+
+            /*
+             usually when the player types the code it interprets as string since we have a string to action parser.
+             to fix it the input gets converted to integer using stoi methodology .
+             also cathes for any wrong entered format.
+
+            */
+        case Actions::PEEK://if they entered a door name peek otherwise not allowed
+            if (noun.empty()) {
+                cout << "Peek through what? \n";
+                break;
+            }
+            else {
+                peekDoor(noun);
             }
             break;
 

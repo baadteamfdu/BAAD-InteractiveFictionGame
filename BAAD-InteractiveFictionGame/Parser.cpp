@@ -18,18 +18,36 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
     if (getline(spaceSplitter, word, ' '))
     {
         noun = word;
+        if (action == Actions::HIDE && word == "in") { //if the word is in it will ignore it and then read the rest of the line
+            word = "";
+            if (getline(spaceSplitter, word)) {
+                noun = word;
+            }
+        }
+    
     }
     else {
         noun = "";
     }
-    if (getline(spaceSplitter, word)) //added what the keycard will be used on to allow for use keycard cryo door
+    if (getline(spaceSplitter, word, ' ')) //added what the keycard will be used on to allow for use keycard cryo door
     {
-        whatToUseOn = word;
+        if (word == "on") { //if the word is on it will ignore it and then read the rest of the line
+            word = "";
+            if (getline(spaceSplitter, word)) {
+                whatToUseOn = word;
+            }    
+        }
+        else { //if the word is not on add the word that wasn't on and then just add everything else too.
+            whatToUseOn = word;
+            if (getline(spaceSplitter, word)) {
+                whatToUseOn += " " + word;
+            }
+        }
     }
     else {
         whatToUseOn = "";
     }
-    if (action == Actions::OPEN || action == Actions::GO) { //moves the whatToUseOn to the end of the noun so you can go through a multi word door instead
+    if (action == Actions::OPEN || action == Actions::GO || action == Actions::PEEK) { //moves the whatToUseOn to the end of the noun so you can go through a multi word door instead
         if (!whatToUseOn.empty()) {                         //it being noun = cryo whatToUseOn = door
             noun += " " + whatToUseOn;
             whatToUseOn = "";
