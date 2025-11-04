@@ -261,6 +261,10 @@ void Game::peekDoor(const string& doorName) { //borrowed goDoor code
         cout << "You cannot peek through this. \n";
         return;
     }
+    if (alien.getSawPlayer()) {
+        cout << "There is no time for that now!" << endl;
+        return;
+    }
 
     Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
     if (nextRoom) {

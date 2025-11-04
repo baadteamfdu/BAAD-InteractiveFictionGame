@@ -15,6 +15,7 @@ class Alien {
         void increaseTurnCounter(Room* playerCurrentRoom, bool isHidden); //increases value of turns counters
         void addRoom(Room* newRoom);
         void move(); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom else leave()
+        bool getSawPlayer(); //returns bool sawPlayer
 private:
         bool isActive = false; //store if alien is active
         bool sawPlayer = false;//store if alien has seen the player
@@ -26,7 +27,6 @@ private:
         vector<Room*> roomList;
         void killPlayer(); //tell player they lost and exit game
         void setSawPlayer(bool seen); //sets state of alien
-        bool getSawPlayer(); //returns bool sawPlayer
         void leave(); //leave setSawPlayer(false) and determine new slightly random threshold and what the new room will eventually be(maybe dont make it able to enter the same exact room twice in a row)
         void resetAlienState(); // resets thresholds and counters
 };
