@@ -47,7 +47,7 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
     else {
         whatToUseOn = "";
     }
-    if (action == Actions::OPEN || action == Actions::GO) { //moves the whatToUseOn to the end of the noun so you can go through a multi word door instead
+    if (action == Actions::OPEN || action == Actions::GO || action == Actions::PEEK) { //moves the whatToUseOn to the end of the noun so you can go through a multi word door instead
         if (!whatToUseOn.empty()) {                         //it being noun = cryo whatToUseOn = door
             noun += " " + whatToUseOn;
             whatToUseOn = "";
