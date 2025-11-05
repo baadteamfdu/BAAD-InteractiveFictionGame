@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../BAAD-InteractiveFictionGame/Object.cpp"
 #include "../BAAD-InteractiveFictionGame/Inventory.cpp"
+#include "../BAAD-InteractiveFictionGame/Room.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -26,6 +27,25 @@ namespace BAADInteractiveFictionGameTest
 		{
 			Logger::WriteMessage("Hello from BAAD_PlayerConstructor_Test\n");
 		}
+
+		TEST_METHOD(CreateRoom) { //precondition, room can be created, using the method of using variables for comparison.
+			string id = "cryoTest";
+			string name = "Test Room";
+			string description = "A room for testing";
+			Room* cryoTest = new Room(id, name, description);
+
+			// Post condition, Verify the information retrieve for the random object, matches the information we provided on initialization;
+			Assert::AreEqual(cryoTest->getId(), id, L"Verifying room ID");
+			Assert::AreEqual(cryoTest->getName(), name, L"Verifying room name");
+			Assert::AreEqual(cryoTest->getDescription(), description, L"Verifying description");
+
+
+		}
+
+
+
+
+
 		TEST_METHOD(CreateObjects) {
 
 			// create two different objects, but use variables to capture the information so we can compare later
