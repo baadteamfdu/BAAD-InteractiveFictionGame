@@ -38,10 +38,18 @@ namespace BAADInteractiveFictionGameTest
 			Assert::AreEqual(cryoTest->getId(), id, L"Verifying room ID");
 			Assert::AreEqual(cryoTest->getName(), name, L"Verifying room name");
 			Assert::AreEqual(cryoTest->getDescription(), description, L"Verifying description");
-
-
 		}
 
+		TEST_METHOD(AddObjectToRoom) {
+			//first confirm room has no objects
+			Room* cryoTest = new Room("cryoTest", "Test Room", "Test Description");
+			cryoTest->printAllObjects(); //print nothing
+			//add object
+			Object * testObject = new Object("test object", "test description", true);
+			cryoTest->addObject(testObject);
+			cryoTest->printAllObjects(); //print test object
+			Assert::AreEqual(testObject->getName(), cryoTest->getObject("test object")->getName(), L"Verifying object in room");
+		}
 
 
 
