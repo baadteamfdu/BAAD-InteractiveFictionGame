@@ -22,7 +22,7 @@ namespace BAADInteractiveFictionGameTest
 	TEST_CLASS(BAADInteractiveFictionGameTest)
 	{
 	public:
-		
+
 		TEST_METHOD(HelloMessage)
 		{
 			Logger::WriteMessage("Hello from BAAD_PlayerConstructor_Test\n");
@@ -45,13 +45,36 @@ namespace BAADInteractiveFictionGameTest
 			Room* cryoTest = new Room("cryoTest", "Test Room", "Test Description");
 			cryoTest->printAllObjects(); //print nothing
 			//add object
-			Object * testObject = new Object("test object", "test description", true);
+			Object* testObject = new Object("test object", "test description", true);
 			cryoTest->addObject(testObject);
 			cryoTest->printAllObjects(); //print test object
 			Assert::AreEqual(testObject->getName(), cryoTest->getObject("test object")->getName(), L"Verifying object in room");
 		}
 
+		TEST_METHOD(AddTwoNeighboursAndVerifyDoorConnections) //precondition to create rooms and doors and set connections, post is to verify the rooms are properly connected.
+		{
+			//making the rooms
+			Room* testRoom = new Room("test", "test", "test");
+			Room* testNeighbour1 = new Room("testNeighbour1", "testNeighbour1", "testNeighbour1");
+			Room* testNeighbour2 = new Room("testNeighbour2", "testNeighbour2", "testNeighbour2");
 
+			//making the doors to connect the rooms
+			Object* testDoor1 = new Object("testDoor1", "testDoor1", false);
+			Object* testDoor2 = new Object("testDoor2", "testDoor2", false);
+
+			//set the connected rooms
+			testRoom->setNeighbour("testDoor1", testNeighbour1);
+			testRoom->setNeighbour("testDoor2", testNeighbour2);
+
+			//get the connected rooms by their names
+			Room* testNeighbour1Getted = testRoom->getNeighbour("testDoor1");
+			Room* testNeighbour2Getted = testRoom->getNeighbour("testDoor2");
+
+			//check that the neighbour can be retrieved properly
+			Assert::AreEqual(testNeighbour1->getName(), testNeighbour1Getted->getName(), L"testdoor1 should lead to testNeighbour1.");
+			Assert::AreEqual(testNeighbour2->getName(), testNeighbour2Getted->getName(), L"testdoor2 should lead to testNeighbour2.");
+		};
+	
 
 
 		TEST_METHOD(CreateObjects) {
