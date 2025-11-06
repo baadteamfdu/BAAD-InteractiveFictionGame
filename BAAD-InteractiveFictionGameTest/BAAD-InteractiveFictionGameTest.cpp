@@ -5,7 +5,10 @@
 #include "../BAAD-InteractiveFictionGame/Object.cpp"
 #include "../BAAD-InteractiveFictionGame/Inventory.cpp"
 #include "../BAAD-InteractiveFictionGame/Room.cpp"
-
+#include "../BAAD-InteractiveFictionGame/Game.cpp"
+#include "../BAAD-InteractiveFictionGame/Alien.cpp"
+#include "../BAAD-InteractiveFictionGame/Parser.cpp"
+#include "../BAAD-InteractiveFictionGame/Actions.cpp"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 /*
@@ -75,6 +78,44 @@ namespace BAADInteractiveFictionGameTest
 			Assert::AreEqual(testNeighbour2->getName(), testNeighbour2Getted->getName(), L"testdoor2 should lead to testNeighbour2.");
 		};
 	
+		TEST_METHOD(VerifyRoomIsLockedAndBlockMovement) { //precondition is create two rooms connected by locked door //post is that goDoor doesn't let them change current room
+			Parser parser; //to avoid external errors
+			Alien alien; 
+			Game game;
+
+			//create needed objects for test
+			Room* testRoom = new Room("test", "test", "test");
+			Room* lockedRoom = new Room("lockedRoom", "lockedRoom", "lockedRoom");
+			Object* lockedDoor = new Object("lockedDoor", "lockedDoor", false);//starting unlocked to manually set
+			lockedDoor->setIsLocked(true); // lock the door manually
+			testRoom->addObject(lockedDoor); //add the locked door
+			testRoom->setNeighbour("lockedDoor", lockedRoom); //set the locked door as the connection point
+			
+			//check door is actually locked
+			Assert::IsTrue(lockedDoor->getIsLocked(), L"The door should be locked.");
+			game.setCurrentRoom(testRoom); //set inital position
+			game.goDoor("lockedDoor"); //try moving through locked door and verify if they weren't able to move
+			Assert::AreEqual(testRoom->getName(), game.getCurrentRoom()->getName(), L"Player should not move through a locked door.");
+			}
+
+		TEST_METHOD(VerifyRoomIsUnlockedAndAllowMovement) { //precondition is create two rooms connected by unlocked door //post is that goDoor does let them change current room
+			Parser parser; //to avoid external errors
+			Alien alien;
+			Game game;
+
+			//create needed objects for test
+			Room* testRoom = new Room("test", "test", "test");
+			Room* unlockedRoom = new Room("unlockedRoom", "unlockedRoom", "unlockedRoom");
+			Object* unlockedDoor = new Object("unlockedDoor", "unlockedDoor", false); //needs to be unlocked to start, because of the silly bathroom hard code
+			testRoom->addObject(unlockedDoor); //add the unlocked door
+			testRoom->setNeighbour("unlockedDoor", unlockedRoom); //set the unlocked door as the connection point
+
+			//check door is actually unlocked
+			Assert::IsFalse(unlockedDoor->getIsLocked(), L"The door should be unlocked.");
+			game.setCurrentRoom(testRoom); //set inital position
+			game.goDoor("unlockedDoor"); //try moving through unlocked door and verify if they were able to move
+			Assert::AreNotEqual(testRoom->getName(), game.getCurrentRoom()->getName(), L"Player should move through a unlocked door.");
+		}
 
 
 		TEST_METHOD(CreateObjects) {
