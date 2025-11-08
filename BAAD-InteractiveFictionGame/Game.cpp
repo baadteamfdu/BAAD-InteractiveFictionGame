@@ -143,7 +143,7 @@ void Game::init() {
     passcodeDoor->setPasscode(passcode);
 
     Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, false);
-    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
+    escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
@@ -684,6 +684,21 @@ void Game::process()
             if (noun.empty()) {
                 cout << "Use what?\n";
                 break;
+            }
+            //clicking the button in the dark room
+            if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == true) {
+                if (escPodChamDoor->getIsOpen() == true) {
+                    cout << "the door is already open" << endl;
+                    break;
+                }
+                else {
+                    cout << "You pressed the button, I think something is opened now" << endl;
+                    escPodChamDoor->setIsOpen(true);
+                    break;
+                }
+            }
+            else {
+                cout << "The room is too dark, you can not see anything" << endl;
             }
 
             //Combining batteries and flashlight

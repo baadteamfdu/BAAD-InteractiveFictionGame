@@ -17,6 +17,7 @@ private:
     Alien alien;
     Object* flashlight;                  // Object flashlight is created here to have access in the gameProcess()
     Object* batteries;                   // Object batteries is created here to have access in the gamePorcess()
+    Object* escPodChamDoor;              // To change the state of the door(if open or not) in the gameProcess()
     bool foundcode1 = false;             // code in bathroom set to false by default. to check of the player got the first half.
     bool foundcode2 = false;             // code found in book set to false by default.to check of the player got the second half.
     int passcode;                        // random 4 digit passocde.
