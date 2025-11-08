@@ -121,7 +121,7 @@ void Game::init() {
     cafeteria->addObject(flashlight);
 
     //Batteries in the Kitchen
-    Object* batteries = new Object("batteries", "Batteries that can be used with flashlight", true, false);
+    batteries = new Object("batteries", "Batteries that can be used with flashlight", true, false);
     kitchen->addObject(batteries);
 
     // Button in the dark room
@@ -570,7 +570,8 @@ void Game::process()
 
         case Actions::LOOK:
             if (noun == "around" || noun == "room") {
-                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) { //check if the player is in the darkRoom and has the lighter that does not work
+                //check if the player is in the darkRoom and has the lighter that does not work
+                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) {
                     cout << "It is too dark to see anything. Maybe you need a working flashlight.\n";
                     break; // stop further look processing
                 }
@@ -683,6 +684,20 @@ void Game::process()
             if (noun.empty()) {
                 cout << "Use what?\n";
                 break;
+            }
+
+            //Combining batteries and flashlight
+            if (noun == "flashlight") {
+                if (whatToUseOn == "batteries") {
+                    combine(batteries, flashlight);
+                    break;
+                }
+            }
+            else if (noun == "batteries") {
+                if (whatToUseOn == "flashlight") {
+                    combine(batteries, flashlight);
+                    break;
+                }
             }
 
             // Keycard usage
