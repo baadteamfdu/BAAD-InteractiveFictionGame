@@ -4,11 +4,10 @@ using namespace std;
 
 //use inheritance for object types like takeable maybe and maybe exits/door and the base class could have things like id name and description etc
 
-Object::Object(string name, string description, bool takeable, bool isWorking)
+Object::Object(string name, string description, bool takeable, bool isWorking, int dummy)
     : name(name), description(description), takeable(takeable),
-    isLocked(false), isPasscodeLocked(false), passcode(0), isOpen(false), isSafeZone(false), isWorking(false){
+    isLocked(false), isPasscodeLocked(false), passcode(0), isOpen(false), isSafeZone(false), isWorking(false), dummy(0){
 }
-
 
 Object::Object(string name, string description, bool takeable, bool isLocked)
     : name(name), description(description), takeable(takeable),

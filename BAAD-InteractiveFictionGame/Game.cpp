@@ -117,8 +117,7 @@ void Game::init() {
     bathroom->addObject(stall); // Placing in the bathroom.
 
     //Flashlight in the cafeteria
-    Object* flashlight = new Object("flashlight", "A flashlight that does not have a batteries", true, false);
-    flashlight->setWorking(false); // to make sure that the flashlight's last isWorking flag is assigned as in the constructor it may take last value as isSafe
+    flashlight = new Object("flashlight", "A flashlight that does not have a batteries", true, false, 0);
     cafeteria->addObject(flashlight);
 
     //Batteries in the Kitchen
@@ -571,6 +570,10 @@ void Game::process()
 
         case Actions::LOOK:
             if (noun == "around" || noun == "room") {
+                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) { //check if the player is in the darkRoom and has the lighter that does not work
+                    cout << "It is too dark to see anything. Maybe you need a working flashlight.\n";
+                    break; // stop further look processing
+                }
                 if (currentRoom) {
                     cout << currentRoom->getDescription() << endl;
                     cout << "Objects in room:" << endl;

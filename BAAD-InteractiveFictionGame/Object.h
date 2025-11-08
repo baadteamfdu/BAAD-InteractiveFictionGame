@@ -24,9 +24,11 @@ private:
 	bool isOpen;                      // for containers like stall, book, etc.
 	bool isSafeZone;                  // for objects that are safe zones
 	bool isWorking;					  // for the flashlight right now and maybe for something else in the future.
+
+	int dummy;						  // VARIABLE THAT DOES NOTHING, JUST NEEDED TO SEPARATE TWO CONSTRUCTORS!!!
 public:
 
-	Object(string n, string d, bool  takeable, bool isWorking);
+	Object(string n, string d, bool  takeable, bool isWorking, int dummy);
 	Object(string n, string d, bool takeable, bool isLocked); //additional constructor for doors and maybe for other locked objects in the future
 	Object(string n, string d, bool takeable, bool isLocked, bool isSafe); //additional constructor for safe zone objects
 	string getName();
