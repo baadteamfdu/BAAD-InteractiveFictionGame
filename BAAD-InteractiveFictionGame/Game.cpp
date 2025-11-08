@@ -92,15 +92,15 @@ void Game::init() {
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
-    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
+    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true, false);
     cryoStart->addObject(keycard);
 
     // Book in worker's room
-    Object* book = new Object("book", "An old logbook", true); // creating a book object
+    Object* book = new Object("book", "An old logbook", true, false); // creating a book object
     workersRoom->addObject(book); //placing that book in the workers woom. Offcourse is takeable
 
     //Screwdriver in storage area
-    Object* screwdriver = new Object("screwdriver", "A small screwdriver. Could be handy.", true);
+    Object* screwdriver = new Object("screwdriver", "A small screwdriver. Could be handy.", true, false);
     storageArea->addObject(screwdriver);
 
     //vent in storage area (locked by default)
@@ -111,16 +111,24 @@ void Game::init() {
     Object* kitchenLocker = new Object("locker", "A tall kitchen locker with enough space to hide inside.", false, false, true);
     kitchen->addObject(kitchenLocker);
 
-
-
-
-
-
     // stall in bathroom
-
     Object* stall = new Object("stall", "Looks like it has been dead for a while It might open", false, true);  // creating a stall object.
     stall->setIsOpen(false);
     bathroom->addObject(stall); // Placing in the bathroom.
+
+    //Flashlight in the cafeteria
+    Object* flashlight = new Object("flashlight", "A flashlight that does not have a batteries", true, false);
+    flashlight->setWorking(false); // to make sure that the flashlight's last isWorking flag is assigned as in the constructor it may take last value as isSafe
+    cafeteria->addObject(flashlight);
+
+    //Batteries in the Kitchen
+    Object* batteries = new Object("batteries", "Batteries that can be used with flashlight", true, false);
+    kitchen->addObject(batteries);
+
+    // Button in the dark room
+    Object* buttonDarkRoom = new Object("button", "Button that may open something interesting", false, false);
+    darkRoom->addObject(buttonDarkRoom);
+
 
     //code halves inside objects 
   //  Object* codePart1 = new Object("code part 1", "Half of the passcode: '--" + to_string(passcode % 100) + "'", true);

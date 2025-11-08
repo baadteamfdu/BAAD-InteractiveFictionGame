@@ -23,9 +23,10 @@ private:
 	vector<Object*> containedObjects; // objects inside this object
 	bool isOpen;                      // for containers like stall, book, etc.
 	bool isSafeZone;                  // for objects that are safe zones
+	bool isWorking;					  // for the flashlight right now and maybe for something else in the future.
 public:
 
-	Object(string n, string d, bool  takeable);
+	Object(string n, string d, bool  takeable, bool isWorking);
 	Object(string n, string d, bool takeable, bool isLocked); //additional constructor for doors and maybe for other locked objects in the future
 	Object(string n, string d, bool takeable, bool isLocked, bool isSafe); //additional constructor for safe zone objects
 	string getName();
@@ -40,6 +41,7 @@ public:
 	bool getIsOpen();
 	const vector<Object*>& getContainedObjects(); // stores objects inside another object, maybe a book containg a passcode.
 	bool getIsSafeZone(); // to check if the object is a safe zone.
+	bool getIsWorking();
 
 	//setters
 	
@@ -47,6 +49,7 @@ public:
 	void setIsPasscodeLocked(bool lock);
 	void setPasscode(int code);
 	void setIsOpen(bool open);
+	void setWorking(bool working);
 
 	void addContainedObject(Object* obj);
 	Object* getContainedObject(string name);
