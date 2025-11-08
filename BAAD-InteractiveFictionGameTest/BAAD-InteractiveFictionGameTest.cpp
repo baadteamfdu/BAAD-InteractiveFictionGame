@@ -76,8 +76,34 @@ namespace BAADInteractiveFictionGameTest
 			//check that the neighbour can be retrieved properly
 			Assert::AreEqual(testNeighbour1->getName(), testNeighbour1Getted->getName(), L"testdoor1 should lead to testNeighbour1.");
 			Assert::AreEqual(testNeighbour2->getName(), testNeighbour2Getted->getName(), L"testdoor2 should lead to testNeighbour2.");
-		};
+		}
 	
+		TEST_METHOD(SameDoorName) //precondition to create rooms and doors and set connections, post is to verify the rooms are properly connected.
+		{
+			//making the rooms
+			Room* testRoom = new Room("test", "test", "test");
+			Room* testNeighbour1 = new Room("test", "test", "test");
+			Room* testNeighbour2 = new Room("test", "test", "test");
+
+			//making the doors to connect the rooms
+			Object* testDoor1 = new Object("test", "test", false);
+
+			//set the connected rooms
+			testRoom->setNeighbour("test", testNeighbour1);
+			testRoom->setNeighbour("test", testNeighbour2);
+
+			// Retrieve neighbor using the same name
+			Room* retrievedNeighbour = testRoom->getNeighbour("test");
+
+			// Assert that the last set neighbor is returned
+			Assert::AreEqual(testNeighbour2->getName(), retrievedNeighbour->getName(), L"test door should lead to testNeighbour2 (because of overwrite based on implementation).");
+			
+		};
+
+
+
+
+
 		TEST_METHOD(VerifyRoomIsLockedAndBlockMovement) { //precondition is create two rooms connected by locked door //post is that goDoor doesn't let them change current room
 			Parser parser; //to avoid external errors
 			Alien alien; 
