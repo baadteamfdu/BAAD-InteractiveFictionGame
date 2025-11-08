@@ -531,6 +531,22 @@ bool Game::getIsHidden() {
 	return playerIsHidden;
 }
 
+/*Function to combine two objects so one of the objects will start working*/
+bool Game::combine(Object* batt, Object* flash) {
+    if (inventory.gotObject(batt->getName()) && inventory.gotObject(flash->getName())) {
+        // both items exist in inventory
+        inventory.deleteObject(batt);       // remove the battery
+        flash->setWorking(true);              // mark flashlight as working
+        cout << "You combined the battery with the flashlight." << endl;
+        return true;
+    }
+    else {
+        cout << "You don’t have all items." << endl;
+        return false;
+    }
+}
+
+
 void Game::process()
 {
     string input, noun, whatToUseOn;
