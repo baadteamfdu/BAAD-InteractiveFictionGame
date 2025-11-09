@@ -700,7 +700,7 @@ void Game::process()
                     break;
                 }
             }
-            else {
+            else if(noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false){
                 cout << "The room is too dark, you can not see anything" << endl;
             }
 
