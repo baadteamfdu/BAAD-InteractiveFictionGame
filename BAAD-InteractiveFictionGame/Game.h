@@ -20,6 +20,8 @@ private:
     int passcode;                        // random 4 digit passocde.
     int passcode1;                       //variable to store first half of the passcode.
     int passcode2;                       // varuiable to store second half of the passcode.
+    bool controlPanelUnscrewed = false;  // Tracks if the control panel has been unscrewed
+    bool firstButtonPressed = false;     // Tracks if the button inside the control panel has been pressed
     vector<Room*> allRooms;             //this vector stores all rooms for the map
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
@@ -35,14 +37,14 @@ public:
   
     void peekDoor(const string & doorName); //peek that just checks if next room has alien in it or not and notifies player
 	void useKeycard(Object* door);
-    void useScrewdriver(Object* vent);
+    void useScrewdriver(Object* obj);
 	void goDoor(const string& doorName);
     void typeCode(int enteredCode); 
 
     void displayMap() const; //this code will display the map for the game
     void hide(string noun);
 	void unhide();
-
+    void pressButton(Object* button);   // new function
 	void setIsHidden(bool hidden); // setter for playerIsHidden
 
 	bool getIsHidden(); // getter for playerIsHidden

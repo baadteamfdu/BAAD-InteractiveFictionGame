@@ -48,8 +48,7 @@ public:
 	void setPasscode(int code);
 	void setIsOpen(bool open);
 
-	void addContainedObject(Object* obj);
-	Object* getContainedObject(string name);
+	
 
 	void setIsSafeZone(bool safe); // setter for safe zone. After implementing new constructor I do not know if this is needed, however leaving it here for now.
 };

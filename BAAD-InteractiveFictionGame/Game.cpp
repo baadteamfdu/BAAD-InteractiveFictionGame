@@ -16,6 +16,10 @@ using namespace std;
 
 void Game::init() {
 
+
+
+    
+
     // sets current room to the starting room and initializes the starting room to exist
     // Create rooms
 
@@ -92,6 +96,11 @@ void Game::init() {
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
+
+    //control panel in the cryostart
+    Object* controlPanel = new Object("control panel", "A sealed control panel is mounted on the wall.", false, true);
+    cryoStart->addObject(controlPanel);
+
     Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
     cryoStart->addObject(keycard);
 
@@ -361,37 +370,51 @@ void Game::displayMap() const
     cout << "\n* = You\n\n";
 }
 
-// new function to use a screwdriver on a vent.
-void Game::useScrewdriver(Object* vent)
+
+
+
+void Game::useScrewdriver(Object* obj)
 {
-    if (!vent)
-    {
-        cout << "There's nothing like that to use the screwdriver on.\n"; // stops the function if vent is not found
+    if (!obj) {
+        cout << "There's nothing like that to use the screwdriver on.\n";
         return;
     }
 
-    // if not a vent 
+    string name = obj->getName();
 
-    if (vent->getName() != "vent")
-    {
-        cout << "You can't use the screwdriver on that.\n";   
-        return;
+    if (name == "vent") {
+        if (!obj->getIsLocked()) {
+            cout << "The vent is already open.\n";
+            return;
+        }
+        obj->setIsLocked(false);
+        obj->setIsSafeZone(true);
+        cout << "You unscrew the vent cover quietly. You could probably hide inside now.\n";
     }
+    else if (name == "control panel") {
+        if (controlPanelUnscrewed) {
+            cout << "The control panel is already open.\n";
+            return;
+        }
 
-    // if locked
+        obj->setIsLocked(false);  // Optional: mark panel as "unscrewed/unlocked"
+        controlPanelUnscrewed = true;
 
-    if (!vent->getIsLocked())
-    {
-        cout << "The vent is already open.\n";
-        return;
+        // Create the button inside
+        Object* button = new Object(
+            "button",
+            "A small red button inside the open control panel.",
+            false
+        );
+        currentRoom->addObject(button);
+
+        cout << "You unscrew the control panel and expose a small red button inside.\n";
     }
-
-    // updated flags if the player is able to pass through those cases
-
-    vent->setIsLocked(false);
-    vent->setIsSafeZone(true);
-    cout << "You unscrew the vent cover quietly. You could probably hide inside now.\n";
+    else {
+        cout << "You can't use the screwdriver on that.\n";
+    }
 }
+
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
@@ -554,6 +577,13 @@ void Game::process()
                     cout << endl;
 
                 }
+                if (currentRoom->getName() == "CryoStart") {
+                    if (controlPanelUnscrewed && !firstButtonPressed)
+                        cout << "The control panel is open. A small red button glows faintly inside.\n";
+                    else if (controlPanelUnscrewed && firstButtonPressed)
+                        cout << "The control panel is open, but the button has already been pressed.\n";
+                }
+
                 if (currentRoom->getName() == "bathroom") {              // Find the stall object in the current room
                     Object* stall = currentRoom->getObject("stall");     // Make sure the stall exists AND is open
                     if (stall && stall->getIsOpen()) {
@@ -652,6 +682,7 @@ void Game::process()
             displayMap();
             break;
 
+      
         case Actions::USE:
             if (noun.empty()) {
                 cout << "Use what?\n";
@@ -678,6 +709,8 @@ void Game::process()
                     cout << "There is no door by that name here to use the keycard on.\n";
                 }
                 break;
+
+                
             }
 
             // Screwdriver usage
@@ -692,28 +725,18 @@ void Game::process()
                     break;
                 }
 
-                Object* vent = currentRoom->getObject(whatToUseOn);
-                if (!vent) {
+                Object* obj = currentRoom->getObject(whatToUseOn);
+                if (!obj) {
                     cout << "There is no " << whatToUseOn << " here.\n";
                     break;
                 }
 
-                // If the object is a vent, unlock it and mark it as safe
-                if (vent->getName() == "vent") {
-                    if (!vent->getIsLocked()) {
-                        cout << "The vent is already open.\n";
-                        break;
-                    }
-                    useScrewdriver(vent);
-                }
-                else {
-                    cout << "You can't use the screwdriver on that.\n";
-                }
+                // Call the unified useScrewdriver function
+                useScrewdriver(obj);
                 break;
             }
+            
 
-            cout << "You can't use that.\n";
-            break;
 
         case Actions::GO:
         case Actions::OPEN:
@@ -747,6 +770,19 @@ void Game::process()
                 }
                 else {
                     cout << "There's no stall here.\n";
+                }
+            }
+            // Control Panel
+            else if (noun == "control panel") {
+                Object* panel = currentRoom->getObject("control panel");
+                if (!panel) {
+                    cout << "There is no control panel here.\n";
+                }
+                else if (!controlPanelUnscrewed) {
+                    cout << "The control panel is screwed shut. Maybe I need a screwdriver to open it.\n";
+                }
+                else {
+                    cout << "The control panel is already open.\n";
                 }
             }
             else {
@@ -783,7 +819,7 @@ void Game::process()
                 cout << "Invalid code format.\n";
             }
             break;
-
+        
         case Actions::HIDE: { // hide in vent or locker
             if (noun.empty()) {
                 cout << "Hide where?\n";

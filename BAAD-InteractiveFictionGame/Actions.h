@@ -16,7 +16,8 @@ enum Actions
 	TYPE,           //for typing passcode
 	INVALID,
 	HIDE,
-	UNHIDE
+	UNHIDE,
+	PRESS
 };
 
 Actions stringToAction(string action);

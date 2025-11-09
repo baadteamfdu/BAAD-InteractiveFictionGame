@@ -41,5 +41,8 @@ Actions stringToAction(string action) { //maybe
 	if (action == "unhide" || action == "exit" || action == "leave") {
 		return Actions::UNHIDE;
 	}
+	if (action == "press") {
+		return Actions::PRESS;
+	}
 	return Actions::INVALID; //not yet sure if I need this
 }
