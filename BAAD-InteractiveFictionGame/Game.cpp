@@ -369,6 +369,29 @@ void Game::displayMap() const
     }
     cout << "\n* = You\n\n";
 }
+void Game::pressButton(Object* button)
+{
+    if (!button)
+    {
+        cout << "There’s no button here to press.\n";
+        return;
+    }
+
+    if (button->getName() != "button")
+    {
+        cout << "You can’t press that.\n";
+        return;
+    }
+
+    if (firstButtonPressed)
+    {
+        cout << "You already pressed the button. Nothing happens.\n";
+        return;
+    }
+
+    firstButtonPressed = true;
+    cout << "You press the button. A faint hum echoes through the station — something has been activated.\n";
+}
 
 
 
@@ -735,8 +758,23 @@ void Game::process()
                 useScrewdriver(obj);
                 break;
             }
-            
 
+        case Actions::PRESS:
+        {
+            if (noun.empty()) {
+                cout << "Press what?\n";
+                break;
+            }
+
+            Object* button = currentRoom->getObject(noun);
+            if (!button) {
+                cout << "There’s nothing like that to press here.\n";
+                break;
+            }
+
+            pressButton(button);
+            break;
+        }
 
         case Actions::GO:
         case Actions::OPEN:
