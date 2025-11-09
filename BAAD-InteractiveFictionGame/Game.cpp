@@ -402,12 +402,15 @@ void Game::useScrewdriver(Object* vent)
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
-    if (!door) {                                      
+    if (door->getName() == "escape pod door") {
+        cout << "You cannot open that door with a keycard" << endl;
+    }
+    else if (!door) {                                      
         cout << "There's no such door here.\n";
         return;  // stops the function if door is not found
     }
     // Prevent unlocking passcode doors with the keycard
-    if (door->getIsPasscodeLocked()) {
+    else if (door->getIsPasscodeLocked()) {
         cout << "The keycard doesn’t work on this type of door. It requires a passcode.\n";
         return;
     }
