@@ -569,11 +569,19 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
             return;
         }
     }
-    // check for usual keycard doors
-    if (door->getIsLocked()) {           // Check if this door is a passcode-type door
-        cout << "The door is locked.\n"; 
-        return;                          // Stop further execution (player can’t go through yet)
+    // Special condition for the escape pod door
+    if (door->getName() == "escape pod door") {
+        if (!(firstButtonPressed && darkRoomButtonPressed)) {
+            cout << "The escape pod door is sealed tight. It seems two systems must be activated first.\n";
+            return;
+        }
     }
+    // for usual keycard doors
+    else if (door->getIsLocked()) {
+        cout << "The door is locked.\n";
+        return;
+    }
+    
 
      Room* nextRoom = currentRoom->getNeighbour(doorName); // get the neighbouring room through the door
      if (nextRoom) {
@@ -832,16 +840,24 @@ void Game::process()
             }
             //clicking the button in the dark room
             if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == true) {
-                if (escPodChamDoor->getIsOpen() == true) {
-                    cout << "The door is already open." << endl;
+                if (darkRoomButtonPressed) {
+                    cout << "You already pressed the override button.\n";
                     break;
+                }
+                darkRoomButtonPressed = true;
+                cout << "You press the override button. A mechanical hum echoes faintly.\n";
+                // Check if both buttons have been pressed
+                if (firstButtonPressed && darkRoomButtonPressed) {
+                    escPodChamDoor->setIsLocked(false);
+                    cout << "You hear a heavy clang from afar... The escape pod chamber door unlocks!\n";
                 }
                 else {
-                    cout << "You pressed the button, maybe something opened?" << endl;
-                    escPodChamDoor->setIsOpen(true);
-                    break;
+                    cout << "Something activated... but it seems another system still needs power.\n";
                 }
+
+                break;
             }
+            
             else if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) {
                 cout << "The room is too dark, you can not see anything." << endl;
             }

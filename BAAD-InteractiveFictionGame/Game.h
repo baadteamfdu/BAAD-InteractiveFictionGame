@@ -25,6 +25,7 @@ private:
     int passcode2;                       // variable to store second half of the passcode.
     bool controlPanelUnscrewed = false;  // Tracks if the control panel has been unscrewed
     bool firstButtonPressed = false;     // Tracks if the button inside the control panel has been pressed
+    bool darkRoomButtonPressed = false; // Tracks if the button in the dark room has been pressed
     vector<Room*> allRooms;             //this vector stores all rooms for the map
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
