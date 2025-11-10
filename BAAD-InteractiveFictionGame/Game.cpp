@@ -909,7 +909,7 @@ void Game::process()
                     controlPanelUnscrewed = true;
                     cout << "You unscrew the control panel and expose a small red button inside.\n";
                 }
-                break; // Stop here, don’t treat as door
+                break; 
             }
 
             // VENT
@@ -926,7 +926,7 @@ void Game::process()
                 else {
                     cout << "The vent is open now.\n";
                 }
-                break; // Stop here, don’t treat as door
+                break; 
             }
 
             // STALL
