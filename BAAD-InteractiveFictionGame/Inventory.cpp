@@ -37,3 +37,27 @@ Object* Inventory::getObject(string objectName) {
 	}
 	return nullptr;
 }
+
+//this function clears the inventory for when the game ends.
+void Inventory::clear()
+{
+	if (objects.empty())
+	{
+		cout << "Inventory already empty." << endl; //checks for if the inventory is already clear.
+	}
+
+	//checks through the inventory to see if there is objects there.
+	// If there is, the object gets deleted and set to be empty.
+	for (int i = 0; i < objects.size(); i++)
+	{
+		if (objects[i] != nullptr)
+		{
+			delete objects[i];
+			objects[i] = nullptr;
+		}
+	}
+
+	objects.clear();
+	cout << "Inventory has been cleared!" << endl;
+}
+

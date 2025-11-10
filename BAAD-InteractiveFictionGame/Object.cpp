@@ -37,3 +37,4 @@ void Object::setIsPasscodeLocked(bool lock) { isPasscodeLocked = lock; }
 void Object::setPasscode(int code) { passcode = code; }
 void Object::setIsOpen(bool open) { isOpen = open; }
 void Object::setIsSafeZone(bool safe) { isSafeZone = safe; } // setter for safe zone
+
