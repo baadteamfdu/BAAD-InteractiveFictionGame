@@ -38,3 +38,4 @@ void Object::setPasscode(int code) { passcode = code; }
 void Object::setIsOpen(bool open) { isOpen = open; }
 void Object::setIsSafeZone(bool safe) { isSafeZone = safe; } // setter for safe zone
 void Object::setWorking(bool working) { isWorking = working;} //setter for the Flashlight
+void Object::setDescription(string des) { description = des; } //to change description fo the objects when the state is changed

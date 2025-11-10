@@ -52,6 +52,7 @@ public:
 	void setPasscode(int code);
 	void setIsOpen(bool open);
 	void setWorking(bool working);
+	void setDescription(string des);
 
 	void addContainedObject(Object* obj);
 	Object* getContainedObject(string name);

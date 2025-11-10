@@ -117,7 +117,7 @@ void Game::init() {
     bathroom->addObject(stall); // Placing in the bathroom.
 
     //Flashlight in the cafeteria
-    flashlight = new Object("flashlight", "A flashlight that does not have a batteries", true, false, 0);
+    flashlight = new Object("flashlight", "A flashlight that does not have batteries", true, false, 0);
     cafeteria->addObject(flashlight);
 
     //Batteries in the Kitchen
@@ -402,8 +402,9 @@ void Game::useScrewdriver(Object* vent)
 
 // New method to use a keycard on a door,,; checks if the door exists in the current room
 void Game::useKeycard(Object* door) {
-    if (door->getName() == "escape pod door") {
+    if (door->getName() == "pod door") {
         cout << "You cannot open that door with a keycard" << endl;
+        return;
     }
     else if (!door) {                                      
         cout << "There's no such door here.\n";
@@ -539,7 +540,8 @@ bool Game::combine(Object* batt, Object* flash) {
         // both items exist in inventory
         inventory.deleteObject(batt);       // remove the battery
         flash->setWorking(true);              // mark flashlight as working
-        cout << "You combined the battery with the flashlight." << endl;
+        cout << "You combined the batteries with the flashlight." << endl;
+        flash->setDescription("Working flashlight");
         return true;
     }
     else {
@@ -691,11 +693,11 @@ void Game::process()
             //clicking the button in the dark room
             if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == true) {
                 if (escPodChamDoor->getIsOpen() == true) {
-                    cout << "the door is already open" << endl;
+                    cout << "The door is already open" << endl;
                     break;
                 }
                 else {
-                    cout << "You pressed the button, I think something is opened now" << endl;
+                    cout << "You pressed the button, I think something opened" << endl;
                     escPodChamDoor->setIsOpen(true);
                     break;
                 }
