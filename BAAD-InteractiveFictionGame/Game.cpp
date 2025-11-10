@@ -282,7 +282,7 @@ void Game::peekDoor(const string& doorName) { //borrowed goDoor code
         return;
     }
     if (door->isTakeable()) { //stop player trying to open or go a keycard
-        cout << "You cannot peek through this. \n";
+        cout << "You can not peek through this. \n";
         return;
     }
     if (alien.getSawPlayer()) {
@@ -373,7 +373,7 @@ void Game::useScrewdriver(Object* vent)
 {
     if (!vent)
     {
-        cout << "There's nothing like that to use the screwdriver on.\n"; // stops the function if vent is not found
+        cout << "There is nothing like that to use the screwdriver on.\n"; // stops the function if vent is not found
         return;
     }
 
@@ -381,7 +381,7 @@ void Game::useScrewdriver(Object* vent)
 
     if (vent->getName() != "vent")
     {
-        cout << "You can't use the screwdriver on that.\n";   
+        cout << "You can not use the screwdriver on that.\n";   
         return;
     }
 
@@ -407,7 +407,7 @@ void Game::useKeycard(Object* door) {
         return;
     }
     else if (!door) {                                      
-        cout << "There's no such door here.\n";
+        cout << "There is no such door here.\n";
         return;  // stops the function if door is not found
     }
     // Prevent unlocking passcode doors with the keycard
@@ -447,7 +447,7 @@ void Game::typeCode(int enteredCode)
     }
     // Check if the player has discovered both halves of the passcode
     if (!foundcode1 ||!foundcode2) {
-        cout << "You don't have both halves of the passcode yet.\n";
+        cout << "You do not have both halves of the passcode yet.\n";
         return;
     }
     // Compare the entered code with the actual stored passcode
@@ -467,7 +467,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 		return;
 	}
     if (door->isTakeable()) { //stop player trying to open or go a keycard
-        cout << "You cannot open this or go through it. \n";
+        cout << "You can not open this or go through it. \n";
         return;
     }
 
@@ -512,7 +512,7 @@ void Game::hide(string noun) {
         cout << "You hide inside the " << noun << ". Stay quiet...\n";
     }
     else {
-        cout << "You can't hide there.\n";
+        cout << "You can not hide there.\n";
     }
 }
 
@@ -543,15 +543,15 @@ bool Game::combine(Object* batt, Object* flash) {
     bool hasBatt = inventory.gotObject(batt->getName());
     bool hasFlash = inventory.gotObject(flash->getName());
     if (!hasBatt && !hasFlash) {
-        cout << "You dont have the flashlight and the batteries." << endl;
+        cout << "You do not have the flashlight and the batteries." << endl;
         return false;
     }
     if (!hasBatt) {
-        cout << "You dont have batteries." << endl;
+        cout << "You do not have batteries." << endl;
         return false;
     }
     if (!hasFlash) {
-        cout << "You dont have the flashlight." << endl;
+        cout << "You don not have the flashlight." << endl;
         return false;
     }
 
@@ -617,11 +617,11 @@ void Game::process()
                             << passcode2 << "'\n";
                     }
                     else {
-                        cout << "It's a closed stall.\n";                  // if its not open yet, show there's no stall here
+                        cout << "It is a closed stall.\n";                  // if its not open yet, show there's no stall here
                     }
                 }
                 else {
-                    cout << "There's no stall here.\n";
+                    cout << "There is no stall here.\n";
                 }
             }
             else if (noun == "book") {                                  // handle look book
@@ -630,7 +630,7 @@ void Game::process()
                     cout << "You flip through the book and find half a passcode: '" << passcode1 << "--'.\n";
                 }
                 else {
-                    cout << "There's nothing to see.\n";
+                    cout << "There is nothing to see.\n";
                 }
             }
             else if (noun == "inventory") {
@@ -657,7 +657,7 @@ void Game::process()
                     else cout << "You examine the keycard.\n";
                 }
                 else {
-                    cout << "You don't have the " << noun << ".\n";
+                    cout << "You do not have the " << noun << ".\n";
                 }
             }
             break;
@@ -669,7 +669,7 @@ void Game::process()
             }
 
             if (!currentRoom) {
-                cout << "There's nowhere to take that from.\n"; // if player somehow not in room
+                cout << "There is nowhere to take that from.\n"; // if player somehow not in room
                 break;
             }
 
@@ -681,7 +681,7 @@ void Game::process()
                 }
 
                 if (!obj->isTakeable()) {
-                    cout << "You cannot take this object.\n"; // object not takeable
+                    cout << "You can not take this object.\n"; // object not takeable
                     break;
                 }
 
@@ -707,17 +707,17 @@ void Game::process()
             //clicking the button in the dark room
             if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == true) {
                 if (escPodChamDoor->getIsOpen() == true) {
-                    cout << "The door is already open" << endl;
+                    cout << "The door is already open." << endl;
                     break;
                 }
                 else {
-                    cout << "You pressed the button, I think something opened" << endl;
+                    cout << "You pressed the button, maybe something opened?" << endl;
                     escPodChamDoor->setIsOpen(true);
                     break;
                 }
             }
             else if(noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false){
-                cout << "The room is too dark, you can not see anything" << endl;
+                cout << "The room is too dark, you can not see anything." << endl;
             }
 
             //Combining batteries and flashlight
@@ -737,7 +737,7 @@ void Game::process()
             // Keycard usage
             if (noun == "keycard") {
                 if (!inventory.gotObject("keycard")) {
-                    cout << "You don't have a keycard to use.\n";
+                    cout << "You do not have a keycard to use.\n";
                     break;
                 }
 
@@ -759,7 +759,7 @@ void Game::process()
             // Screwdriver usage
             if (noun == "screwdriver") {
                 if (!inventory.gotObject("screwdriver")) {
-                    cout << "You don't have a screwdriver.\n";
+                    cout << "You do not have a screwdriver.\n";
                     break;
                 }
 
@@ -783,12 +783,12 @@ void Game::process()
                     useScrewdriver(vent);
                 }
                 else {
-                    cout << "You can't use the screwdriver on that.\n";
+                    cout << "You can not use the screwdriver on that.\n";
                 }
                 break;
             }
 
-            cout << "You can't use that.\n";
+            cout << "You can not use that.\n";
             break;
 
         case Actions::GO:
@@ -822,7 +822,7 @@ void Game::process()
                     else cout << "The stall is already open. Maybe there is something inside? Maybe I should take a closer look? \n";
                 }
                 else {
-                    cout << "There's no stall here.\n";
+                    cout << "There is no stall here.\n";
                 }
             }
             else {
@@ -868,18 +868,18 @@ void Game::process()
 
             Object* obj = currentRoom->getObject(noun);
             if (!obj) {
-                cout << "That object doesn't exist.\n";
+                cout << "That object does not exist.\n";
                 break;
             }
 
             // Only allow hiding in vent or locker
             if (obj->getName() != "vent" && obj->getName() != "locker") {
-                cout << "You can't hide there.\n";
+                cout << "You can not hide there.\n";
                 break;
             }
 
             if (obj->getIsLocked()) {
-                cout << "The " << obj->getName() << " is locked. You can't hide in it yet.\n";
+                cout << "The " << obj->getName() << " is locked. You can not hide in it yet.\n";
                 break;
             }
 
@@ -898,7 +898,7 @@ void Game::process()
             break;
 
         default:
-            cout << "You can't do that right now.\n";
+            cout << "You can not do that right now.\n";
             break;
         }
 
