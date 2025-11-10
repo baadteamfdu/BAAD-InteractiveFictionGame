@@ -15,6 +15,7 @@ class Alien {
         void increaseTurnCounter(Room* playerCurrentRoom, bool isHidden); //increases value of turns counters
         void addRoom(Room* newRoom);
         void move(); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom else leave()
+        void clearRooms();
 private:
         bool isActive = false; //store if alien is active
         bool sawPlayer = false;//store if alien has seen the player
