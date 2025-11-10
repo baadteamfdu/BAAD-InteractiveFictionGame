@@ -19,7 +19,7 @@ private:
     bool foundcode2 = false;             // code found in book set to false by default.to check of the player got the second half.
     int passcode;                        // random 4 digit passocde.
     int passcode1;                       //variable to store first half of the passcode.
-    int passcode2;                       // varuiable to store second half of the passcode.
+    int passcode2;                       // variable to store second half of the passcode.
     bool controlPanelUnscrewed = false;  // Tracks if the control panel has been unscrewed
     bool firstButtonPressed = false;     // Tracks if the button inside the control panel has been pressed
     vector<Room*> allRooms;             //this vector stores all rooms for the map

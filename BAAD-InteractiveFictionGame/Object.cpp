@@ -28,7 +28,6 @@ bool Object::getIsLocked() { return isLocked; }
 bool Object::getIsPasscodeLocked() { return isPasscodeLocked; }
 int Object::getPasscode() { return passcode; }
 bool Object::getIsOpen() { return isOpen; }
-const vector<Object*>& Object::getContainedObjects() { return containedObjects; }
 bool Object::getIsSafeZone() { return isSafeZone; } // returns if the object is a safe zone
 
 //setters

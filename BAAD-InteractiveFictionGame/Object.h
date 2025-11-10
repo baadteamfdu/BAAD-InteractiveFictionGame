@@ -20,7 +20,6 @@ private:
 	bool isLocked;								 //new flag to check if door is locked or unlocked.
 	bool isPasscodeLocked;						 //new flag for doors that can be unlocked by a passcode. 
 	int passcode;                                //variable to store randomly generated 4 digit passcode.
-	vector<Object*> containedObjects; // objects inside this object
 	bool isOpen;                      // for containers like stall, book, etc.
 	bool isSafeZone;                  // for objects that are safe zones
 public:
@@ -38,7 +37,6 @@ public:
 	bool getIsPasscodeLocked();
 	int getPasscode();
 	bool getIsOpen();
-	const vector<Object*>& getContainedObjects(); // stores objects inside another object, maybe a book containg a passcode.
 	bool getIsSafeZone(); // to check if the object is a safe zone.
 
 	//setters

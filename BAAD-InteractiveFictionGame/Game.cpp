@@ -101,7 +101,7 @@ void Game::init() {
     Object* controlPanel = new Object("control panel", "A sealed control panel is mounted on the wall.", false, true);
     cryoStart->addObject(controlPanel);
 
-    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
+    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true, false);
     cryoStart->addObject(keycard);
 
     // Book in worker's room
@@ -131,12 +131,7 @@ void Game::init() {
     stall->setIsOpen(false);
     bathroom->addObject(stall); // Placing in the bathroom.
 
-    //code halves inside objects 
-  //  Object* codePart1 = new Object("code part 1", "Half of the passcode: '--" + to_string(passcode % 100) + "'", true);
-  //  Object* codePart2 = new Object("code part 2", "Half of the passcode: '" + to_string(passcode / 100) + "--'", true);
-  //  stall->addContainedObject(codePart1);
-  //  book->addContainedObject(codePart2);
-
+ 
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true); //cryo card door
     // passcode door
@@ -369,6 +364,20 @@ void Game::displayMap() const
     }
     cout << "\n* = You\n\n";
 }
+
+/*  void Game::pressButton(Object* button)
+* 
+* 
+================*********================================
+
+
+Handles the player's attempt to press a button in the game.
+- Checks if the object exists; if not, shows an error message.
+- Ensures the object is actually a "button" before allowing interaction.
+- Prevents repeated presses using the firstButtonPressed flag.
+- On the first valid press, sets the flag to true and displays a message
+  indicating that something in the station has been activated.
+*/
 void Game::pressButton(Object* button)
 {
     if (!button)
@@ -393,6 +402,24 @@ void Game::pressButton(Object* button)
     cout << "You press the button. A faint hum echoes through the station — something has been activated.\n";
 }
 
+/* void Game::useScrewdriver(Object* obj)
+* *************************===============*******************************
+* 
+* 
+Handles the player's action when using the screwdriver on an object.
+
+- Checks if the target object exists; if not, notifies the player.
+- If used on the "vent":
+    • Unlocks it if it’s closed and marks it as a safe zone where the player can hide.
+    • If already open, informs the player that nothing needs to be done.
+- If used on the "control panel":
+    • Ensures it hasn’t been opened before using the controlPanelUnscrewed flag.
+    • When first opened, a hidden "button" object is created and added to the room.
+      (The button is created here because it represents a new interactive element
+       that only becomes accessible after the player unscrews the control panel.)
+    • Displays a message indicating that the button has been revealed.
+- If used on anything else, informs the player that the screwdriver has no effect.
+*/
 
 
 
@@ -413,17 +440,16 @@ void Game::useScrewdriver(Object* obj)
         obj->setIsLocked(false);
         obj->setIsSafeZone(true);
         cout << "You unscrew the vent cover quietly. You could probably hide inside now.\n";
+        return;
     }
-    else if (name == "control panel") {
+    if (name == "control panel") {
         if (controlPanelUnscrewed) {
             cout << "The control panel is already open.\n";
             return;
         }
 
-        obj->setIsLocked(false);  // Optional: mark panel as "unscrewed/unlocked"
-        controlPanelUnscrewed = true;
 
-        // Create the button inside
+        controlPanelUnscrewed = true;
         Object* button = new Object(
             "button",
             "A small red button inside the open control panel.",
@@ -436,33 +462,50 @@ void Game::useScrewdriver(Object* obj)
     else {
         cout << "You can't use the screwdriver on that.\n";
     }
+
+
 }
 
 
-// New method to use a keycard on a door,,; checks if the door exists in the current room
+/* void Game::useKeycard(Object* door)
+* 
+* 
+* ===============****=======================
+* 
+* 
+Handles using the screwdriver on different objects.
+- Checks if the target object exists; if not, notifies the player.
+- If used on the "vent":
+  Opens it if locked and marks it as a safe zone for hiding.
+  If already open, informs the player.
+- If used on the "control panel":
+  Opens it only once by checking controlPanelUnscrewed.
+  Reveals a new "button" object inside the panel and adds it to the room.
+- If used on anything else, informs the player that it’s not a valid use.
+*/
+
+
+
 void Game::useKeycard(Object* door) {
     if (!door) {                                      
         cout << "There's no such door here.\n";
-        return;  // stops the function if door is not found
+        return;  
     }
-    // Prevent unlocking passcode doors with the keycard
     if (door->getIsPasscodeLocked()) {
         cout << "The keycard doesn’t work on this type of door. It requires a passcode.\n";
         return;
     }
 
     if (playerIsHidden) {
-        playerIsHidden = false; // unhide player when they use keycard
+        playerIsHidden = false; 
         cout << "You step out from your hiding spot.\n";
     }
 
-    // check if the door is locked
     if (door->getIsLocked()) {
-        door->setIsLocked(false); // unlock the door
+        door->setIsLocked(false); 
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
       
     }
-    // if the door wasnt locked inform the player
     else {
         cout << "The door is already unlocked.\n";
     }
@@ -668,6 +711,7 @@ void Game::process()
             }
             break;
 
+        
         case Actions::TAKE:
             if (noun.empty()) {
                 cout << "Take what?\n";
@@ -680,16 +724,24 @@ void Game::process()
             }
 
             {
-                Object* obj = currentRoom->getObject(noun); // object not in room
+                Object* obj = currentRoom->getObject(noun);
+
+
+                // Take control panel doesnt show the right output so i have m
+                if (!obj) {
+                    if (noun == "control" || noun == "panel")
+                        obj = currentRoom->getObject("control panel");
+
+                }
                 if (!obj) {
                     cout << "There is no " << noun << " here.\n";
                     break;
                 }
-
                 if (!obj->isTakeable()) {
-                    cout << "You cannot take this object.\n"; // object not takeable
+                    cout << "You can't take the " << noun << ". It seems fixed in place.\n"; // object not takeable
                     break;
                 }
+
 
                 inventory.addObject(obj); // add to inventory, remove from room, tell player
                 currentRoom->removeObject(noun);
@@ -705,14 +757,33 @@ void Game::process()
             displayMap();
             break;
 
-      
         case Actions::USE:
+        {
             if (noun.empty()) {
                 cout << "Use what?\n";
                 break;
             }
+            // Control panel usage
+            if (noun == "control" || noun == "panel") {
+                Object* panel = currentRoom->getObject("control panel");
+                if (!panel) {
+                    cout << "There is no control panel here.\n";
+                    break;
+                }
+                // If unlocked & unscrewed 
+                if (controlPanelUnscrewed) {
+                    cout << "The control panel is unlocked and ready to use.\n";
+                    break;
+                }
+                //check if set to locked
+                if (panel->getIsLocked()) {
+                    cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
+                    break;
+                }
 
+            }
             // Keycard usage
+            //check if keycard
             if (noun == "keycard") {
                 if (!inventory.gotObject("keycard")) {
                     cout << "You don't have a keycard to use.\n";
@@ -723,20 +794,26 @@ void Game::process()
                     cout << "Use on what?\n";
                     break;
                 }
+                // if the keycard exists in the current room
 
-                Object* door = currentRoom->getObject(whatToUseOn);
-                if (door) {
-                    useKeycard(door);
+                Object* obj = currentRoom->getObject(whatToUseOn);
+                if (!obj) {
+                    cout << "There is no " << whatToUseOn << " here to use the keycard on.\n";
+                    break;
+                }
+                // Only allow keycards on objects that are locked and not takeable (doors)
+                if (!obj->isTakeable() && obj->getIsLocked() && obj->getName() != "control panel") {
+                    useKeycard(obj);
                 }
                 else {
-                    cout << "There is no door by that name here to use the keycard on.\n";
+                    cout << "The keycard won't work on that.\n";
                 }
                 break;
 
-                
             }
 
             // Screwdriver usage
+            //check if screwdriver
             if (noun == "screwdriver") {
                 if (!inventory.gotObject("screwdriver")) {
                     cout << "You don't have a screwdriver.\n";
@@ -747,17 +824,48 @@ void Game::process()
                     cout << "Use on what?\n";
                     break;
                 }
-
+                // if the keycard exists in the current room
                 Object* obj = currentRoom->getObject(whatToUseOn);
                 if (!obj) {
-                    cout << "There is no " << whatToUseOn << " here.\n";
+                    cout << "There is no " << whatToUseOn << " here to use the screwdriver on.\n";
                     break;
                 }
 
-                // Call the unified useScrewdriver function
-                useScrewdriver(obj);
+                useScrewdriver(obj); // handles vent, control panel, etc.
                 break;
             }
+
+            //  Button usage
+            if (noun == "button") {
+                Object* button = currentRoom->getObject("button");
+                if (!button) {
+                    cout << "There’s no button here to press.\n";
+                    break;
+                }
+
+                if (!controlPanelUnscrewed) {
+                    cout << "You can’t see any button until the control panel is open.\n";
+                    break;
+                }
+
+                if (!firstButtonPressed) {
+                    cout << "You press the red button. You hear a faint mechanical hum.\n";
+                    firstButtonPressed = true;
+                }
+                else {
+                    cout << "You already pressed the button.\n";
+                }
+                break;
+            }
+
+
+            // Fallback for other items that arent applicable in use case scenario(e.g, door)
+            cout << "You can't use that right now.\n";
+            break;
+        }
+
+
+
 
         case Actions::PRESS:
         {
@@ -768,14 +876,13 @@ void Game::process()
 
             Object* button = currentRoom->getObject(noun);
             if (!button) {
-                cout << "There’s nothing like that to press here.\n";
+                cout << "There is nothing like that to press here.\n";
                 break;
             }
 
             pressButton(button);
             break;
         }
-
         case Actions::GO:
         case Actions::OPEN:
             if (noun.empty()) {
@@ -783,57 +890,74 @@ void Game::process()
                 break;
             }
 
+            // CONTROL PANEL
+            if (noun == "control panel") {
+                Object* panel = currentRoom->getObject("control panel");
+                if (!panel) {
+                    cout << "There’s no control panel here.\n";
+                    break;
+                }
+
+                if (panel->getIsLocked()) {
+                    cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
+                }
+                else if (controlPanelUnscrewed) {
+                    cout << "The control panel is already open, revealing a red button inside.\n";
+                }
+                else {
+                    // Player opens/unscrews it
+                    controlPanelUnscrewed = true;
+                    cout << "You unscrew the control panel and expose a small red button inside.\n";
+                }
+                break; // Stop here, don’t treat as door
+            }
+
+            // VENT
             if (noun == "vent") {
                 Object* vent = currentRoom->getObject("vent");
                 if (!vent) {
                     cout << "There is no vent here.\n";
+                    break;
                 }
-                else if (vent->getIsLocked()) {
+
+                if (vent->getIsLocked()) {
                     cout << "The vent is locked. Maybe you need a tool to open it.\n";
                 }
                 else {
                     cout << "The vent is open now.\n";
                 }
+                break; // Stop here, don’t treat as door
             }
 
-            else if (noun == "stall") {
-            Object* obj = currentRoom->getObject("stall");
-                if (obj) {
-                    if (!obj->getIsOpen()) {
-                        obj->setIsOpen(true);
-                        foundcode2 = true;
-                        cout << "You open the stall. Maybe there is something inside? Maybe I should take a closer look? \n";
-                    }
-                    else cout << "The stall is already open. Maybe there is something inside? Maybe I should take a closer look? \n";
-                }
-                else {
+            // STALL
+            if (noun == "stall") {
+                Object* stall = currentRoom->getObject("stall");
+                if (!stall) {
                     cout << "There's no stall here.\n";
+                    break;
                 }
-            }
-            // Control Panel
-            else if (noun == "control panel") {
-                Object* panel = currentRoom->getObject("control panel");
-                if (!panel) {
-                    cout << "There is no control panel here.\n";
-                }
-                else if (!controlPanelUnscrewed) {
-                    cout << "The control panel is screwed shut. Maybe I need a screwdriver to open it.\n";
+
+                if (!stall->getIsOpen()) {
+                    stall->setIsOpen(true);
+                    foundcode2 = true;
+                    cout << "You open the stall. Maybe there is something inside? Maybe I should take a closer look?\n";
                 }
                 else {
-                    cout << "The control panel is already open.\n";
+                    cout << "The stall is already open. Maybe there is something inside? Maybe I should take a closer look?\n";
                 }
+                break;
             }
-            else {
-                goDoor(noun);
+
+            // BUTTON
+            if (noun == "button") {
+                cout << "You can not open a button.\n";
+                break;
             }
+
+            // DEFAULT: treat as door
+            goDoor(noun);
             break;
 
-            /*
-             usually when the player types the code it interprets as string since we have a string to action parser.
-             to fix it the input gets converted to integer using stoi methodology .
-             also cathes for any wrong entered format.
-
-            */
         case Actions::PEEK://if they entered a door name peek otherwise not allowed
             if (noun.empty()) {
                 cout << "Peek through what? \n";
@@ -857,7 +981,7 @@ void Game::process()
                 cout << "Invalid code format.\n";
             }
             break;
-        
+
         case Actions::HIDE: { // hide in vent or locker
             if (noun.empty()) {
                 cout << "Hide where?\n";
@@ -883,7 +1007,7 @@ void Game::process()
 
             if (!getIsHidden()) {
                 hide(noun);  // call existing hide() function
-           
+
             }
             else {
                 cout << "You are already hidden.\n";
@@ -903,4 +1027,7 @@ void Game::process()
         alien.increaseTurnCounter(currentRoom, playerIsHidden);
     }
 }
+
+
+
 
