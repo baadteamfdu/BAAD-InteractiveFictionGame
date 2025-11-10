@@ -124,6 +124,19 @@ void Game::init() {
     stall->setIsOpen(false);
     bathroom->addObject(stall); // Placing in the bathroom.
 
+    //Flashlight in the cafeteria
+    flashlight = new Object("flashlight", "A flashlight that does not have batteries", true, false, 0);
+    cafeteria->addObject(flashlight);
+
+    //Batteries in the Kitchen
+    batteries = new Object("batteries", "Batteries that can be used with flashlight", true, false);
+    kitchen->addObject(batteries);
+
+    // Button in the dark room
+    Object* buttonDarkRoom = new Object("button", "Button that may open something interesting", false, false);
+    darkRoom->addObject(buttonDarkRoom);
+
+
     //code halves inside objects 
   //  Object* codePart1 = new Object("code part 1", "Half of the passcode: '--" + to_string(passcode % 100) + "'", true);
   //  Object* codePart2 = new Object("code part 2", "Half of the passcode: '" + to_string(passcode / 100) + "--'", true);
