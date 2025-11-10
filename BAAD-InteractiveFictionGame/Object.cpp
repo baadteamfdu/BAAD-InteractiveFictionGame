@@ -4,11 +4,10 @@ using namespace std;
 
 //use inheritance for object types like takeable maybe and maybe exits/door and the base class could have things like id name and description etc
 
-Object::Object(string name, string description, bool takeable)
+Object::Object(string name, string description, bool takeable, bool isWorking, int dummy)
     : name(name), description(description), takeable(takeable),
-    isLocked(false), isPasscodeLocked(false), passcode(0), isOpen(false), isSafeZone(false){
+    isLocked(false), isPasscodeLocked(false), passcode(0), isOpen(false), isSafeZone(false), isWorking(false), dummy(0){
 }
-
 
 Object::Object(string name, string description, bool takeable, bool isLocked)
     : name(name), description(description), takeable(takeable),
@@ -30,6 +29,7 @@ int Object::getPasscode() { return passcode; }
 bool Object::getIsOpen() { return isOpen; }
 const vector<Object*>& Object::getContainedObjects() { return containedObjects; }
 bool Object::getIsSafeZone() { return isSafeZone; } // returns if the object is a safe zone
+bool Object::getIsWorking() { return isWorking; } //returns if the object is working
 
 //setters
 void Object::setIsLocked(bool lock) { isLocked = lock; }
@@ -37,3 +37,5 @@ void Object::setIsPasscodeLocked(bool lock) { isPasscodeLocked = lock; }
 void Object::setPasscode(int code) { passcode = code; }
 void Object::setIsOpen(bool open) { isOpen = open; }
 void Object::setIsSafeZone(bool safe) { isSafeZone = safe; } // setter for safe zone
+void Object::setWorking(bool working) { isWorking = working;} //setter for the Flashlight
+void Object::setDescription(string des) { description = des; } //to change description fo the objects when the state is changed

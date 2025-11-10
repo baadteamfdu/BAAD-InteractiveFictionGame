@@ -37,3 +37,14 @@ Object* Inventory::getObject(string objectName) {
 	}
 	return nullptr;
 }
+
+bool Inventory::deleteObject(Object* object) {
+	for (int i = 0; i < objects.size(); i++) {
+		if (objects[i] == object) {   // found the matching pointer
+			delete objects[i];        // free memory (only if created with new)
+			objects.erase(objects.begin() + i);  // remove from vector
+			return true;
+		}
+	}
+	return false;  // not found
+}

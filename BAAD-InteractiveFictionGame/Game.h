@@ -15,6 +15,9 @@ private:
     Parser parser;
     Inventory inventory;
     Alien alien;
+    Object* flashlight;                  // Object flashlight is created here to have access in the gameProcess()
+    Object* batteries;                   // Object batteries is created here to have access in the gamePorcess()
+    Object* escPodChamDoor;              // To change the state of the door(if open or not) in the gameProcess()
     bool foundcode1 = false;             // code in bathroom set to false by default. to check of the player got the first half.
     bool foundcode2 = false;             // code found in book set to false by default.to check of the player got the second half.
     int passcode;                        // random 4 digit passocde.
@@ -23,7 +26,7 @@ private:
     vector<Room*> allRooms;             //this vector stores all rooms for the map
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
-    
+
 public:
 
     void init();
@@ -32,19 +35,20 @@ public:
 
     Room* getCurrentRoom();
     void setCurrentRoom(Room* nextRoom);
-  
-    void peekDoor(const string & doorName); //peek that just checks if next room has alien in it or not and notifies player
-	void useKeycard(Object* door);
+
+    void peekDoor(const string& doorName); //peek that just checks if next room has alien in it or not and notifies player
+    void useKeycard(Object* door);
     void useScrewdriver(Object* vent);
-	void goDoor(const string& doorName);
-    void typeCode(int enteredCode); 
+    void goDoor(const string& doorName);
+    void typeCode(int enteredCode);
+    bool combine(Object* one, Object* two); // to combine two objects
 
     void displayMap() const; //this code will display the map for the game
     void hide(string noun);
-	void unhide();
+    void unhide();
 
-	void setIsHidden(bool hidden); // setter for playerIsHidden
+    void setIsHidden(bool hidden); // setter for playerIsHidden
 
-	bool getIsHidden(); // getter for playerIsHidden
+    bool getIsHidden(); // getter for playerIsHidden
 
 };
