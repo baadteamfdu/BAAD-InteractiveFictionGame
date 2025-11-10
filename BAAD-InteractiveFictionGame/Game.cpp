@@ -96,7 +96,11 @@ void Game::init() {
 
     //NOTE ALL OBJECTS MUST HAVE LOWERCASE NAMES AT LEAST FOR NOW, AS TOLOWER IS IN PARSER
     // Add objects to starting room
-    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true);
+    //control panel in the cryostart
+    Object* controlPanel = new Object("control panel", "A sealed control panel is mounted on the wall.", false, true);
+    cryoStart->addObject(controlPanel);
+
+    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true, false);
     cryoStart->addObject(keycard);
 
     // Book in worker's room
@@ -376,7 +380,7 @@ void Game::pressButton(Object* button)
 {
     if (!button)
     {
-        cout << "There's nothing like that to use the screwdriver on.\n"; // stops the function if vent is not found
+        cout << "There’s no button here to press.\n";
         return;
     }
 
@@ -388,12 +392,12 @@ void Game::pressButton(Object* button)
 
     if (firstButtonPressed)
     {
-        cout << "You can't use the screwdriver on that.\n";   
+        cout << "You already pressed the button. Nothing happens.\n";
         return;
     }
 
     firstButtonPressed = true;
-    cout << "You press the button. A faint hum echoes through the station — something has been activated.\n";
+    cout << "You press the button. A faint hum echoes through the station, something has been activated.\n";
 }
 
 /* void Game::useScrewdriver(Object* obj)
@@ -445,10 +449,7 @@ void Game::useScrewdriver(Object* obj)
 
         controlPanelUnscrewed = true;
         Object* button = new Object(
-            "button",
-            "A small red button inside the open control panel.",
-            false
-        );
+            "button", "A small red button inside the open control panel.", false, false);
         currentRoom->addObject(button);
 
         cout << "You unscrew the control panel and expose a small red button inside.\n";
@@ -746,7 +747,7 @@ void Game::process()
             }
             break;
 
-        
+
         case Actions::TAKE:
             if (noun.empty()) {
                 cout << "Take what?\n";
@@ -815,6 +816,7 @@ void Game::process()
                     cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
                     break;
                 }
+            }
             //clicking the button in the dark room
             if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == true) {
                 if (escPodChamDoor->getIsOpen() == true) {
@@ -827,7 +829,7 @@ void Game::process()
                     break;
                 }
             }
-            else if(noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false){
+            else if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) {
                 cout << "The room is too dark, you can not see anything." << endl;
             }
 
@@ -927,9 +929,6 @@ void Game::process()
             break;
         }
 
-
-
-
         case Actions::PRESS:
         {
             if (noun.empty()) {
@@ -972,7 +971,7 @@ void Game::process()
                     controlPanelUnscrewed = true;
                     cout << "You unscrew the control panel and expose a small red button inside.\n";
                 }
-                break; 
+                break;
             }
 
             // VENT
@@ -989,7 +988,7 @@ void Game::process()
                 else {
                     cout << "The vent is open now.\n";
                 }
-                break; 
+                break;
             }
 
             // STALL
@@ -1088,9 +1087,8 @@ void Game::process()
         }
 
         alien.increaseTurnCounter(currentRoom, playerIsHidden);
+        }
     }
-}
-
 
 
 
