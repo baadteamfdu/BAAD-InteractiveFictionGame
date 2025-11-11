@@ -36,6 +36,14 @@ Actions stringToAction(string action) { //maybe
 	if (action == "hide") {
 		return Actions::HIDE;
 	}
+	if (action == "reset")
+	{
+		return Actions::QUIT;
+	}
+	if (action == "quit")
+	{
+		return Actions::QUIT;
+	}
 	if (action == "unhide") {
 		return Actions::UNHIDE;
 	}

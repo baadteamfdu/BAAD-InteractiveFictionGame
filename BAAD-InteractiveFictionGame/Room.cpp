@@ -74,3 +74,14 @@ Room* Room::getNeighbour(const string& doorName) { // getter for neighbour
 void Room::setNeighbour(const string& doorName, Room* room) { // setter for neighbour
 	neighbours[doorName] = room; // set the Room pointer for the given doorName
 }
+
+//removes all the objects from the game once it ends
+void Room::removeAllObjects()
+{
+    for (auto* obj : roomObjects)
+    {
+        delete obj;
+    }
+
+    roomObjects.clear();
+}

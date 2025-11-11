@@ -30,6 +30,7 @@ public:
 	void printAllObjects(); // displays all objects in the room
 	void setNeighbour(const string& doorName, Room* room); // setter for neighbour
 	Room* getNeighbour(const string& doorName); // getter for neighbour
+	void removeAllObjects();
 
 	//this code sets the positions for where the rooms are and the player
 	void setPosition(int x, int y);

@@ -265,6 +265,54 @@ void Game::getHelp() { // prints out available commands
     cout << "help\n";
 
 }
+//this function makes it so that the whole game get restarted
+void Game::resetGame()
+{
+    destroyWorld();
+    generatePasscode();
+    init();
+
+    cout << "Game restarting..." << endl;
+}
+//if the player gives up this function makes it so that you can quit the game
+void Game::quitGame()
+{
+    destroyWorld();
+    cout << "Game over!" << endl;
+    exit(0);
+}
+
+void Game::destroyWorld()
+{
+    //this for loop goes through all the items in the game and deletes them
+    for (auto* room : allRooms)
+    {
+        room->removeAllObjects();
+        delete room; //and also the room itself (couldn't figure out another way)
+    }
+    //clears inventory and rooms
+    allRooms.clear();
+    inventory.clear();
+
+    //player is not in the current room anymore
+    currentRoom = nullptr;
+
+    //resets the codes and makes sure that the player 
+    playerIsHidden = false;
+    foundcode1 = false;
+    foundcode2 = false;
+}
+
+//this makes a new random passcode so that the game isn't beatable consistently
+void Game::generatePasscode()
+{
+    passcode = rand() % 9000 + 1000;
+    passcode1 = passcode / 100; //first two digits of passcode being randomized
+    passcode2 = passcode % 100; //last two digits of passcode being randomized
+    //this makes sure that the player starts off with new code
+    foundcode1 = false;
+    foundcode2 = false;
+}
 
 //this functions displays the map that is used for the game.
 //
@@ -329,6 +377,7 @@ void Game::displayMap() const
     }
     cout << "\n* = You\n\n";
 }
+
 
 // new function to use a screwdriver on a vent.
 void Game::useScrewdriver(Object* vent)
@@ -771,6 +820,17 @@ void Game::process()
         case Actions::UNHIDE: // unhide anywhere
             unhide();
             break;
+
+        case Actions::QUIT: //gives the player the ability to quit the game
+        {
+            quitGame();
+            break;
+        }
+        case Actions::RESET: //this restarts the whole game
+        {
+            resetGame();
+            break;
+        }
 
         default:
             cout << "You can't do that right now.\n";
