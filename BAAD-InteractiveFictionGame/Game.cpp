@@ -389,29 +389,64 @@ Handles the player's attempt to press a button in the game.
 - On the first valid press, sets the flag to true and displays a message
   indicating that something in the station has been activated.
 */
-void Game::pressButton(Object* button)
-{
-    if (!button)
+
+    void Game::pressButton(Object * button)
     {
-        cout << "There’s no button here to press.\n";
-        return;
+        if (!button)
+        {
+            cout << "There’s no button here to press.\n";
+            return;
+        }
+
+        if (button->getName() != "button")
+        {
+            cout << "You can’t press that.\n";
+            return;
+        }
+
+        // If in CryoStart room -> Control Panel button
+        if (currentRoom->getId() == "cryo01")
+        {
+            if (firstButtonPressed)
+            {
+                cout << "You already pressed the control panel button. Nothing happens.\n";
+                return;
+            }
+
+            firstButtonPressed = true;
+            cout << "You press the control panel button. A faint hum echoes through the station.\n";
+            return;
+        }
+
+        // If in Dark Room Override button
+        if (currentRoom->getId() == "darkRoom")
+        {
+            if (darkRoomButtonPressed)
+            {
+                cout << "You already pressed the override button.\n";
+                return;
+            }
+
+            darkRoomButtonPressed = true;
+            cout << "You press the override button. A mechanical hum echoes faintly.\n";
+
+            // Only open the escape pod if both buttons pressed
+            if (firstButtonPressed && darkRoomButtonPressed)
+            {
+                escPodChamDoor->setIsLocked(false);
+                cout << "You hear a heavy clang from afar... The escape pod chamber door unlocks!\n";
+            }
+            else
+            {
+                cout << "Something activated... but it seems another system still needs power.\n";
+            }
+            return;
+        }
+
+        cout << "You press the button, but nothing seems to happen here.\n";
     }
 
-    if (button->getName() != "button")
-    {
-        cout << "You can’t press that.\n";
-        return;
-    }
 
-    if (firstButtonPressed)
-    {
-        cout << "You already pressed the button. Nothing happens.\n";
-        return;
-    }
-
-    firstButtonPressed = true;
-    cout << "You press the button. A faint hum echoes through the station, something has been activated.\n";
-}
 
 /* void Game::useScrewdriver(Object* obj)
 * *************************===============*******************************
