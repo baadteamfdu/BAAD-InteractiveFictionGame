@@ -48,7 +48,7 @@ namespace BAADInteractiveFictionGameTest
 			Room* cryoTest = new Room("cryoTest", "Test Room", "Test Description");
 			cryoTest->printAllObjects(); //print nothing
 			//add object
-			Object* testObject = new Object("test object", "test description", true);
+			Object* testObject = new Object("test object", "test description", true, true);
 			cryoTest->addObject(testObject);
 			cryoTest->printAllObjects(); //print test object
 			Assert::AreEqual(testObject->getName(), cryoTest->getObject("test object")->getName(), L"Verifying object in room");
@@ -62,8 +62,8 @@ namespace BAADInteractiveFictionGameTest
 			Room* testNeighbour2 = new Room("testNeighbour2", "testNeighbour2", "testNeighbour2");
 
 			//making the doors to connect the rooms
-			Object* testDoor1 = new Object("testDoor1", "testDoor1", false);
-			Object* testDoor2 = new Object("testDoor2", "testDoor2", false);
+			Object* testDoor1 = new Object("testDoor1", "testDoor1", false, false);
+			Object* testDoor2 = new Object("testDoor2", "testDoor2", false, false);
 
 			//set the connected rooms
 			testRoom->setNeighbour("testDoor1", testNeighbour1);
@@ -86,7 +86,7 @@ namespace BAADInteractiveFictionGameTest
 			Room* testNeighbour2 = new Room("test", "test", "test");
 
 			//making the doors to connect the rooms
-			Object* testDoor1 = new Object("test", "test", false);
+			Object* testDoor1 = new Object("test", "test", false, false);
 
 			//set the connected rooms
 			testRoom->setNeighbour("test", testNeighbour1);
@@ -112,7 +112,7 @@ namespace BAADInteractiveFictionGameTest
 			//create needed objects for test
 			Room* testRoom = new Room("test", "test", "test");
 			Room* lockedRoom = new Room("lockedRoom", "lockedRoom", "lockedRoom");
-			Object* lockedDoor = new Object("lockedDoor", "lockedDoor", false);//starting unlocked to manually set
+			Object* lockedDoor = new Object("lockedDoor", "lockedDoor", false, false);//starting unlocked to manually set
 			lockedDoor->setIsLocked(true); // lock the door manually
 			testRoom->addObject(lockedDoor); //add the locked door
 			testRoom->setNeighbour("lockedDoor", lockedRoom); //set the locked door as the connection point
@@ -132,7 +132,7 @@ namespace BAADInteractiveFictionGameTest
 			//create needed objects for test
 			Room* testRoom = new Room("test", "test", "test");
 			Room* unlockedRoom = new Room("unlockedRoom", "unlockedRoom", "unlockedRoom");
-			Object* unlockedDoor = new Object("unlockedDoor", "unlockedDoor", false); //needs to be unlocked to start, because of the silly bathroom hard code
+			Object* unlockedDoor = new Object("unlockedDoor", "unlockedDoor", false, false); //needs to be unlocked to start, because of the silly bathroom hard code
 			testRoom->addObject(unlockedDoor); //add the unlocked door
 			testRoom->setNeighbour("unlockedDoor", unlockedRoom); //set the unlocked door as the connection point
 
@@ -155,8 +155,8 @@ namespace BAADInteractiveFictionGameTest
 			string name2Description = "Now is the time ...";
 			bool helloTake = true;
 
-			Object random(randomName, randomDescription, randomTake);
-			Object n2(name2, name2Description, helloTake);
+			Object random(randomName, randomDescription, randomTake, false);
+			Object n2(name2, name2Description, helloTake, false);
 
 			// log object we are testing
 			messageOutput = "Random object name " + random.getName() + "\n";
@@ -180,9 +180,9 @@ namespace BAADInteractiveFictionGameTest
 			string name2Description = "Now is the time ...";
 			bool helloTake = true;
 
-			Object random(randomName, randomDescription, randomTake);
-			Object n2(name2, name2Description, helloTake);
-			Object n3(name2, name2Description, helloTake);
+			Object random(randomName, randomDescription, randomTake, false);
+			Object n2(name2, name2Description, helloTake, false);
+			Object n3(name2, name2Description, helloTake, false);
 
 			/*
 				*** copied from inventory.h ***
