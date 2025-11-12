@@ -719,6 +719,8 @@ void Game::process()
 
         if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
             cout << "You hesitate... the alien catches you.\n";
+            inEscapeSequence = false;
+            runCount = 0;
             alien.killPlayer();
         }
 
