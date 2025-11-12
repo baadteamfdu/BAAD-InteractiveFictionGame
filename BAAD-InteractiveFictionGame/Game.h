@@ -23,6 +23,9 @@ private:
     int passcode;                        // random 4 digit passocde.
     int passcode1;                       //variable to store first half of the passcode.
     int passcode2;                       // variable to store second half of the passcode.
+    int runCount = 0;                    //how many times the player has entered run
+    int runsRequired = 4;                 //how many times the player must enter run, unique output after each
+    bool inEscapeSequence = false;                //true when they enter the final room, tracks point of no return 
     bool controlPanelUnscrewed = false;  // Tracks if the control panel has been unscrewed
     bool firstButtonPressed = false;     // Tracks if the button inside the control panel has been pressed
     bool darkRoomButtonPressed = false; // Tracks if the button in the dark room has been pressed

@@ -250,6 +250,13 @@ Room* Game::getCurrentRoom() {
 }
 
 void Game::setCurrentRoom(Room* nextRoom) {
+    if (nextRoom->getId() == "escape pod chamber" && inEscapeSequence == false) {
+        inEscapeSequence = true;
+        runCount = 0;
+        alien.setActive(false);
+        cout << "ENTER RUN! THE ALIEN IS RIGHT BEHIND YOU!" << endl;
+    }
+
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
@@ -257,12 +264,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
         alien.move();
         cout << "You see a passcode door on one side, and an ajar, unlocked door leading to a room for workers on the other." << endl; //hint to tell player to hide and they don't need to use keycard
     }
-    if (currentRoom->getId() == "finalRoom") { //added winning for the deliverable
-        cout << "You see one last working escape pod." << endl; 
-        cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
-        cout << "You win!" << endl;
-        exit(0);
-    }
+
 }
 
 void Game::getHelp() { // prints out available commands
@@ -715,6 +717,11 @@ void Game::process()
             continue;
         }
 
+        if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
+            cout << "You hesitate... the alien catches you.\n";
+            alien.killPlayer();
+        }
+
         switch (action) {
 
         case Actions::HELP:
@@ -892,7 +899,7 @@ void Game::process()
 
                 break;
             }
-            
+
             else if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) {
                 cout << "The room is too dark, you can not see anything." << endl;
             }
@@ -1009,6 +1016,32 @@ void Game::process()
             pressButton(button);
             break;
         }
+
+        case Actions::RUN:
+            if (inEscapeSequence) {
+                runCount++;
+                while (runCount < runsRequired) {
+                    switch (runCount) {
+                    case (1):
+                        cout << "The alien is right behind you, type RUN, one of these escape pods has got to work!" << endl;
+                        break;
+                    case (2):
+                        cout << "Fierce sounds are coming from you. Type RUN, you need to keep going!" << endl;
+                        break;
+                    case (3):
+                        cout << "You see something in the distance, a working escape pod! Type RUN, keep going!" << endl;
+                        break;
+                    case (4):
+                        cout << "You are almost at the working escape pod! Type RUN and keep going!" << endl;
+                        break;
+
+                    }
+                }
+                cout << "You see one last working escape pod." << endl;
+                cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
+                cout << "You win!" << endl;
+                exit(0);
+            }
         case Actions::GO:
         case Actions::OPEN:
             if (noun.empty()) {

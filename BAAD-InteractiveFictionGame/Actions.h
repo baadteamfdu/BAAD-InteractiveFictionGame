@@ -17,6 +17,7 @@ enum Actions
 	INVALID,
 	HIDE,
 	UNHIDE,
+	RUN,
 	PRESS
 };
 
