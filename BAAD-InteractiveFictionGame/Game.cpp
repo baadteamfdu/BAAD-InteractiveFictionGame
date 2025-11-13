@@ -733,7 +733,15 @@ void Game::process()
         cout << "> ";
         if (!getline(cin, input)) break; // handle EOF cleanly
 
-        if (!parser.parse(input, action, noun, whatToUseOn)) {
+        if (!parser.parse(input, action, noun, whatToUseOn)) { 
+
+            if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
+                cout << "You hesitate... the alien catches you.\n"; //this is to prevent player surviving if they enter nonsense
+                inEscapeSequence = false;
+                runCount = 0;
+                alien.killPlayer();
+            }
+
             cout << "Invalid command. Type 'help' for a list of commands.\n";
             continue;
         }
@@ -1000,7 +1008,7 @@ void Game::process()
 
         case Actions::RUN:
             if (inEscapeSequence) {
-                runCount++;
+                runCount++; //increase run count so after they pass 4 it ends
                     switch (runCount) {
                     case (1):
                         cout << "The alien is right behind you, type RUN, one of these escape pods has got to work!" << endl;
@@ -1020,6 +1028,12 @@ void Game::process()
                         cout << "You win!" << endl;
                         exit(0);
                     }
+                     if (noun.empty()) { //prevents run stil asking where this might be redundant
+                break;
+            }
+                     else if (inEscapeSequence) {
+                         break;
+                     }
                 }
         case Actions::GO:
         case Actions::OPEN:
