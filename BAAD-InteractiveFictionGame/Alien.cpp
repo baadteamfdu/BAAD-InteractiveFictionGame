@@ -118,3 +118,8 @@ void Alien::resetAlienState() { //taken from professor's recommendation
 	chaseCounter = 0;
 	sawPlayer = false;
 }
+
+void Alien::clearRooms()
+{
+	roomList.clear();
+}

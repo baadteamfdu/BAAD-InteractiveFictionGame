@@ -262,7 +262,10 @@ void Game::getHelp() { // prints out available commands
     cout << "type <passcode>\n";
 	cout << "hide <object name>\n";
 	cout << "unhide\n";
+    cout << "reset\n";
+    cout << "quit\n";
     cout << "help\n";
+
 
 }
 //this function makes it so that the whole game get restarted
@@ -284,6 +287,9 @@ void Game::quitGame()
 
 void Game::destroyWorld()
 {
+
+    alien.clearRooms();
+    alien.setActive(false);
     //this for loop goes through all the items in the game and deletes them
     for (auto* room : allRooms)
     {

@@ -78,7 +78,7 @@ void Room::setNeighbour(const string& doorName, Room* room) { // setter for neig
 //removes all the objects from the game once it ends
 void Room::removeAllObjects()
 {
-    for (auto* obj : roomObjects)
+    for (Object* obj : roomObjects)
     {
         delete obj;
     }
