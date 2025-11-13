@@ -113,7 +113,7 @@ void Alien::addRoom(Room* newRoom) { //add a room to the list of rooms the alien
 
 void Alien::resetAlienState() { //taken from professor's recommendation
 	moveThreshold = (rand() % 5) + 2;
-	chaseThreshold = (rand() % 3) + 6;
+	chaseThreshold = (rand() % 3) + 7;
 	turnCounter = 0;
 	chaseCounter = 0;
 	sawPlayer = false;

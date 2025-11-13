@@ -250,7 +250,7 @@ Room* Game::getCurrentRoom() {
 }
 
 void Game::setCurrentRoom(Room* nextRoom) {
-    if (nextRoom->getId() == "escape pod chamber" && inEscapeSequence == false) {
+    if (nextRoom->getId() == "escapePodChamber" && inEscapeSequence == false) {
         inEscapeSequence = true;
         runCount = 0;
         alien.setActive(false);
@@ -378,6 +378,29 @@ void Game::displayMap() const
     cout << "\n* = You\n\n";
 }
 
+
+/*  void Game::checkBothButtons()
+*
+*
+================*********================================
+
+Either says just one button has been pressed, or both
+If both were pressed it will unlock escPodChamDoor
+*/
+
+
+void Game::checkBothButtons() {
+    if (firstButtonPressed && darkRoomButtonPressed) {
+        escPodChamDoor->setIsLocked(false);
+        cout << "You hear a heavy clang from afar... The escape pod chamber door unlocks!\n";
+    }
+    else {
+        cout << "Something activated... but it seems another system still needs power.\n";
+    }
+}
+
+
+
 /*  void Game::pressButton(Object* button)
 * 
 * 
@@ -417,12 +440,18 @@ Handles the player's attempt to press a button in the game.
 
             firstButtonPressed = true;
             cout << "You press the control panel button. A faint hum echoes through the station.\n";
+            checkBothButtons();
             return;
         }
 
         // If in Dark Room Override button
         if (currentRoom->getId() == "darkRoom")
         {
+            if (flashlight->getIsWorking() == false) {
+                cout << "The room is too dark, you cannot see anything.\n";
+                return;
+            }
+
             if (darkRoomButtonPressed)
             {
                 cout << "You already pressed the override button.\n";
@@ -433,15 +462,7 @@ Handles the player's attempt to press a button in the game.
             cout << "You press the override button. A mechanical hum echoes faintly.\n";
 
             // Only open the escape pod if both buttons pressed
-            if (firstButtonPressed && darkRoomButtonPressed)
-            {
-                escPodChamDoor->setIsLocked(false);
-                cout << "You hear a heavy clang from afar... The escape pod chamber door unlocks!\n";
-            }
-            else
-            {
-                cout << "Something activated... but it seems another system still needs power.\n";
-            }
+            checkBothButtons();
             return;
         }
 
@@ -882,29 +903,6 @@ void Game::process()
                     break;
                 }
             }
-            //clicking the button in the dark room
-            if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == true) {
-                if (darkRoomButtonPressed) {
-                    cout << "You already pressed the override button.\n";
-                    break;
-                }
-                darkRoomButtonPressed = true;
-                cout << "You press the override button. A mechanical hum echoes faintly.\n";
-                // Check if both buttons have been pressed
-                if (firstButtonPressed && darkRoomButtonPressed) {
-                    escPodChamDoor->setIsLocked(false);
-                    cout << "You hear a heavy clang from afar... The escape pod chamber door unlocks!\n";
-                }
-                else {
-                    cout << "Something activated... but it seems another system still needs power.\n";
-                }
-
-                break;
-            }
-
-            else if (noun == "button" && currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) {
-                cout << "The room is too dark, you can not see anything." << endl;
-            }
 
             //Combining batteries and flashlight
             if (noun == "flashlight") {
@@ -972,30 +970,11 @@ void Game::process()
                 useScrewdriver(obj); // handles vent, control panel, etc.
                 break;
             }
-
-            //  Button usage
             if (noun == "button") {
                 Object* button = currentRoom->getObject("button");
-                if (!button) {
-                    cout << "There’s no button here to press.\n";
-                    break;
-                }
-
-                if (!controlPanelUnscrewed) {
-                    cout << "You can’t see any button until the control panel is open.\n";
-                    break;
-                }
-
-                if (!firstButtonPressed) {
-                    cout << "You press the red button. You hear a faint mechanical hum.\n";
-                    firstButtonPressed = true;
-                }
-                else {
-                    cout << "You already pressed the button.\n";
-                }
+                pressButton(button);
                 break;
             }
-
 
             // Fallback for other items that arent applicable in use case scenario(e.g, door)
             cout << "You can't use that right now.\n";

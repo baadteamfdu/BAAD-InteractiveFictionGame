@@ -50,6 +50,7 @@ public:
     bool combine(Object* one, Object* two); // to combine two objects
 
     void displayMap() const; //this code will display the map for the game
+    void checkBothButtons();
     void hide(string noun);
 	void unhide();
     void pressButton(Object* button);   // new function
