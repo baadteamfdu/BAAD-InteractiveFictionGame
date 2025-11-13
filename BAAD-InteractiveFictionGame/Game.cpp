@@ -57,7 +57,7 @@ void Game::init() {
     Room* escapePodChamber = new Room(
         "escapePodChamber",
         "Escape Pod Chamber",
-        "A large bay leading to the final escape pod door. The control panel beside it is screwed shut.\n"
+        ""
     );
     Room* finalRoom = new Room(
         "finalRoom",
@@ -1001,7 +1001,6 @@ void Game::process()
         case Actions::RUN:
             if (inEscapeSequence) {
                 runCount++;
-                while (runCount < runsRequired) {
                     switch (runCount) {
                     case (1):
                         cout << "The alien is right behind you, type RUN, one of these escape pods has got to work!" << endl;
@@ -1015,14 +1014,13 @@ void Game::process()
                     case (4):
                         cout << "You are almost at the working escape pod! Type RUN and keep going!" << endl;
                         break;
-
+                    default:
+                        cout << "You see one last working escape pod." << endl;
+                        cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
+                        cout << "You win!" << endl;
+                        exit(0);
                     }
                 }
-                cout << "You see one last working escape pod." << endl;
-                cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
-                cout << "You win!" << endl;
-                exit(0);
-            }
         case Actions::GO:
         case Actions::OPEN:
             if (noun.empty()) {
@@ -1037,12 +1035,11 @@ void Game::process()
                     cout << "There’s no control panel here.\n";
                     break;
                 }
-
-                if (panel->getIsLocked()) {
-                    cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
-                }
-                else if (controlPanelUnscrewed) {
+                if (controlPanelUnscrewed) {
                     cout << "The control panel is already open, revealing a red button inside.\n";
+                }
+                else if (panel->getIsLocked()) {
+                    cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
                 }
                 else {
                     // Player opens/unscrews it
