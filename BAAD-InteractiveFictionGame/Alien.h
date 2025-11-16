@@ -16,6 +16,8 @@ class Alien {
         void move(); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom else leave()
         bool getSawPlayer(); //returns bool sawPlayer
         void killPlayer(); //tell player they lost and exit game
+        void setCurrentRoom(Room* room) { alienCurrentRoom = room; } // to change aliens location outside the class
+        Room* getCurrentRoom() const { return alienCurrentRoom; }
 private:
         bool isActive = false; //store if alien is active
         bool sawPlayer = false;//store if alien has seen the player

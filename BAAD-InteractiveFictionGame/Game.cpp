@@ -596,7 +596,7 @@ void Game::typeCode(int enteredCode)
     }
     // Check if the player has discovered both halves of the passcode
     if (!foundcode1 ||!foundcode2) {
-        cout << "You do not have both halves of the passcode yet.\n";
+        cout << "You cannot enter a passcode until you have discovered both halves.\n";
         return;
     }
     // Compare the entered code with the actual stored passcode
@@ -605,7 +605,11 @@ void Game::typeCode(int enteredCode)
         cout << "The keypad flashes green. The door unlocks.\n";
         door->setIsLocked(false);
     }
-    else { cout << "Incorrect code. Try again.\n"; }
+    else {
+        cout << "Incorrect code. Try again.\n";
+        alien.setCurrentRoom(currentRoom);
+        cout << "A distant screech echoes… Something has been alerted.\n";
+    }
 }
 
 
