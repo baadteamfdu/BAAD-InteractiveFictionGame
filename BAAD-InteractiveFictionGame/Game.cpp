@@ -150,14 +150,14 @@ void Game::init() {
     passcodeDoor->setIsPasscodeLocked(true); // door is locked
     passcodeDoor->setPasscode(passcode);
 
-    Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, false);
-    escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
+    Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, true);
+    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
-    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false); //this is not hardcoded and the player will lock it behind them.
+    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
-    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, false);
-    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, false);
-    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, false);
+    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, true);
+    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, true);
+    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, true);
 
     // Adding doors to rooms
 
@@ -262,7 +262,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
         alien.setActive(true);
         alien.move();
-        cout << "You see a passcode door on one side, and an ajar, unlocked door leading to a room for workers on the other." << endl; //hint to tell player to hide and they don't need to use keycard
+        cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
     }
 
 }
@@ -655,7 +655,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
          door->setIsLocked(true); // lock the door again after going through
-         if ((door->getName()) == "bathroom door") { //don't lock player in bathroom 
+         if ((door->getName()) == "bathroom door" || door->getName() == "worker door") { //don't lock player in bathroom or worker room 
                 door->setIsLocked(false);
             
          }
