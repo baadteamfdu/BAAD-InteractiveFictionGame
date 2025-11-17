@@ -21,8 +21,13 @@ int main ()
         cout << "======== MAIN MENU ========\n";
         cout << "1. Start Game\n";
         cout << "2. Exit Game\n";
+        cout << "> ";
         string choice;
-        getline(cin, choice);
+   
+        if (!getline(cin, choice)) {
+            cout << "input closed exiting game...\n";
+            exit(0);
+        }
 
         if (choice == "1") {
             clearScreen();
