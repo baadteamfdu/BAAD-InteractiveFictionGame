@@ -186,6 +186,44 @@ namespace BAADInteractiveFictionGameTest
 
 		}
 
+		TEST_METHOD(FlashlightWorkingTest) {
+			Object* flashlight = new Object("flashlight", "test", true, false);
+			Inventory inventory;
+			inventory.addObject(flashlight);
+			flashlight->setWorking(false);
+			Assert::IsFalse(flashlight->getIsWorking(), L"The flashlight should be off");
+			flashlight->setWorking(true);
+			Assert::IsTrue(flashlight->getIsWorking(), L"The flashlight should be on");
+		}
+
+		TEST_METHOD(CombineFlashlightAndBatteryToGetWorking) {
+			Inventory inventory;
+			//had to duplicate the combine code, because the game has its own private inventory.
+
+			Object* batt = new Object("batteries", "test", true, false);
+			Object* flash = new Object("flashlight", "test", true, false);
+			inventory.addObject(flash);
+			inventory.addObject(batt);
+			flash->setWorking(false);			
+			if (flash->getIsWorking()) {
+				Assert::Fail(L"You already have a working flashlight.");
+			}
+			bool hasBatt = inventory.gotObject(batt->getName());
+			bool hasFlash = inventory.gotObject(flash->getName());
+			if (!hasBatt && !hasFlash) {
+				Assert::Fail(L"You do not have the flashlight and the batteries");
+			}
+			// Combine them
+			inventory.deleteObject(batt);        // remove the batteries
+			flash->setWorking(true);             // mark flashlight as working
+			flash->setDescription("Working flashlight");
+			Logger::WriteMessage(L"You combined the batteries with the flashlight");			
+			Assert::IsFalse(inventory.gotObject("batteries"), L"The batteries shouldn't be in the player's inventory");
+			Assert::IsTrue(flash->getIsWorking(), L"The Flashlight should be on");
+		}
+		//player hide from alien test case? Like in a safe zone?
+		//passcode door case?
+
 		TEST_METHOD(AddObjectsToInventory) {
 			std::string messageOutput;
 			string randomName = "Random";
