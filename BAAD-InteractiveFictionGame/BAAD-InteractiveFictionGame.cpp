@@ -4,12 +4,43 @@
 #include "Game.h"
 #include <string>
 #include "Actions.h"
+# include <stdlib.h> 
 using namespace std;
 
-int main()
+// Function to clear the console screen ..................Credit: https://stackoverflow.com/questions/70687173/how-to-clear-screen-in-c-programming-im-u-using-dev-c-but-everything-i-try-seem
+void clearScreen() {
+    system("cls");  
+}
+
+
+int main ()
 {
 
     srand(time(0));  // initialize random seed.
+    while (true) {
+        cout << "======== MAIN MENU ========\n";
+        cout << "1. Start Game\n";
+        cout << "2. Exit Game\n";
+        cout << "> ";
+        string choice;
+   
+        if (!getline(cin, choice)) {
+            cout << "input closed exiting game...\n";
+            exit(0);
+        }
+
+        if (choice == "1") {
+            clearScreen();
+            break;   // continue into the game
+        }
+        else if (choice == "2") {
+            cout << "Exiting game...\n";
+            return 0;
+        }
+        else {
+            cout << "Invalid input. Please type 1 or 2.\n\n";
+        }
+    }
     //setup for the game
 	Game game;
 	game.init();
