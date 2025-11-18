@@ -171,6 +171,21 @@ namespace BAADInteractiveFictionGameTest
 			// 2nd object ...., maybe some more default testing
 		}
 
+
+		TEST_METHOD(RemoveObjectsFromInventory){
+			// create two different objects, to delete 1 from inventory
+			
+			Object* test1 = new Object("test1", "test1", true, false);
+			Object* test2 = new Object("test2", "test2", true, false);
+			Inventory inventory;
+			inventory.addObject(test1);
+			inventory.addObject(test2);
+			inventory.deleteObject(test1);
+			Assert::IsFalse(inventory.gotObject("test1"), L"The object shouldn't be in the inventory");
+			Assert::IsTrue(inventory.gotObject("test2"), L"The object should be in the inventory");
+
+		}
+
 		TEST_METHOD(AddObjectsToInventory) {
 			std::string messageOutput;
 			string randomName = "Random";
