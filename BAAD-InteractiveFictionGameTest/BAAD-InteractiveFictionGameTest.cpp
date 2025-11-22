@@ -221,8 +221,23 @@ namespace BAADInteractiveFictionGameTest
 			Assert::IsFalse(inventory.gotObject("batteries"), L"The batteries shouldn't be in the player's inventory"); //verify batteries removed
 			Assert::IsTrue(flash->getIsWorking(), L"The Flashlight should be on"); //verify flashlight now works
 		}
+
+
 		//player hide from alien test case? Like in a safe zone?
 		//passcode door case?
+		TEST_METHOD(PlayerCanHide) { //precondition player not hiding but in a room with a object they could hide in, post is player is hiding and can unhide
+			Game game;
+			Object* locker = new Object("locker", "test", false, false, true); //create a safe zone that the player can hide in
+			Room* testRoom = new Room("testRoom", "testRoom", "testRoom");
+			testRoom->addObject(locker); //add object to the room because you cannot hide when not in a room
+			game.setCurrentRoom(testRoom);
+			Assert::IsTrue(locker->getIsSafeZone(), L"Locker should be a safe place to hide"); //check it is safe
+			Assert::IsFalse(game.getIsHidden(), L"Player should not be hidden");//check player isn't hiding in it
+			game.hide("locker");
+			Assert::IsTrue(game.getIsHidden(), L"Player should be hidden"); //check player now is hiding in it
+			game.unhide();
+			Assert::IsFalse(game.getIsHidden(), L"Player should not be hidden");//check player isn't hiding in anymore
+		}
 
 		TEST_METHOD(AddObjectsToInventory) {
 			std::string messageOutput;
