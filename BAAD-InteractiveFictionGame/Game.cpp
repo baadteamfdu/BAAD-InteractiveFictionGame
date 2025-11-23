@@ -243,6 +243,16 @@ void Game::init() {
 	workersRoom->addObject(safeZone); // placing the locker in the worker's room
     //let Alien Access rooms
     alien.addAllRooms(allRooms);
+
+
+    /*
+    * giving the values for the NOTES FOR THE LORE.
+    */
+    darkNote = new Object("dark note", "Note that was found in the Dark Room", true, false);
+    bathroomNote = new Object("note-1", "Note that was found in the Bathroom", true, false);
+    dockNote = new Object("dock note", "Note that was found in the Dock", true, false);
+    alienNote = new Object("alien note", "Note that felt from the Alien", true, false);
+
     }
 
 Room* Game::getCurrentRoom() {
@@ -724,6 +734,25 @@ bool Game::combine(Object* batt, Object* flash) {
     return true;
 }
 
+/*================================================================= 
+UseMirror FUNCTION TO REVEAL THE TEXT IN THE NOTE FROM THE BATHROOM 
+===================================================================*/
+bool Game :: useMirror(Object* n) {
+    if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-1")) {
+        string text = "An accident.Could not stop it.\n They will never understand(not readable)\nThe answer exists in pieces.\nBeginning holds(water damage)\n Workers space holds(torn edge)\n Records in the dark will(ink faded)\n Someone might remember(blurred section)\n Dont destroy what you dont(rest torn away)";
+        bathroomNote->setNoteText(text);
+        cout << "You are using mirror to reflect the text in the note....\n Now you can read it" << endl;
+        return true;
+    }
+    else if (currentRoom->getName() == "Bathroom") {
+        cout << endl << "There is no mirror here" << endl;
+        return false;
+    }
+    else {
+        cout << endl << "What are you doing?" << endl;
+        return false;
+    }
+}
 
 
 void Game::process()
@@ -822,6 +851,28 @@ void Game::process()
             else if (noun.empty()) {
                 cout << "Look at what?\n";
             }
+
+            /* 
+            ================================
+             FOR MIRROR IN THE BATHROOM ROOM
+            ================================
+            */
+
+            else if (noun == "mirror") {
+                if (currentRoom->getName() == "Bathroom") {
+                    cout << "You are looking at yourself......\n You look tired.......\n You need to take a rest.......\n" << endl;
+                    if (!inventory.gotObject("note-1")) {
+                        cout << "But you are noticing a piece of paper in the right corner of the mirror" << endl;
+                        currentRoom->addObject(bathroomNote);
+                    }
+                }
+                else {
+                    cout << "There is no mirror here" << endl;
+                }
+            }
+
+
+
             /*
             If none of the special 'look' cases matched (like book or stall),
             this block handles generic "look <object>" commands.
@@ -858,13 +909,16 @@ void Game::process()
             }
 
             {
+                //=====================================================================================================================
+                if (noun == "paper") {
+                    noun = "note-1";
+                }
                 Object* obj = currentRoom->getObject(noun);
 
                 // Take control panel doesnt show the right output so i have m
                 if (!obj) {
                     if (noun == "control" || noun == "panel")
                         obj = currentRoom->getObject("control panel");
-
                 }
                 if (!obj) {
                     cout << "There is no " << noun << " here.\n";
@@ -881,10 +935,17 @@ void Game::process()
                 cout << "You picked up the " << noun << ".\n";
 
 
+                /*========================================================================================
+                =======================================================================================
+                ======================================================================================*/
+
                 // Increase the counter if the object is the lore note
                 if (!obj->getNoteText().empty()) {
                     noteCounter++;
                 }
+
+                //ONLY TO CHECK IF THE COUNTER IS WORKING. WILL BE DELETED AFTER FINISHING
+                cout << endl << noteCounter << endl << endl;
             }
             break;
 
@@ -992,6 +1053,32 @@ void Game::process()
                 pressButton(button);
                 break;
             }
+            //============================USE MIRROR TO REFLECT THE TEXT IN THE NOTE=============================================
+            bool nounIsNote = (noun == "note" || noun == "note-1");
+            bool nounIsMirror = (noun == "mirror");
+
+            bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-1");
+            bool wtuIsMirror = (whatToUseOn == "mirror");
+
+            // Allow exactly two combinations:
+            // use note mirror
+            // use mirror note
+            bool validCombo = (nounIsNote && wtuIsMirror) || (nounIsMirror && wtuIsNote);
+
+            if (validCombo) {
+                // Now check room and inventory
+                if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-1")) {
+                    useMirror(bathroomNote);
+                }
+                else if (currentRoom->getName() != "Bathroom") {
+                    cout << "There is no mirror here" << endl;
+                }
+                else {
+                    cout << "You don't have the note." << endl;
+                }
+                break;
+            }
+
 
             // Fallback for other items that arent applicable in use case scenario(e.g, door)
             cout << "You can't use that right now.\n";
@@ -1175,10 +1262,32 @@ void Game::process()
             break;
         }
 
-        case Actions::UNHIDE: // unhide anywhere
+        case Actions::UNHIDE: { // unhide anywhere
             unhide();
             break;
-
+        }
+        case Actions::READ: {
+            if (noun.empty()) {
+                cout << "Read what?\n";
+                break;
+            }
+            //===============================================================================================================================
+            if (noun == "note-1") {
+                if (bathroomNote->getNoteText() == "" && inventory.gotObject("note-1")) {
+                    cout << endl << "It seems like the text is reversed....\n I cannot read that" << endl;
+                    break;
+                }
+                else {
+                    cout << bathroomNote->getNoteText() << endl;
+                    break;
+                }
+                cout << "it did not go to any if statement" << endl;
+            }
+            else {
+                cout << "you do not have this to read" << endl;
+                break;
+            }
+        }
         default:
             cout << "You can not do that right now.\n";
             break;
@@ -1190,3 +1299,4 @@ void Game::process()
 
 
 
+////////////////////////////////

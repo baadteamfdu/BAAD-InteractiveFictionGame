@@ -46,7 +46,6 @@ private:
     Object* darkNote;
     Object* alienNote;
 
-
 public:
 
     void init();
@@ -71,5 +70,7 @@ public:
 	void setIsHidden(bool hidden); // setter for playerIsHidden
 
     bool getIsHidden(); // getter for playerIsHidden
+
+    bool useMirror(Object* n); // to reveal the first note in the bathroom
 
 };
