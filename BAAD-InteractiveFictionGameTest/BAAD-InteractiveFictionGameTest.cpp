@@ -222,9 +222,18 @@ namespace BAADInteractiveFictionGameTest
 			Assert::IsTrue(flash->getIsWorking(), L"The Flashlight should be on"); //verify flashlight now works
 		}
 
+		TEST_METHOD(PasscodeDoorWorks) {
+			Game game;
+			Room* passcodeRoom = new Room("test", "test", "test");
+			game.setCurrentRoom(passcodeRoom);
+			Object* passcodeDoor = new Object("passcode door", "test", false, true);
+			passcodeDoor->setIsPasscodeLocked(true);
+			Assert::IsTrue(passcodeDoor->getIsPasscodeLocked(), L"Passcode door should require passcode");
+			passcodeDoor->setPasscode(1234);
+			game.typeCode(1234);
+			Assert::IsTrue(passcodeDoor->getIsPasscodeLocked(), L"Player has not found both halves of a code"); //I would test unlocking but I cannot access the member for the foundcode1 and foundcode2
 
-		//player hide from alien test case? Like in a safe zone?
-		//passcode door case?
+		}
 		TEST_METHOD(PlayerCanHide) { //precondition player not hiding but in a room with a object they could hide in, post is player is hiding and can unhide, and then test alien leaves if player is hidden
 			Game game;
 			Object* locker = new Object("locker", "test", false, false, true); //create a safe zone that the player can hide in
