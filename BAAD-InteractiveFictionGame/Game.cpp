@@ -248,10 +248,11 @@ void Game::init() {
     /*
     * giving the values for the NOTES FOR THE LORE.
     */
-    darkNote = new Object("dark note", "Note that was found in the Dark Room", true, false);
-    bathroomNote = new Object("note-1", "Note that was found in the Bathroom", true, false);
-    dockNote = new Object("dock note", "Note that was found in the Dock", true, false);
-    alienNote = new Object("alien note", "Note that felt from the Alien", true, false);
+    darkNote = new Object("note-3", "Note that was found in the Dark Room", true, false);
+    bathroomNote = new Object("note-2", "Note that was found in the Bathroom", true, false);
+    storageNote = new Object("note-1", "Note that was found in the Dock", true, false);
+    storageNote->setNoteText(storageText);
+    alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
 
     }
 
@@ -518,7 +519,9 @@ void Game::useScrewdriver(Object* obj)
         }
         obj->setIsLocked(false);
         obj->setIsSafeZone(true);
-        cout << "You unscrew the vent cover quietly. You could probably hide inside now.\n";
+        cout << "As you quietly unscrew the vent cover, a small piece of paper slips out and falls to the floor.\n You could probably hide inside now.\n";
+        //ADD NOTE TO THE Room
+        currentRoom->addObject(storageNote);
         return;
     }
     if (name == "control panel") {
@@ -738,9 +741,8 @@ bool Game::combine(Object* batt, Object* flash) {
 UseMirror FUNCTION TO REVEAL THE TEXT IN THE NOTE FROM THE BATHROOM 
 ===================================================================*/
 bool Game :: useMirror(Object* n) {
-    if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-1")) {
-        string text = "An accident.Could not stop it.\n They will never understand(not readable)\nThe answer exists in pieces.\nBeginning holds(water damage)\n Workers space holds(torn edge)\n Records in the dark will(ink faded)\n Someone might remember(blurred section)\n Dont destroy what you dont(rest torn away)";
-        bathroomNote->setNoteText(text);
+    if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-2")) {
+        bathroomNote->setNoteText(mirrorText);
         cout << "You are using mirror to reflect the text in the note....\n Now you can read it" << endl;
         return true;
     }
@@ -751,6 +753,25 @@ bool Game :: useMirror(Object* n) {
     else {
         cout << endl << "What are you doing?" << endl;
         return false;
+    }
+}
+
+/*
+*  IF STATEMENTS SO THE USER IS ABLE TO TAKE NOTES WITHOUT SPECIFYING THE NUMBER OF THE NOTE
+*/
+
+string Game :: takeNoteRoom(string noun) {
+    if (currentRoom->getId() == "bathroom")
+        return noun = "note-2";
+    else if (currentRoom->getId() == "storageArea")
+        return noun = "note-1";
+    else if (currentRoom->getId() == "darkRoom")
+        return noun = "note-3";
+    else if (currentRoom->getObject("note-5") == alienNote)
+        return noun = "note-5";
+    else {
+        cout << "There is no paper" << endl;
+        return noun = "";
     }
 }
 
@@ -911,7 +932,7 @@ void Game::process()
             {
                 //=====================================================================================================================
                 if (noun == "paper") {
-                    noun = "note-1";
+                    noun = takeNoteRoom(noun);
                 }
                 Object* obj = currentRoom->getObject(noun);
 
@@ -1054,20 +1075,20 @@ void Game::process()
                 break;
             }
             //============================USE MIRROR TO REFLECT THE TEXT IN THE NOTE=============================================
-            bool nounIsNote = (noun == "note" || noun == "note-1");
+            bool nounIsNote = (noun == "note" || noun == "note-2" || noun == "paper");
             bool nounIsMirror = (noun == "mirror");
 
-            bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-1");
+            bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-2" || noun == "paper");
             bool wtuIsMirror = (whatToUseOn == "mirror");
 
-            // Allow exactly two combinations:
+            // Allow two combinations:
             // use note mirror
             // use mirror note
             bool validCombo = (nounIsNote && wtuIsMirror) || (nounIsMirror && wtuIsNote);
 
             if (validCombo) {
                 // Now check room and inventory
-                if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-1")) {
+                if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-2")) {
                     useMirror(bathroomNote);
                 }
                 else if (currentRoom->getName() != "Bathroom") {
@@ -1272,8 +1293,8 @@ void Game::process()
                 break;
             }
             //===============================================================================================================================
-            if (noun == "note-1") {
-                if (bathroomNote->getNoteText() == "" && inventory.gotObject("note-1")) {
+            if (noun == "note-2") {
+                if (bathroomNote->getNoteText() == "" && inventory.gotObject("note-2")) {
                     cout << endl << "It seems like the text is reversed....\n I cannot read that" << endl;
                     break;
                 }
@@ -1282,6 +1303,9 @@ void Game::process()
                     break;
                 }
                 cout << "it did not go to any if statement" << endl;
+            }
+            else if (noun == "note-1" && inventory.gotObject("note-1")) {
+                cout << storageNote->getNoteText() << endl;
             }
             else {
                 cout << "you do not have this to read" << endl;

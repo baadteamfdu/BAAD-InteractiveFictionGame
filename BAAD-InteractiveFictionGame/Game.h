@@ -11,6 +11,11 @@ using namespace std;
 
 class Game {
 private:
+    // NOTE TEXTS
+    string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case.\nIf someone finds this, (*something unreadable*).\nNot everything is as it seems.\nG.S.";
+    string mirrorText = "An accident.Could not stop it.\n They will never understand(not readable)\nThe answer exists in pieces.\nBeginning holds(water damage)\n Workers space holds(torn edge)\n Records in the dark will(ink faded)\n Someone might remember(blurred section)\n Dont destroy what you dont(rest torn away)";
+
+
     Room* currentRoom = nullptr;
     Parser parser;
     Inventory inventory;
@@ -42,7 +47,7 @@ private:
 
     int noteCounter = 0;
     Object* bathroomNote;
-    Object* dockNote;
+    Object* storageNote;
     Object* darkNote;
     Object* alienNote;
 
@@ -72,5 +77,7 @@ public:
     bool getIsHidden(); // getter for playerIsHidden
 
     bool useMirror(Object* n); // to reveal the first note in the bathroom
+
+    string takeNoteRoom(string noun);
 
 };
