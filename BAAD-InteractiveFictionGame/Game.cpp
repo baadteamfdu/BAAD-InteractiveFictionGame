@@ -10,6 +10,8 @@
 
 using namespace std;
 
+int noteCounter = 0;
+
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
@@ -255,6 +257,7 @@ void Game::init() {
     storageNote = new Object("note-1", "Note that was found in the Dock", true, false);
     storageNote->setNoteText(storageText);
     alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
+    alienNote->setNoteText(alienText);
 
     // JUST ADD FOR NOW MAYBE I WILL COME UP WITH BETTER IDEA TO HIDE IT IN THE FUTURE, HOWEVER I ASSUME THAT THE USING OF FLASHLIGHT IS GOOD ENOUGH
     //darkRoom->addObject(darkNote); 
@@ -689,6 +692,9 @@ void Game::hide(string noun) {
     if (hideSpot && hideSpot->getIsSafeZone()) {
         playerIsHidden = true;
         cout << "You hide inside the " << noun << ". Stay quiet...\n";
+        if (noteCounter == 4) {
+            currentRoom->addObject(alienNote);
+        }
     }
     else {
         cout << "You can not hide there.\n";
@@ -1415,6 +1421,10 @@ void Game::process()
             }
             else if (noun == "note-1" && inventory.gotObject("note-1")) {
                 cout << storageNote->getNoteText() << endl;
+                break;
+            }
+            else if (noun == "note-5" && inventory.gotObject("note-5")) {
+                cout << alienNote->getNoteText() << endl;
                 break;
             }
             else if (noun == "note-3" && inventory.gotObject("note-3")) {

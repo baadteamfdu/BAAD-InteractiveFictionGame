@@ -1,8 +1,8 @@
 #include <iostream>
 #include "Alien.h"
+#include "Game.h"
 
 using namespace std;
-
 
 
 Alien::Alien() {
@@ -52,6 +52,10 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden) {
 			chaseCounter++;
 			if (alienCurrentRoom == playerCurrentRoom && isHidden && chaseCounter < chaseThreshold) { //same room and hid in time
 				cout << "The alien enters the room, looks around.... then leaves" << endl;
+				if (noteCounter == 4) {
+					cout << "As it limps toward the exit, something slips from its grasp.\n";
+					cout << "A small, crumpled piece of paper falls to the floor.\n";
+				}
 				leave(); //if alien and player in same room but player is hidden, alien leaves
 				return;
 			}

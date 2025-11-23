@@ -9,11 +9,38 @@
 #include <string>
 using namespace std;
 
+extern int noteCounter; //Global variable so it is possible to access it in the alien.h
+
 class Game {
 private:
     // NOTE TEXTS
-    string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case.\nIf someone finds this, (*something unreadable*).\nNot everything is as it seems.\nG.S.";
-    string mirrorText = "An accident.Could not stop it.\n They will never understand(not readable)\nThe answer exists in pieces.\nBeginning holds(water damage)\n Workers space holds(torn edge)\n Records in the dark will(ink faded)\n Someone might remember(blurred section)\n Dont destroy what you dont(rest torn away)";
+    string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist"
+        "\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case."
+        "\nIf someone finds this, (*something unreadable*)."
+        "\nNot everything is as it seems.\nG.S.";
+
+    string mirrorText = "An accident.Could not stop it."
+        "\n They will never understand(not readable)"
+        "\nThe answer exists in pieces."
+        "\nBeginning holds(water damage)"
+        "\n Workers space holds(torn edge)"
+        "\n Records in the dark will(ink faded)"
+        "\n Someone might remember(blurred section)"
+        "\n Dont destroy what you dont(rest torn away)";
+    
+    string alienText =
+        "[Barely legible, torn and bloodstained paper]\n"
+        "\nstill... me...\n"
+        "name... Gojo (smudged)\n"
+        "\ncannot... fight it... much longer\n"
+        "hurts... so much...\n"
+        "\n(*large section destroyed by claw marks*)\n"
+        "\n you found... notes?\n"
+        "YOU KNOW... what I (torn)\n"
+        "\nplease... donot run...\n"
+        "still... human... inside...\n"
+        "\nG.S.\n";
+
     string darkText;
 
     int flashlightCounter = 0;
@@ -47,7 +74,6 @@ private:
     ==================================
     */
 
-    int noteCounter = 0;
     Object* bathroomNote;
     Object* storageNote;
     Object* darkNote;
@@ -87,4 +113,5 @@ public:
     string takeNoteRoom(string noun); 
 
     void lightRevealing();
+
 };
