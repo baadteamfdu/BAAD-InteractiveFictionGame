@@ -14,7 +14,9 @@ private:
     // NOTE TEXTS
     string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case.\nIf someone finds this, (*something unreadable*).\nNot everything is as it seems.\nG.S.";
     string mirrorText = "An accident.Could not stop it.\n They will never understand(not readable)\nThe answer exists in pieces.\nBeginning holds(water damage)\n Workers space holds(torn edge)\n Records in the dark will(ink faded)\n Someone might remember(blurred section)\n Dont destroy what you dont(rest torn away)";
+    string darkText;
 
+    int flashlightCounter = 0;
 
     Room* currentRoom = nullptr;
     Parser parser;
@@ -78,6 +80,11 @@ public:
 
     bool useMirror(Object* n); // to reveal the first note in the bathroom
 
-    string takeNoteRoom(string noun);
 
+    /*
+        Function to return exact note depending on the location of the player so user is able to write just take paper to take each note    
+    */
+    string takeNoteRoom(string noun); 
+
+    void lightRevealing();
 };

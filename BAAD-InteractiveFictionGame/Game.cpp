@@ -87,7 +87,7 @@ void Game::init() {
     Room* darkRoom = new Room(
         "darkRoom",
         "Dark Room",
-        "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
+        "The room is dark and quiet\ You cannot see anything"
     );
 
     setCurrentRoom(cryoStart);
@@ -155,9 +155,11 @@ void Game::init() {
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
-    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, true);
-    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, true);
-    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, true);
+
+    // OMGGGGG I WILL SET THEM FALSE WHILE I AM MAKING STORY
+    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, false);
+    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, false);
+    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, false);
 
     // Adding doors to rooms
 
@@ -253,6 +255,9 @@ void Game::init() {
     storageNote = new Object("note-1", "Note that was found in the Dock", true, false);
     storageNote->setNoteText(storageText);
     alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
+
+    // JUST ADD FOR NOW MAYBE I WILL COME UP WITH BETTER IDEA TO HIDE IT IN THE FUTURE, HOWEVER I ASSUME THAT THE USING OF FLASHLIGHT IS GOOD ENOUGH
+    //darkRoom->addObject(darkNote); 
 
     }
 
@@ -737,6 +742,12 @@ bool Game::combine(Object* batt, Object* flash) {
     return true;
 }
 
+/*======================================================================================================================================
+* ======================================================================================================================================
+* FUNCTIONS FOR NOTES 
+* ========================================================================================================================================
+==========================================================================================================================================*/
+
 /*================================================================= 
 UseMirror FUNCTION TO REVEAL THE TEXT IN THE NOTE FROM THE BATHROOM 
 ===================================================================*/
@@ -774,6 +785,60 @@ string Game :: takeNoteRoom(string noun) {
         return noun = "";
     }
 }
+
+void Game::lightRevealing() {
+    switch (flashlightCounter) {
+    case 0:
+        cout << "You shine the flashlight on the note.\n"
+            << "Something faint flickers... too blurry to read.\n";
+        darkText =
+            "INCIDENT REPORT - SUBJECT: (not readable)";
+        darkNote->setNoteText(darkText);
+        break;
+
+    case 1:
+        cout << "You shine again. More of the writing appears.\n";
+        darkText =
+            "INCIDENT REPORT - SUBJECT: (*heavily redacted*)\n"
+            "Date: 3 days prior...\n"
+            "Exposure to experimental (*not readable*)...";
+        darkNote->setNoteText(darkText);
+        break;
+
+    case 2:
+        cout << "You focus the flashlight one last time.\nThe full message reveals itself.\n";
+        darkText =
+            "INCIDENT REPORT - SUBJECT: (*heavily redacted*)\n"
+            "Date: 3 days prior to current date\n"
+            "Location: Research Lab (Dark Room)\n"
+            "\n"
+            "Exposure to experimental compound - molecular changes detected.\n"
+            "Subject volatile. Memory degradation observed.\n"
+            "\n"
+            "Possible reversal protocol exists but untested.\n"
+            "Required components located in:\n"
+            "\n"
+            "CryoStart medical (*smudged*)\n"
+            "Worker's Room secured (*not readable*)\n"
+            "\n"
+            "Transformation may be reversible if original (torn) recovered.\n"
+            "Subject dangerous but showed moments of clarity.\n"
+            "\n"
+            "Do not terminate on sight.\n"
+            "\n"
+            "Dr. Marcus Webb, Medical Officer";
+        darkNote->setNoteText(darkText);
+        break;
+
+    default:
+        cout << "You already revealed all the text.\n";
+        return;
+    }
+
+    flashlightCounter++;
+}
+
+
 
 
 void Game::process()
@@ -819,6 +884,9 @@ void Game::process()
                 if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking() == false) {
                     cout << "It is too dark to see anything. Maybe you need a working flashlight.\n";
                     break; // stop further look processing
+                }
+                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking()) {
+                    currentRoom->setDescription("The room is dark and quiet, with only a faint light seeping through a crack in the door.\nScattered across the floor, a mess of papers lies in disordered piles, as if someone left in a hurry.\n");
                 }
                 if (currentRoom) {
                     cout << currentRoom->getDescription() << endl;
@@ -889,6 +957,20 @@ void Game::process()
                 }
                 else {
                     cout << "There is no mirror here" << endl;
+                }
+            }
+
+            else if (noun == "papers" || noun == "paper") {
+                cout << "you are enterin look papers";
+                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking()) {
+                    cout << "You kneel down and start sorting through the scattered papers.\nMost of them are stained, half-torn documents covered in chaotic handwriting you cannot make sense of.\nBut one note stands out from the rest, it looks more intact, empty, but in perfect condition." << endl;
+                    currentRoom->addObject(darkNote);
+                }
+                else if (currentRoom->getId() == "darkRoom" && !flashlight->getIsWorking()) {
+                    cout << "It is too dark, you can not see what is in there" << endl;
+                }
+                else {
+                    cout << "There is no papers here" << endl;
                 }
             }
 
@@ -1074,11 +1156,38 @@ void Game::process()
                 pressButton(button);
                 break;
             }
+
+            //=======================================================USAGE FLASHLIGHT ON THE NOTE=====================================
+            if ((noun == "flashlight" || noun == "note" || noun == "note-3" || noun == "paper") && inventory.gotObject("flashlight") && inventory.gotObject("note-3"))
+            {
+                if (!inventory.gotObject("flashlight")) {
+                    cout << "You do not have a flashlight.\n";
+                    break;
+                }
+                if (!inventory.gotObject("note-3")) {
+                    cout << "You do not have the note.\n";
+                    break;
+                }
+                bool nounIsFlash = (noun == "flashlight");
+                bool nounIsNote = (noun == "note" || noun == "note-3" || noun == "paper");
+
+                bool wtuIsFlash = (whatToUseOn == "flashlight");
+                bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-3" || whatToUseOn == "paper");
+
+                bool validCombo = (nounIsFlash && wtuIsNote) || (nounIsNote && wtuIsFlash);
+
+                if (validCombo)
+                {
+                    lightRevealing();
+                    break;
+                }
+            }
+
             //============================USE MIRROR TO REFLECT THE TEXT IN THE NOTE=============================================
             bool nounIsNote = (noun == "note" || noun == "note-2" || noun == "paper");
             bool nounIsMirror = (noun == "mirror");
 
-            bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-2" || noun == "paper");
+            bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-2" || whatToUseOn == "paper");
             bool wtuIsMirror = (whatToUseOn == "mirror");
 
             // Allow two combinations:
@@ -1306,6 +1415,17 @@ void Game::process()
             }
             else if (noun == "note-1" && inventory.gotObject("note-1")) {
                 cout << storageNote->getNoteText() << endl;
+                break;
+            }
+            else if (noun == "note-3" && inventory.gotObject("note-3")) {
+                if (flashlightCounter == 0) {
+                    cout << "Note is empty" << endl;
+                    break;
+                }
+                else {
+                    cout << darkNote->getNoteText() << endl;
+                    break;
+                }
             }
             else {
                 cout << "you do not have this to read" << endl;
