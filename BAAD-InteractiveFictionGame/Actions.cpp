@@ -47,5 +47,8 @@ Actions stringToAction(string action) { //maybe
 	if (action == "run") {
 		return Actions::RUN;
 	}
+	if (action == "read") {
+		return Actions::READ;
+	}
 	return Actions::INVALID; //not yet sure if I need this
 }

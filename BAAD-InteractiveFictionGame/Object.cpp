@@ -22,6 +22,7 @@ Object::Object(string name, string description, bool takeable, bool isLocked, bo
 //getters	
 string Object::getName() { return name; }
 string Object::getDescription() { return description; }
+string Object::getNoteText() { return noteText; }
 bool Object::isTakeable() { return takeable; }
 bool Object::getIsLocked() { return isLocked; }
 bool Object::getIsPasscodeLocked() { return isPasscodeLocked; }
@@ -38,3 +39,4 @@ void Object::setIsOpen(bool open) { isOpen = open; }
 void Object::setIsSafeZone(bool safe) { isSafeZone = safe; } // setter for safe zone
 void Object::setWorking(bool working) { isWorking = working;} //setter for the Flashlight
 void Object::setDescription(string des) { description = des; } //to change description fo the objects when the state is changed
+void Object::setNoteText(string txt) { noteText = txt; }

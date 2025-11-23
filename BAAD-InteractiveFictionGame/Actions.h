@@ -18,7 +18,8 @@ enum Actions
 	HIDE,
 	UNHIDE,
 	RUN,
-	PRESS
+	PRESS,
+	READ
 };
 
 Actions stringToAction(string action);

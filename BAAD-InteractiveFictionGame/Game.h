@@ -32,6 +32,21 @@ private:
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
 
+
+    /* VARIABLES FOR NOTES 
+    
+    counter to check how many notes have been collected, and notes itself so
+    it is possible to manipulate them in the gameProcess()
+    ==================================
+    */
+
+    int noteCounter = 0;
+    Object* bathroomNote;
+    Object* dockNote;
+    Object* darkNote;
+    Object* alienNote;
+
+
 public:
 
     void init();

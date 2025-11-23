@@ -860,7 +860,6 @@ void Game::process()
             {
                 Object* obj = currentRoom->getObject(noun);
 
-
                 // Take control panel doesnt show the right output so i have m
                 if (!obj) {
                     if (noun == "control" || noun == "panel")
@@ -880,6 +879,12 @@ void Game::process()
                 inventory.addObject(obj); // add to inventory, remove from room, tell player
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
+
+
+                // Increase the counter if the object is the lore note
+                if (!obj->getNoteText().empty()) {
+                    noteCounter++;
+                }
             }
             break;
 
