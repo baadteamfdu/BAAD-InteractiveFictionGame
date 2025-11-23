@@ -225,10 +225,11 @@ namespace BAADInteractiveFictionGameTest
 
 		//player hide from alien test case? Like in a safe zone?
 		//passcode door case?
-		TEST_METHOD(PlayerCanHide) { //precondition player not hiding but in a room with a object they could hide in, post is player is hiding and can unhide
+		TEST_METHOD(PlayerCanHide) { //precondition player not hiding but in a room with a object they could hide in, post is player is hiding and can unhide, and then test alien leaves if player is hidden
 			Game game;
 			Object* locker = new Object("locker", "test", false, false, true); //create a safe zone that the player can hide in
 			Room* testRoom = new Room("testRoom", "testRoom", "testRoom");
+			Room* testRoom2 = new Room("testRoom", "testRoom", "testRoom");
 			testRoom->addObject(locker); //add object to the room because you cannot hide when not in a room
 			game.setCurrentRoom(testRoom);
 			Assert::IsTrue(locker->getIsSafeZone(), L"Locker should be a safe place to hide"); //check it is safe
@@ -237,6 +238,16 @@ namespace BAADInteractiveFictionGameTest
 			Assert::IsTrue(game.getIsHidden(), L"Player should be hidden"); //check player now is hiding in it
 			game.unhide();
 			Assert::IsFalse(game.getIsHidden(), L"Player should not be hidden");//check player isn't hiding in anymore
+			Alien alien; //add the alien
+			alien.addRoom(testRoom);
+			alien.addRoom(testRoom2);
+			alien.setActive(true); //add rooms and set active
+			game.hide("locker");
+			alien.setCurrentRoom(testRoom); //put in room while player hidden
+			alien.increaseTurnCounter(game.getCurrentRoom(), game.getIsHidden()); //since hiding it should leave
+			Assert::IsFalse(alien.getSawPlayer(), L"Player is hiding, Alien should not see them");
+			Assert::IsFalse((alien.getCurrentRoom() == testRoom), L"Alien should not be in the testRoom, as it should have gone out since the player hid");
+		
 		}
 
 		TEST_METHOD(AddObjectsToInventory) {
