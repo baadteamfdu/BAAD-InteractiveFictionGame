@@ -256,7 +256,27 @@ namespace BAADInteractiveFictionGameTest
 			alien.increaseTurnCounter(game.getCurrentRoom(), game.getIsHidden()); //since hiding it should leave
 			Assert::IsFalse(alien.getSawPlayer(), L"Player is hiding, Alien should not see them");
 			Assert::IsFalse((alien.getCurrentRoom() == testRoom), L"Alien should not be in the testRoom, as it should have gone out since the player hid");
-		
+		}
+
+		TEST_METHOD(PlayerCanPeek) { //precondition is two rooms exist connected by door and player in one room, then they peek, post is if alien in the connected room, return true, otherwise false
+			Game game;
+			Room* testRoom = new Room("testRoom", "testRoom", "testRoom"); //setup two rooms and connect
+			Room* testRoom2 = new Room("testRoom", "testRoom", "testRoom");
+			Object* testDoor = new Object("testdoor", "testdoor", false, false);
+			testRoom->setNeighbour("testdoor", testRoom2);
+			testRoom2->setNeighbour("testdoor", testRoom);
+			game.setCurrentRoom(testRoom);
+			Assert::IsTrue(testRoom->getNeighbour("testdoor") == testRoom2, L"Should have testRoom2 neighbor"); //testing precondition that rooms are connected
+			Assert::IsTrue(testRoom2->getNeighbour("testdoor") == testRoom, L"Should have testRoom neighbor");
+			Alien alien; //add the alien and rooms
+			alien.addRoom(testRoom);
+			alien.addRoom(testRoom2);
+			Room* nextRoom1 = game.getCurrentRoom()->getNeighbour("testdoor"); // get the neighbouring room through the door
+			Assert::IsFalse(alien.isAlienInRoom(nextRoom1), L"Alien should not be in the next room");
+			alien.setCurrentRoom(testRoom2); //set the alien to actually be in the next room
+			Room* nextRoom2 = game.getCurrentRoom()->getNeighbour("testdoor"); // get the neighbouring room through the door
+			Assert::IsTrue(alien.isAlienInRoom(nextRoom2), L"Alien should be in the next room now");  //copied logic since peek doesn't return anything
+
 		}
 
 		TEST_METHOD(AddObjectsToInventory) {
