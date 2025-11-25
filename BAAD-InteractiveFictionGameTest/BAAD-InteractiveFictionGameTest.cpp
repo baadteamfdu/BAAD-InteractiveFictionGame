@@ -171,6 +171,114 @@ namespace BAADInteractiveFictionGameTest
 			// 2nd object ...., maybe some more default testing
 		}
 
+
+		TEST_METHOD(RemoveObjectsFromInventory){
+			// create two different objects, to delete 1 from inventory
+			
+			Object* test1 = new Object("test1", "test1", true, false);
+			Object* test2 = new Object("test2", "test2", true, false);
+			Inventory inventory;
+			inventory.addObject(test1);
+			inventory.addObject(test2);
+			inventory.deleteObject(test1);
+			Assert::IsFalse(inventory.gotObject("test1"), L"The object shouldn't be in the inventory");
+			Assert::IsTrue(inventory.gotObject("test2"), L"The object should be in the inventory");
+
+		}
+
+		TEST_METHOD(FlashlightWorkingTest) { //precondition, flashlight is in inventory and turned off, post condition, it is now on
+			Object* flashlight = new Object("flashlight", "test", true, false);
+			Inventory inventory;
+			inventory.addObject(flashlight);//add to inventory start off.
+			flashlight->setWorking(false);
+			Assert::IsFalse(flashlight->getIsWorking(), L"The flashlight should be off");
+			flashlight->setWorking(true); //set on to verify this works
+			Assert::IsTrue(flashlight->getIsWorking(), L"The flashlight should be on");
+		}
+
+		TEST_METHOD(CombineFlashlightAndBatteryToGetWorking) { //combines both by mimicing the combine logic from the game class, precondition is have both batteries and flashlight in inventory, post is the batteries are removed and the flashlight is turned on 
+			Inventory inventory;
+			//had to duplicate the combine code, because the game has its own private inventory.
+
+			Object* batt = new Object("batteries", "test", true, false);
+			Object* flash = new Object("flashlight", "test", true, false);
+			inventory.addObject(flash);
+			inventory.addObject(batt);
+			flash->setWorking(false);			
+			if (flash->getIsWorking()) { //test flashlight wasn't already working
+				Assert::Fail(L"You already have a working flashlight.");
+			}
+			bool hasBatt = inventory.gotObject(batt->getName());
+			bool hasFlash = inventory.gotObject(flash->getName());
+			if (!hasBatt && !hasFlash) { //test both in inventory
+				Assert::Fail(L"You do not have the flashlight and the batteries");
+			}
+			// Combine them
+			inventory.deleteObject(batt);        // remove the batteries
+			flash->setWorking(true);             // mark flashlight as working
+			flash->setDescription("Working flashlight");
+			Logger::WriteMessage(L"You combined the batteries with the flashlight");		//log they were combined	
+			Assert::IsFalse(inventory.gotObject("batteries"), L"The batteries shouldn't be in the player's inventory"); //verify batteries removed
+			Assert::IsTrue(flash->getIsWorking(), L"The Flashlight should be on"); //verify flashlight now works
+		}
+
+		TEST_METHOD(PasscodeDoorWorks) {
+			Game game;
+			Room* passcodeRoom = new Room("test", "test", "test");
+			game.setCurrentRoom(passcodeRoom);
+			Object* passcodeDoor = new Object("passcode door", "test", false, true);
+			passcodeDoor->setIsPasscodeLocked(true);
+			Assert::IsTrue(passcodeDoor->getIsPasscodeLocked(), L"Passcode door should require passcode");
+			passcodeDoor->setPasscode(1234);
+			game.typeCode(1234);
+			Assert::IsTrue(passcodeDoor->getIsPasscodeLocked(), L"Player has not found both halves of a code"); //I would test unlocking but I cannot access the member for the foundcode1 and foundcode2
+
+		}
+		TEST_METHOD(PlayerCanHide) { //precondition player not hiding but in a room with a object they could hide in, post is player is hiding and can unhide, and then test alien leaves if player is hidden
+			Game game;
+			Object* locker = new Object("locker", "test", false, false, true); //create a safe zone that the player can hide in
+			Room* testRoom = new Room("testRoom", "testRoom", "testRoom");
+			Room* testRoom2 = new Room("testRoom", "testRoom", "testRoom");
+			testRoom->addObject(locker); //add object to the room because you cannot hide when not in a room
+			game.setCurrentRoom(testRoom);
+			Assert::IsTrue(locker->getIsSafeZone(), L"Locker should be a safe place to hide"); //check it is safe
+			Assert::IsFalse(game.getIsHidden(), L"Player should not be hidden");//check player isn't hiding in it
+			game.hide("locker");
+			Assert::IsTrue(game.getIsHidden(), L"Player should be hidden"); //check player now is hiding in it
+			game.unhide();
+			Assert::IsFalse(game.getIsHidden(), L"Player should not be hidden");//check player isn't hiding in anymore
+			Alien alien; //add the alien
+			alien.addRoom(testRoom);
+			alien.addRoom(testRoom2);
+			alien.setActive(true); //add rooms and set active
+			game.hide("locker");
+			alien.setCurrentRoom(testRoom); //put in room while player hidden
+			alien.increaseTurnCounter(game.getCurrentRoom(), game.getIsHidden()); //since hiding it should leave
+			Assert::IsFalse(alien.getSawPlayer(), L"Player is hiding, Alien should not see them");
+			Assert::IsFalse((alien.getCurrentRoom() == testRoom), L"Alien should not be in the testRoom, as it should have gone out since the player hid");
+		}
+
+		TEST_METHOD(PlayerCanPeek) { //precondition is two rooms exist connected by door and player in one room, then they peek, post is if alien in the connected room, return true, otherwise false
+			Game game;
+			Room* testRoom = new Room("testRoom", "testRoom", "testRoom"); //setup two rooms and connect
+			Room* testRoom2 = new Room("testRoom", "testRoom", "testRoom");
+			Object* testDoor = new Object("testdoor", "testdoor", false, false);
+			testRoom->setNeighbour("testdoor", testRoom2);
+			testRoom2->setNeighbour("testdoor", testRoom);
+			game.setCurrentRoom(testRoom);
+			Assert::IsTrue(testRoom->getNeighbour("testdoor") == testRoom2, L"Should have testRoom2 neighbor"); //testing precondition that rooms are connected
+			Assert::IsTrue(testRoom2->getNeighbour("testdoor") == testRoom, L"Should have testRoom neighbor");
+			Alien alien; //add the alien and rooms
+			alien.addRoom(testRoom);
+			alien.addRoom(testRoom2);
+			Room* nextRoom1 = game.getCurrentRoom()->getNeighbour("testdoor"); // get the neighbouring room through the door
+			Assert::IsFalse(alien.isAlienInRoom(nextRoom1), L"Alien should not be in the next room");
+			alien.setCurrentRoom(testRoom2); //set the alien to actually be in the next room
+			Room* nextRoom2 = game.getCurrentRoom()->getNeighbour("testdoor"); // get the neighbouring room through the door
+			Assert::IsTrue(alien.isAlienInRoom(nextRoom2), L"Alien should be in the next room now");  //copied logic since peek doesn't return anything
+
+		}
+
 		TEST_METHOD(AddObjectsToInventory) {
 			std::string messageOutput;
 			string randomName = "Random";
