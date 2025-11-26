@@ -23,8 +23,11 @@ private:
     vector<Room*> allRooms;             //this vector stores all rooms for the map
     vector<Object*> allDoors;           //this vector stores all the doors for the map
 
+    //this destroys the world and resets
     void destroyWorld();
+    //generates a new passcode so that the game isn't predictable to beat
     void generatePasscode();
+    //makes sure that you get asked a menu when player dies
     void handlePlayerDeath();
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
