@@ -38,6 +38,6 @@ public:
     // Helper: can the captain still save the player once
     bool canProtectPlayer();
 
-    // Reset (which is not needed just doing it anyway.
+    // Reset (which is not needed just doing it anyway).
     void reset();
 };
