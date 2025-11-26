@@ -80,7 +80,10 @@ void Room::removeAllObjects()
 {
     for (Object* obj : roomObjects)
     {
-        delete obj;
+        if (obj->isTakeable() || obj->getName() == "vent" || obj->getName() == "locker" || obj->getName() == "stall")
+        {
+            delete obj;
+        }
     }
 
     roomObjects.clear();

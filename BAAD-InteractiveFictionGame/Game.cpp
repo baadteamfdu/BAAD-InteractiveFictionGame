@@ -284,29 +284,75 @@ void Game::quitGame()
     cout << "Game over!" << endl;
     exit(0);
 }
+void Game::handlePlayerDeath()
+{
+    cout << "\nThe alien catches you. You feel its claws close around you.\n";
+    cout << "Your vision fades as everything goes quiet.\n\n";
+
+    while (true)
+    {
+        cout << "Type 'reset' to restart or 'quit' to exit: ";
+
+        string choice;
+        if (!getline(cin, choice))
+        {
+            // If input somehow fails, just quit cleanly.
+            quitGame();
+            return;
+        }
+
+        // Make input lowercase so RESET, Reset, etc. still work.
+        for (char& c : choice)
+        {
+            c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+        }
+
+        if (choice == "reset")
+        {
+            cout << "\nRestarting from the beginning...\n\n";
+            resetGame();
+            return; // back to the main game loop with a fresh world
+        }
+        else if (choice == "quit")
+        {
+            quitGame(); // this will also exit(0)
+            return;
+        }
+        else
+        {
+            cout << "Please type exactly 'reset' or 'quit'.\n";
+        }
+    }
+}
 
 void Game::destroyWorld()
 {
-
     alien.clearRooms();
     alien.setActive(false);
-    //this for loop goes through all the items in the game and deletes them
+
+    // Clear the non-door objects and delete the Rooms themselves
     for (auto* room : allRooms)
     {
-        room->removeAllObjects();
-        delete room; //and also the room itself (couldn't figure out another way)
+        room->removeAllObjects(); // Clears all roomObjects, but only deletes the UN-SHARED ones (as per the fix above)
+        delete room;
     }
+
+    // Delete the shared door objects once
+    for (auto* door : allDoors)
+    {
+        delete door;
+    }
+
     //clears inventory and rooms
     allRooms.clear();
+    //Clear the vector of door pointers
+    allDoors.clear(); 
     inventory.clear();
 
     //player is not in the current room anymore
     currentRoom = nullptr;
 
-    //resets the codes and makes sure that the player 
-    playerIsHidden = false;
-    foundcode1 = false;
-    foundcode2 = false;
+    // ...
 }
 
 //this makes a new random passcode so that the game isn't beatable consistently

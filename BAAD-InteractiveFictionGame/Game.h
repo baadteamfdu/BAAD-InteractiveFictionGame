@@ -21,9 +21,11 @@ private:
     int passcode1;                       //variable to store first half of the passcode.
     int passcode2;                       // varuiable to store second half of the passcode.
     vector<Room*> allRooms;             //this vector stores all rooms for the map
+    vector<Object*> allDoors;           //this vector stores all the doors for the map
 
     void destroyWorld();
     void generatePasscode();
+    void handlePlayerDeath();
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
     
