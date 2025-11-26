@@ -104,8 +104,17 @@ public:
 
     bool getIsHidden(); // getter for playerIsHidden
 
-    bool useMirror(Object* n); // to reveal the first note in the bathroom
+    bool useMirror(Object* note); // to reveal the first note in the bathroom
 
+    void createBathroomNote();
+
+    void increaseNoteCounter(Object* obj);
+
+    bool isNote(string note);
+    bool isMirror(string mirror);
+    bool isFlashlight(string flash);
+
+    void createDarkNote();
 
     /*
         Function to return exact note depending on the location of the player so user is able to write just take paper to take each note    

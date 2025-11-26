@@ -757,27 +757,30 @@ bool Game::combine(Object* batt, Object* flash) {
 /*================================================================= 
 UseMirror FUNCTION TO REVEAL THE TEXT IN THE NOTE FROM THE BATHROOM 
 ===================================================================*/
-bool Game :: useMirror(Object* n) {
-    if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-2")) {
-        bathroomNote->setNoteText(mirrorText);
-        cout << "You are using mirror to reflect the text in the note....\n Now you can read it" << endl;
-        return true;
-    }
-    else if (currentRoom->getName() == "Bathroom") {
+bool Game::useMirror(Object* n) {
+    if (currentRoom->getName() != "Bathroom") {
         cout << endl << "There is no mirror here" << endl;
         return false;
     }
-    else {
+    if(!inventory.gotObject("note-2")) {
         cout << endl << "What are you doing?" << endl;
         return false;
     }
+    if (!bathroomNote->getNoteText().empty()) {
+        cout << "You have already revealed the text" << endl;
+        return true;
+    }
+    bathroomNote->setNoteText(mirrorText);
+    cout << "You are using mirror to reflect the text in the note....\n Now you can read it" << endl;
+    increaseNoteCounter(bathroomNote);
+    return true;
 }
 
 /*
 *  IF STATEMENTS SO THE USER IS ABLE TO TAKE NOTES WITHOUT SPECIFYING THE NUMBER OF THE NOTE
 */
 
-string Game :: takeNoteRoom(string noun) {
+string Game::takeNoteRoom(string noun) {
     if (currentRoom->getId() == "bathroom")
         return noun = "note-2";
     else if (currentRoom->getId() == "storageArea")
@@ -793,6 +796,15 @@ string Game :: takeNoteRoom(string noun) {
 }
 
 void Game::lightRevealing() {
+    if (!inventory.gotObject("flashlight")) {
+        cout << "You do not have a flashlight.\n";
+        return;
+    }
+
+    if (!inventory.gotObject("note-3")) {
+        cout << "What are you trying to do?\n";
+        return;
+    }
     switch (flashlightCounter) {
     case 0:
         cout << "You shine the flashlight on the note.\n"
@@ -834,6 +846,7 @@ void Game::lightRevealing() {
             "\n"
             "Dr. Marcus Webb, Medical Officer";
         darkNote->setNoteText(darkText);
+        increaseNoteCounter(darkNote);
         break;
 
     default:
@@ -845,7 +858,63 @@ void Game::lightRevealing() {
 }
 
 
+void Game::createBathroomNote() {
+    if (currentRoom->getName() != "Bathroom") {
+        cout << "There is no mirror here\n";
+        return;
+    }
+    cout << "You are looking at yourself......\n"
+        "You look tired.......\n"
+        "You need to take a rest.......\n\n";
+    if (inventory.gotObject("note-2")) {
+        return;
+    }
+    if (currentRoom->getObject("note-2") != bathroomNote) {
+        currentRoom->addObject(bathroomNote);
+    }
+    cout << "You notice a piece of paper stuck in the right corner of the mirror.\n";
+}
 
+
+void Game::increaseNoteCounter(Object* obj) {
+    if (!obj->getNoteText().empty()) {
+        noteCounter++;
+        cout << endl << noteCounter << endl;
+    }
+}
+
+bool Game::isNote(string obj) {
+    return obj == "note" || obj == "note-2" || obj == "paper" || obj == "note-3";
+}
+
+bool Game::isMirror(string obj) {
+    return obj == "mirror";
+}
+
+bool Game::isFlashlight(string obj) {
+    return obj == "flashlight";
+}
+void Game::createDarkNote() {
+    if (currentRoom->getId() != "darkRoom") {
+        cout << "There are no papers here.\n";
+        return;
+    }
+
+    // Must have working flashlight
+    if (!flashlight->getIsWorking()) {
+        cout << "It is too dark to see anything.\n";
+        return;
+    }
+
+    // Description of the papers
+    cout << "You kneel down and sort through the scattered papers.\n"
+        "Most are torn or unreadable—but one looks intact...\n";
+
+    if (currentRoom->getObject("note-3") != darkNote) {
+        currentRoom->addObject(darkNote);
+    }
+
+}
 
 void Game::process()
 {
@@ -954,33 +1023,12 @@ void Game::process()
             */
 
             else if (noun == "mirror") {
-                if (currentRoom->getName() == "Bathroom") {
-                    cout << "You are looking at yourself......\n You look tired.......\n You need to take a rest.......\n" << endl;
-                    if (!inventory.gotObject("note-1")) {
-                        cout << "But you are noticing a piece of paper in the right corner of the mirror" << endl;
-                        currentRoom->addObject(bathroomNote);
-                    }
-                }
-                else {
-                    cout << "There is no mirror here" << endl;
-                }
+                createBathroomNote();
             }
 
-            else if (noun == "papers" || noun == "paper") {
-                cout << "you are enterin look papers";
-                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking()) {
-                    cout << "You kneel down and start sorting through the scattered papers.\nMost of them are stained, half-torn documents covered in chaotic handwriting you cannot make sense of.\nBut one note stands out from the rest, it looks more intact, empty, but in perfect condition." << endl;
-                    currentRoom->addObject(darkNote);
-                }
-                else if (currentRoom->getId() == "darkRoom" && !flashlight->getIsWorking()) {
-                    cout << "It is too dark, you can not see what is in there" << endl;
-                }
-                else {
-                    cout << "There is no papers here" << endl;
-                }
+            else if (noun == "paper" || noun == "papers") {
+                createDarkNote();
             }
-
-
 
             /*
             If none of the special 'look' cases matched (like book or stall),
@@ -1018,8 +1066,12 @@ void Game::process()
             }
 
             {
+                if (currentRoom->getId() == "bathroom" && noun == "mirror") {
+                    cout << "It seems that the mirror is fixed on the wall, I do not think I can take that" << endl;
+                    break;
+                }
                 //=====================================================================================================================
-                if (noun == "paper") {
+                if (isNote(noun)) {
                     noun = takeNoteRoom(noun);
                 }
                 Object* obj = currentRoom->getObject(noun);
@@ -1048,10 +1100,7 @@ void Game::process()
                 =======================================================================================
                 ======================================================================================*/
 
-                // Increase the counter if the object is the lore note
-                if (!obj->getNoteText().empty()) {
-                    noteCounter++;
-                }
+                increaseNoteCounter(obj);
 
                 //ONLY TO CHECK IF THE COUNTER IS WORKING. WILL BE DELETED AFTER FINISHING
                 cout << endl << noteCounter << endl << endl;
@@ -1163,58 +1212,18 @@ void Game::process()
                 break;
             }
 
-            //=======================================================USAGE FLASHLIGHT ON THE NOTE=====================================
-            if ((noun == "flashlight" || noun == "note" || noun == "note-3" || noun == "paper") && inventory.gotObject("flashlight") && inventory.gotObject("note-3"))
-            {
-                if (!inventory.gotObject("flashlight")) {
-                    cout << "You do not have a flashlight.\n";
-                    break;
-                }
-                if (!inventory.gotObject("note-3")) {
-                    cout << "You do not have the note.\n";
-                    break;
-                }
-                bool nounIsFlash = (noun == "flashlight");
-                bool nounIsNote = (noun == "note" || noun == "note-3" || noun == "paper");
+            //============================ USE MIRROR ON NOTE ============================
 
-                bool wtuIsFlash = (whatToUseOn == "flashlight");
-                bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-3" || whatToUseOn == "paper");
-
-                bool validCombo = (nounIsFlash && wtuIsNote) || (nounIsNote && wtuIsFlash);
-
-                if (validCombo)
-                {
-                    lightRevealing();
-                    break;
-                }
-            }
-
-            //============================USE MIRROR TO REFLECT THE TEXT IN THE NOTE=============================================
-            bool nounIsNote = (noun == "note" || noun == "note-2" || noun == "paper");
-            bool nounIsMirror = (noun == "mirror");
-
-            bool wtuIsNote = (whatToUseOn == "note" || whatToUseOn == "note-2" || whatToUseOn == "paper");
-            bool wtuIsMirror = (whatToUseOn == "mirror");
-
-            // Allow two combinations:
-            // use note mirror
-            // use mirror note
-            bool validCombo = (nounIsNote && wtuIsMirror) || (nounIsMirror && wtuIsNote);
-
-            if (validCombo) {
-                // Now check room and inventory
-                if (currentRoom->getName() == "Bathroom" && inventory.gotObject("note-2")) {
-                    useMirror(bathroomNote);
-                }
-                else if (currentRoom->getName() != "Bathroom") {
-                    cout << "There is no mirror here" << endl;
-                }
-                else {
-                    cout << "You don't have the note." << endl;
-                }
+            if ((isMirror(noun) && isNote(whatToUseOn)) || (isNote(noun) && isMirror(whatToUseOn))) {
+                useMirror(bathroomNote);
                 break;
             }
 
+            //=======================================================USAGE FLASHLIGHT ON THE NOTE=====================================
+            if ((isFlashlight(noun) && isNote(whatToUseOn)) || (isNote(noun) && isFlashlight(whatToUseOn))) {
+                lightRevealing();
+                break;
+            }
 
             // Fallback for other items that arent applicable in use case scenario(e.g, door)
             cout << "You can't use that right now.\n";
