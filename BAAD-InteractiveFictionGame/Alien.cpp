@@ -96,7 +96,7 @@ void Alien::killPlayer(Captain* captain) {
 		string playerName = captain->getPlayerName();
 		// If playername is empty fall back to kid
 		if (playerName == "") {
-			playerName == "kid";
+			playerName = "kid";
 		}
 		cout << "The alien lunges toward you, claws outstretched.\n";
 		cout << "Captain Santron shoves you behind him, stepping between you and the creature.\n";

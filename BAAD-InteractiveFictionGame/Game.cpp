@@ -7,12 +7,22 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
+
+// https://stackoverflow.com/questions/16884607/character-by-character-output-to-simulate-a-typing-effect
+void coolTyping(string text) {
+    for (char letter : text) {
+        cout << letter;
+            this_thread::sleep_for(chrono::milliseconds(50));
+    }
+}
 
 void Game::init() {
 
@@ -91,10 +101,11 @@ void Game::init() {
         "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
     );
       // captain's quarter
-    Room * captainRoom = new Room(
+    Room* captainRoom = new Room(
         "captainRoom",
         "Captain's Quarters",
-        "A small, private cabin dominated by a reinforced cryo pod and a worn chair bolted to the floor.\n"
+        "A small, private cabin dominated by a reinforced cryo pod A reinforced cryo pod rests at the center of the room,\n" 
+        "its frosted glass trembling with a faint breath from within and a worn chair sits nearby as if someone waited here long ago.\n"
         );
 
     setCurrentRoom(cryoStart);
@@ -162,7 +173,7 @@ void Game::init() {
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, true);
-    Object* captainDoor = new Object("captain room door", "A door to the Captain's Quarters", false, false);
+    Object* captainDoor = new Object("captain door", "A door to the Captain's Quarters", false, false);
     Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, true);
     Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, true);
 
@@ -232,8 +243,8 @@ void Game::init() {
     cafeteria->setNeighbour("dark door", darkRoom);
     darkRoom->setNeighbour("dark door", cafeteria);
 
-    cafeteria->setNeighbour("captain room door", captainRoom);
-    captainRoom->setNeighbour("captain room door", cafeteria);
+    cafeteria->setNeighbour("captain door", captainRoom);
+    captainRoom->setNeighbour("captain door", cafeteria);
 
     allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom };
     cryoStart->setPosition(24, 0);
@@ -749,6 +760,7 @@ void Game::process()
 {
     string input, noun, whatToUseOn;
     Actions action;
+    alien.setActive(false);
 
     cout << "Type 'help' for a list of commands.\n";
 
@@ -1059,7 +1071,10 @@ void Game::process()
             captain.setIsAwake(true);
             cout << "You wipe frost from the cryo pod's glass and find an older man inside.\n";
             cout << "You fumble with the manual release until the lid hisses open.\n";
-            cout << "His eyes flutter, and he whispers, \"Wata... watah...\"\n";
+
+            cout << " \n";
+
+            coolTyping ("His eyes flutter, and he whispers, \"Wata... watah...\"\n");
             cout << "Type: serve water to captain\n";
             break;
         }
@@ -1098,8 +1113,8 @@ void Game::process()
             // Conversation sequence
             captain.setHasWater(true);
 
-            cout << "You find a bottle of water on a nearby shelf and bring it to the captain.\n";
-            cout << "He drinks greedily, some color returning to his face.\n\n";
+            coolTyping  ("You find a bottle of water on a nearby shelf and bring it to the captain.\n");
+            coolTyping  ("He drinks greedily, some color returning to his face.\n\n");
 
             cout << "Captain: \"Gh... thank you. It looks like u got yourself into some trouble..like i did....UMMM... what year is it?\"\n";
 
@@ -1117,16 +1132,30 @@ void Game::process()
                 }
                 try {
                     year = stoi(yearInput);
-                    break;
+
+                    // only allow valid input
+                    if (year < 1000 || year > 9999) {
+                        cout << "Please enter a valid four–digit year (2000–2500).\n";
+                        continue;
+                    }
+
+                    // pastYear is not negative
+                    if (year - 275 < 0) {
+                        cout << "That doesn't seem like a real year... try again.\n";
+                        continue;
+                    }
+
+                    break; //
                 }
                 catch (...) {
                     cout << "Please enter the year as numbers (for example: 2025).\n";
                 }
+
             }
 
             int pastYear = year - 275;
-            cout << "Captain: \"By the stars... that means the last time I was awake, it was around " << pastYear << ".\"\n";
-            cout << "Captain: \"Two hundred and seventy-five years... gone in a blink.\"\n\n";
+            cout <<"Captain: \"By the stars... that means the last time I was awake, it was around " << pastYear << ".\"\n";
+            coolTyping  ("Captain: \"Two hundred and seventy-five years... gone in a blink.\"\n\n");
 
             cout << "Press ENTER to listen to the captain's story...\n";
 
@@ -1134,13 +1163,15 @@ void Game::process()
             string dummy;
             getline(cin, dummy);
 
-            cout << "He leans back against the pod frame, staring past the ceiling.\n";
-            cout << "\"Back then, this station was a frontier outpost,\" he begins.\n";
-            cout << "\"We ferried colonists, cargo, and an egg we never should've taken aboard.\"\n";
-            cout << "\"When things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n";
-            cout << "\"Looks like that job landed on you.\"\n\n";
+            coolTyping  ("\He says: My name is Emaruv Santron.\n");
 
-            cout << "Captain: \"Enough about me. What's your name, kid?\"\n";
+            coolTyping  ("\Then he leans back against the pod frame, staring past the ceiling.\n");
+            coolTyping  ("\"Back then, this station was a frontier outpost,\" he begins.\n");
+            coolTyping  ("\"We ferried colonists, cargo, and an egg we never should've taken aboard.\"\n");
+            coolTyping  ("\"When things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n");
+            coolTyping  ("\"Looks like that job landed on you.\"\n\n");
+
+            coolTyping  ("Captain: \"Enough about me. What's your name, kid?\"\n");
             cout << "> My name is : ";
             string name;
             if (!getline(cin, name)) {
@@ -1155,8 +1186,8 @@ void Game::process()
             captain.setIntroduced(true);
             captain.setIsFollowing(true);
 
-            cout << "Captain: \"All right, " << name << ".\"\n";
-            cout << "\"Stay close. I'll watch your back as long as I can.\"\n";
+            coolTyping("Captain: \"All right, "); cout << name << ".\"\n";
+            coolTyping("\"Stay close. I'll watch your back as long as I can.\"\n");
 
             break;
         }
@@ -1185,16 +1216,16 @@ void Game::process()
                         if (captain.getIsFollowing() && captain.getIsAlive()) {
                             string nm = captain.getPlayerName();
                             if (nm.empty()) nm = "kid";
-                            cout << "Captain Santron slumps into the seat beside you and lets out a tired laugh.\n";
-                            cout << "\"We made it out, " << nm << ". Somehow.\"\n";
+                            coolTyping ("Captain Santron slumps into the seat beside you and lets out a tired laugh.\n");
+                            coolTyping ("\"We made it out, "); cout << nm << ". Somehow.\"\n";
                         }
                         // if only the player has made it out
                         else if (captain.getHasProtectedOnce() && !captain.getIsAlive()) {
-                            cout << "As the pod drifts into the void, you remember Captain Santron's last stand.\n";
-                            cout << "His sacrifice bought you this one chance at survival.\n";
+                            coolTyping ("As the pod drifts into the void, you remember Captain Santron's last stand.\n");
+                            coolTyping("His sacrifice bought you this one chance at survival.\n");
                         }
 
-                        cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
+                        coolTyping("With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination.\n");
                         cout << "You win!" << endl;
                         exit(0);
                     }
