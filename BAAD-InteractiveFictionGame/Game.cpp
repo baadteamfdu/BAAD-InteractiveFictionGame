@@ -168,7 +168,7 @@ void Game::init() {
     passcodeDoor->setPasscode(passcode);
 
     Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, true);
-    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
+    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false); //
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
