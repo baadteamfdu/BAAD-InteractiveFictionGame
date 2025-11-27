@@ -9,6 +9,7 @@
 #include "../BAAD-InteractiveFictionGame/Alien.cpp"
 #include "../BAAD-InteractiveFictionGame/Parser.cpp"
 #include "../BAAD-InteractiveFictionGame/Actions.cpp"
+#include "../BAAD-InteractiveFictionGame/Captain.cpp"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 /*
