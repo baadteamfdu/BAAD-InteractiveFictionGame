@@ -18,7 +18,9 @@ enum Actions
 	HIDE,
 	UNHIDE,
 	RUN,
-	PRESS
+	PRESS,
+	WAKE,        // to wake up captain
+	SERVE,       // to serve water to captain
 };
 
 Actions stringToAction(string action);

@@ -29,9 +29,9 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
     else {
         noun = "";
     }
-    if (getline(spaceSplitter, word, ' ')) //added what the keycard will be used on to allow for use keycard cryo door
+    if (getline(spaceSplitter, word, ' ')) //added what the keycard will be used on to allow for use keycard cryo door// serve water to captain
     {
-        if (word == "on") { //if the word is on it will ignore it and then read the rest of the line
+        if (word == "on" || "to") { //if the word is on it will ignore it and then read the rest of the line
             word = "";
             if (getline(spaceSplitter, word)) {
                 whatToUseOn = word;

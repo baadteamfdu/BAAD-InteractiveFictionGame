@@ -32,6 +32,7 @@ void Game::init() {
     foundcode2 = false;
 
 	playerIsHidden = false;          // player is not hidden at the start of the game.
+    captain.reset(); // captain resets each game.
 
     // Create rooms
     Room* cryoStart = new Room(
@@ -89,6 +90,12 @@ void Game::init() {
         "Dark Room",
         "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
     );
+      // captain's quarter
+    Room * captainRoom = new Room(
+        "captainRoom",
+        "Captain's Quarters",
+        "A small, private cabin dominated by a reinforced cryo pod and a worn chair bolted to the floor.\n"
+        );
 
     setCurrentRoom(cryoStart);
 
@@ -140,8 +147,7 @@ void Game::init() {
     //code halves inside objects 
   //  Object* codePart1 = new Object("code part 1", "Half of the passcode: '--" + to_string(passcode % 100) + "'", true);
   //  Object* codePart2 = new Object("code part 2", "Half of the passcode: '" + to_string(passcode / 100) + "--'", true);
-  //  stall->addContainedObject(codePart1);
-  //  book->addContainedObject(codePart2);
+  
 
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true); //cryo card door
@@ -156,6 +162,7 @@ void Game::init() {
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, true);
+    Object* captainDoor = new Object("captain room door", "A door to the Captain's Quarters", false, false);
     Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, true);
     Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, true);
 
@@ -191,6 +198,9 @@ void Game::init() {
     cafeteria->addObject(darkDoor);
     darkRoom->addObject(darkDoor);
 
+    cafeteria->addObject(captainDoor);
+    captainRoom->addObject(captainDoor);
+
     //Connect rooms
     cryoStart->setNeighbour("cryo door", cryoHall);
     cryoHall->setNeighbour("cryo door", cryoStart);
@@ -221,6 +231,9 @@ void Game::init() {
 
     cafeteria->setNeighbour("dark door", darkRoom);
     darkRoom->setNeighbour("dark door", cafeteria);
+
+    cafeteria->setNeighbour("captain room door", captainRoom);
+    captainRoom->setNeighbour("captain room door", cafeteria);
 
     allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom };
     cryoStart->setPosition(24, 0);
@@ -654,6 +667,12 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
          cout << "You go through the " << doorName << " and enter the next room.\n";
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
+
+         // IF captain is following and is alive cout the folllowng
+         if (captain.getIsFollowing() && captain.getIsAlive()) {
+             cout << "Captain Emaruv Santron steps in behind you, scanning the corners of the room.\n";
+         }
+
          door->setIsLocked(true); // lock the door again after going through
          if ((door->getName()) == "bathroom door" || door->getName() == "worker door") { //don't lock player in bathroom or worker room 
                 door->setIsLocked(false);
@@ -743,7 +762,7 @@ void Game::process()
                 cout << "You hesitate... the alien catches you.\n"; //this is to prevent player surviving if they enter nonsense
                 inEscapeSequence = false;
                 runCount = 0;
-                alien.killPlayer();
+                alien.killPlayer(& captain);
             }
 
             cout << "Invalid command. Type 'help' for a list of commands.\n";
@@ -754,7 +773,8 @@ void Game::process()
             cout << "You hesitate... the alien catches you.\n";
             inEscapeSequence = false;
             runCount = 0;
-            alien.killPlayer();
+            ;
+            alien.killPlayer(& captain);
         }
 
         switch (action) {
@@ -775,6 +795,10 @@ void Game::process()
                     cout << "Objects in room:" << endl;
                     currentRoom->printAllObjects();
                     cout << endl;
+                    //show captain if following and alive
+                    if (captain.getIsFollowing() && captain.getIsAlive()) {
+                        cout << "Captain Santron stands nearby, watching the shadows.\n";
+                    }
 
                 }
                 if (currentRoom->getName() == "CryoStart") {
@@ -1010,6 +1034,134 @@ void Game::process()
             break;
         }
 
+        case Actions::WAKE:
+        {
+            if (noun.empty()) {
+                cout << "Wake who?\n";
+                break;
+            }
+
+            if (currentRoom->getId() != "captainRoom") {
+                cout << "There is no one here to wake.\n";
+                break;
+            }
+
+            if (noun != "captain") {
+                cout << "That doesn't seem to respond.\n";
+                break;
+            }
+
+            if (captain.getIsAwake()) {
+                cout << "The captain is already awake.\n";
+                break;
+            }
+
+            captain.setIsAwake(true);
+            cout << "You wipe frost from the cryo pod's glass and find an older man inside.\n";
+            cout << "You fumble with the manual release until the lid hisses open.\n";
+            cout << "His eyes flutter, and he whispers, \"Wata... watah...\"\n";
+            cout << "Type: serve water to captain\n";
+            break;
+        }
+        case Actions::SERVE:
+        {
+            if (noun.empty()) {
+                cout << "Serve what?\n";
+                break;
+            }
+
+            if (noun != "water") {
+                cout << "You can't serve that right now.\n";
+                break;
+            }
+
+            if (whatToUseOn.empty() || whatToUseOn != "captain") {
+                cout << "Serve water to whom?\n";
+                break;
+            }
+
+            if (currentRoom->getId() != "captainRoom") {
+                cout << "The captain isn't here.\n";
+                break;
+            }
+
+            if (!captain.getIsAwake()) {
+                cout << "No one here seems awake enough to drink.\n";
+                break;
+            }
+
+            if (captain.getHasWater()) {
+                cout << "The captain has already had water.\n";
+                break;
+            }
+
+            // Conversation sequence
+            captain.setHasWater(true);
+
+            cout << "You find a bottle of water on a nearby shelf and bring it to the captain.\n";
+            cout << "He drinks greedily, some color returning to his face.\n\n";
+
+            cout << "Captain: \"Gh... thank you. It looks like u got yourself into some trouble..like i did....UMMM... what year is it?\"\n";
+
+            int year = 0;
+            while (true) {
+                cout << "> ";
+                string yearInput;
+                if (!getline(cin, yearInput)) {
+                    cout << "Input closed. Exiting game...\n";
+                    exit(0);
+                }
+                if (yearInput.size() == 0) {
+                    cout << "Please enter the year as numbers.\n";
+                    continue;
+                }
+                try {
+                    year = stoi(yearInput);
+                    break;
+                }
+                catch (...) {
+                    cout << "Please enter the year as numbers (for example: 2025).\n";
+                }
+            }
+
+            int pastYear = year - 275;
+            cout << "Captain: \"By the stars... that means the last time I was awake, it was around " << pastYear << ".\"\n";
+            cout << "Captain: \"Two hundred and seventy-five years... gone in a blink.\"\n\n";
+
+            cout << "Press ENTER to listen to the captain's story...\n";
+
+            // prompting the player to press enter but this would take anything as legal input
+            string dummy;
+            getline(cin, dummy);
+
+            cout << "He leans back against the pod frame, staring past the ceiling.\n";
+            cout << "\"Back then, this station was a frontier outpost,\" he begins.\n";
+            cout << "\"We ferried colonists, cargo, and an egg we never should've taken aboard.\"\n";
+            cout << "\"When things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n";
+            cout << "\"Looks like that job landed on you.\"\n\n";
+
+            cout << "Captain: \"Enough about me. What's your name, kid?\"\n";
+            cout << "> My name is : ";
+            string name;
+            if (!getline(cin, name)) {
+                cout << "Input closed. Exiting game...\n";
+                exit(0);
+            }
+            if (name.empty()) {
+                name = "kid";
+            }
+
+            captain.setPlayerName(name);
+            captain.setIntroduced(true);
+            captain.setIsFollowing(true);
+
+            cout << "Captain: \"All right, " << name << ".\"\n";
+            cout << "\"Stay close. I'll watch your back as long as I can.\"\n";
+
+            break;
+        }
+
+
         case Actions::RUN:
             if (inEscapeSequence) {
                 runCount++; //increase run count so after they pass 4 it ends
@@ -1028,6 +1180,20 @@ void Game::process()
                         break;
                     default:
                         cout << "You see one last working escape pod." << endl;
+
+                        // if the captain and the player made it out. 
+                        if (captain.getIsFollowing() && captain.getIsAlive()) {
+                            string nm = captain.getPlayerName();
+                            if (nm.empty()) nm = "kid";
+                            cout << "Captain Santron slumps into the seat beside you and lets out a tired laugh.\n";
+                            cout << "\"We made it out, " << nm << ". Somehow.\"\n";
+                        }
+                        // if only the player has made it out
+                        else if (captain.getHasProtectedOnce() && !captain.getIsAlive()) {
+                            cout << "As the pod drifts into the void, you remember Captain Santron's last stand.\n";
+                            cout << "His sacrifice bought you this one chance at survival.\n";
+                        }
+
                         cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
                         cout << "You win!" << endl;
                         exit(0);
@@ -1038,7 +1204,7 @@ void Game::process()
                      else if (inEscapeSequence) {
                          break;
                      }
-                }
+            }
         case Actions::GO:
         case Actions::OPEN:
             if (noun.empty()) {
@@ -1179,7 +1345,7 @@ void Game::process()
             break;
         }
 
-        alien.increaseTurnCounter(currentRoom, playerIsHidden);
+        alien.increaseTurnCounter(currentRoom, playerIsHidden, & captain);
         }
     }
 

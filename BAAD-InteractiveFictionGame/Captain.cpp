@@ -1,5 +1,6 @@
 #include "Captain.h"
 
+
 // resetting the captain behavior after the game starts
 
 Captain::Captain()
@@ -43,3 +44,5 @@ bool Captain::canProtectPlayer()
 {
     return isAwake && isAlive && isFollowing && !hasProtectedOnce;
 }
+
+
