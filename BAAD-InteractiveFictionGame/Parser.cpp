@@ -24,6 +24,13 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
                 noun = word;
             }
         }
+        if (action == Actions::WAKE && word == "up"){
+            //wake up captain
+            word = "";
+            if (getline(spaceSplitter, word)) {
+                noun = word;
+            }
+        }
     
     }
     else {
@@ -31,7 +38,7 @@ bool Parser::parse(string input, Actions &action, string &noun, string &whatToUs
     }
     if (getline(spaceSplitter, word, ' ')) //added what the keycard will be used on to allow for use keycard cryo door// serve water to captain
     {
-        if (word == "on" || "to") { //if the word is on it will ignore it and then read the rest of the line
+        if (word == "on" || word == "to") { //if the word is on it will ignore it and then read the rest of the line
             word = "";
             if (getline(spaceSplitter, word)) {
                 whatToUseOn = word;
