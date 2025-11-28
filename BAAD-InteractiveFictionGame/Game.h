@@ -11,8 +11,42 @@
 #include <vector>
 using namespace std;
 
+extern int noteCounter; //Global variable so it is possible to access it in the alien.h
+
 class Game {
 private:
+    // NOTE TEXTS
+    string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist"
+        "\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case."
+        "\nIf someone finds this, (*something unreadable*)."
+        "\nNot everything is as it seems.\nG.S.";
+
+    string mirrorText = "An accident.Could not stop it."
+        "\n They will never understand(not readable)"
+        "\nThe answer exists in pieces."
+        "\nBeginning holds(water damage)"
+        "\n Workers space holds(torn edge)"
+        "\n Records in the dark will(ink faded)"
+        "\n Someone might remember(blurred section)"
+        "\n Dont destroy what you dont(rest torn away)";
+    
+    string alienText =
+        "[Barely legible, torn and bloodstained paper]\n"
+        "\nstill... me...\n"
+        "name... Gojo (smudged)\n"
+        "\ncannot... fight it... much longer\n"
+        "hurts... so much...\n"
+        "\n(*large section destroyed by claw marks*)\n"
+        "\n you found... notes?\n"
+        "YOU KNOW... what I (torn)\n"
+        "\nplease... donot run...\n"
+        "still... human... inside...\n"
+        "\nG.S.\n";
+
+    string darkText;
+
+    int flashlightCounter = 0;
+
     Room* currentRoom = nullptr;
     Parser parser;
     Inventory inventory;
@@ -34,6 +68,19 @@ private:
     vector<Room*> allRooms;             //this vector stores all rooms for the map
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
+
+
+    /* VARIABLES FOR NOTES 
+    
+    counter to check how many notes have been collected, and notes itself so
+    it is possible to manipulate them in the gameProcess()
+    ==================================
+    */
+
+    Object* bathroomNote;
+    Object* storageNote;
+    Object* darkNote;
+    Object* alienNote;
 
 public:
 
@@ -59,5 +106,24 @@ public:
 	void setIsHidden(bool hidden); // setter for playerIsHidden
 
     bool getIsHidden(); // getter for playerIsHidden
+
+    bool useMirror(Object* note); // to reveal the first note in the bathroom
+
+    void createBathroomNote();
+
+    void increaseNoteCounter(Object* obj);
+
+    bool isNote(string note);
+    bool isMirror(string mirror);
+    bool isFlashlight(string flash);
+
+    void createDarkNote();
+
+    /*
+        Function to return exact note depending on the location of the player so user is able to write just take paper to take each note    
+    */
+    string takeNoteRoom(string noun); 
+
+    void lightRevealing();
 
 };

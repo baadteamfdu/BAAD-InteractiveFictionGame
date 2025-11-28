@@ -1,9 +1,9 @@
 #include <iostream>
 #include "Alien.h"
 #include "Captain.h"
+#include "Game.h"
 
 using namespace std;
-
 
 
 Alien::Alien() {
@@ -53,6 +53,10 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden, Captain*
 			chaseCounter++;
 			if (alienCurrentRoom == playerCurrentRoom && isHidden && chaseCounter < chaseThreshold) { //same room and hid in time
 				cout << "The alien enters the room, looks around.... then leaves" << endl;
+				if (noteCounter == 4) {
+					cout << "As it limps toward the exit, something slips from its grasp.\n";
+					cout << "A small, crumpled piece of paper falls to the floor.\n";
+				}
 				leave(); //if alien and player in same room but player is hidden, alien leaves
 				return;
 			}
@@ -88,7 +92,7 @@ void Alien::move() {
 	leave();
 }
 
-//function to exit the game if they idle too long OR captain doesn’t save them
+//function to exit the game if they idle too long OR captain doesnï¿½t save them
 bool Alien::killPlayer(Captain* captain) {
 	// if we have a captain and if it can protect the player once:
 	if (captain && captain->canProtectPlayer()) {

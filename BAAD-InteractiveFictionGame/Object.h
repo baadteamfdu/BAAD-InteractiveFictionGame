@@ -16,6 +16,7 @@ class Object
 private:
 	string name;
 	string description;
+	string noteText;				// To hold the lore in the notes
 	bool takeable;
 	bool isLocked;								 //new flag to check if door is locked or unlocked.
 	bool isPasscodeLocked;						 //new flag for doors that can be unlocked by a passcode. 
@@ -30,12 +31,13 @@ public:
 	Object(string n, string d, bool  takeable, bool isWorking, int dummy);
 	Object(string n, string d, bool takeable, bool isLocked); //additional constructor for doors and maybe for other locked objects in the future
 	Object(string n, string d, bool takeable, bool isLocked, bool isSafe); //additional constructor for safe zone objects
-	string getName();
-	string getDescription();
-	bool isTakeable();
 
 	// getters
 	
+	string getName();
+	string getDescription();
+	string getNoteText(); 
+	bool isTakeable();
 	bool getIsLocked();
 	bool getIsPasscodeLocked();
 	int getPasscode();
@@ -51,7 +53,7 @@ public:
 	void setIsOpen(bool open);
 	void setWorking(bool working);
 	void setDescription(string des);
-
+	void setNoteText(string txt);
 	
 
 	void setIsSafeZone(bool safe); // setter for safe zone. After implementing new constructor I do not know if this is needed, however leaving it here for now.

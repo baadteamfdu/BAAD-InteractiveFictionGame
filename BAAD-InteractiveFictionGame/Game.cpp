@@ -12,6 +12,8 @@
 
 using namespace std;
 
+int noteCounter = 0;
+
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
@@ -98,7 +100,7 @@ void Game::init() {
     Room* darkRoom = new Room(
         "darkRoom",
         "Dark Room",
-        "The room is dark and quiet, with only a faint light seeping through a crack in the door.\n"
+        "The room is dark and quiet\ You cannot see anything"
     );
       // captain's quarter
     Room* captainRoom = new Room(
@@ -170,7 +172,7 @@ void Game::init() {
     Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, true);
     escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false); //
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
-    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
+    Object* workersDoor = new Object("worker door", "A door to the Workerâ€™s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
     Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, true);
     Object* captainDoor = new Object("captain door", "A door to the Captain's Quarters", false, false);
@@ -267,6 +269,21 @@ void Game::init() {
 	workersRoom->addObject(safeZone); // placing the locker in the worker's room
     //let Alien Access rooms
     alien.addAllRooms(allRooms);
+
+
+    /*
+    * giving the values for the NOTES FOR THE LORE.
+    */
+    darkNote = new Object("note-3", "Note that was found in the Dark Room", true, false);
+    bathroomNote = new Object("note-2", "Note that was found in the Bathroom", true, false);
+    storageNote = new Object("note-1", "Note that was found in the Dock", true, false);
+    storageNote->setNoteText(storageText);
+    alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
+    alienNote->setNoteText(alienText);
+
+    // JUST ADD FOR NOW MAYBE I WILL COME UP WITH BETTER IDEA TO HIDE IT IN THE FUTURE, HOWEVER I ASSUME THAT THE USING OF FLASHLIGHT IS GOOD ENOUGH
+    //darkRoom->addObject(darkNote); 
+
     }
 
 Room* Game::getCurrentRoom() {
@@ -444,13 +461,13 @@ Handles the player's attempt to press a button in the game.
     {
         if (!button)
         {
-            cout << "There’s no button here to press.\n";
+            cout << "Thereâ€™s no button here to press.\n";
             return;
         }
 
         if (button->getName() != "button")
         {
-            cout << "You can’t press that.\n";
+            cout << "You canâ€™t press that.\n";
             return;
         }
 
@@ -504,14 +521,14 @@ Handles the player's action when using the screwdriver on an object.
 
 - Checks if the target object exists; if not, notifies the player.
 - If used on the "vent":
-    • Unlocks it if it’s closed and marks it as a safe zone where the player can hide.
-    • If already open, informs the player that nothing needs to be done.
+    â€¢ Unlocks it if itâ€™s closed and marks it as a safe zone where the player can hide.
+    â€¢ If already open, informs the player that nothing needs to be done.
 - If used on the "control panel":
-    • Ensures it hasn’t been opened before using the controlPanelUnscrewed flag.
-    • When first opened, a hidden "button" object is created and added to the room.
+    â€¢ Ensures it hasnâ€™t been opened before using the controlPanelUnscrewed flag.
+    â€¢ When first opened, a hidden "button" object is created and added to the room.
       (The button is created here because it represents a new interactive element
        that only becomes accessible after the player unscrews the control panel.)
-    • Displays a message indicating that the button has been revealed.
+    â€¢ Displays a message indicating that the button has been revealed.
 - If used on anything else, informs the player that the screwdriver has no effect.
 */
 
@@ -533,7 +550,9 @@ void Game::useScrewdriver(Object* obj)
         }
         obj->setIsLocked(false);
         obj->setIsSafeZone(true);
-        cout << "You unscrew the vent cover quietly. You could probably hide inside now.\n";
+        cout << "As you quietly unscrew the vent cover, a small piece of paper slips out and falls to the floor.\n You could probably hide inside now.\n";
+        //ADD NOTE TO THE Room
+        currentRoom->addObject(storageNote);
         return;
     }
     if (name == "control panel") {
@@ -572,7 +591,7 @@ Handles using the screwdriver on different objects.
 - If used on the "control panel":
   Opens it only once by checking controlPanelUnscrewed.
   Reveals a new "button" object inside the panel and adds it to the room.
-- If used on anything else, informs the player that it’s not a valid use.
+- If used on anything else, informs the player that itâ€™s not a valid use.
 */
 
 
@@ -588,7 +607,7 @@ void Game::useKeycard(Object* door) {
     }
     // Prevent unlocking passcode doors with the keycard
     else if (door->getIsPasscodeLocked()) {
-        cout << "The keycard doesn’t work on this type of door. It requires a passcode.\n";
+        cout << "The keycard doesnâ€™t work on this type of door. It requires a passcode.\n";
         return;
     }
 
@@ -633,7 +652,7 @@ void Game::typeCode(int enteredCode)
     else {
         cout << "Incorrect code. Try again.\n";
         alien.setCurrentRoom(currentRoom);
-        cout << "A distant screech echoes… Something has been alerted.\n";
+        cout << "A distant screech echoesâ€¦ Something has been alerted.\n";
     }
 }
 
@@ -702,6 +721,9 @@ void Game::hide(string noun) {
     if (hideSpot && hideSpot->getIsSafeZone()) {
         playerIsHidden = true;
         cout << "You hide inside the " << noun << ". Stay quiet...\n";
+        if (noteCounter == 4) {
+            currentRoom->addObject(alienNote);
+        }
     }
     else {
         cout << "You can not hide there.\n";
@@ -755,7 +777,173 @@ bool Game::combine(Object* batt, Object* flash) {
     return true;
 }
 
+/*======================================================================================================================================
+* ======================================================================================================================================
+* FUNCTIONS FOR NOTES 
+* ========================================================================================================================================
+==========================================================================================================================================*/
 
+/*================================================================= 
+UseMirror FUNCTION TO REVEAL THE TEXT IN THE NOTE FROM THE BATHROOM 
+===================================================================*/
+bool Game::useMirror(Object* n) {
+    if (currentRoom->getName() != "Bathroom") {
+        cout << endl << "There is no mirror here" << endl;
+        return false;
+    }
+    if(!inventory.gotObject("note-2")) {
+        cout << endl << "What are you doing?" << endl;
+        return false;
+    }
+    if (!bathroomNote->getNoteText().empty()) {
+        cout << "You have already revealed the text" << endl;
+        return true;
+    }
+    bathroomNote->setNoteText(mirrorText);
+    cout << "You are using mirror to reflect the text in the note....\n Now you can read it" << endl;
+    increaseNoteCounter(bathroomNote);
+    return true;
+}
+
+/*
+*  IF STATEMENTS SO THE USER IS ABLE TO TAKE NOTES WITHOUT SPECIFYING THE NUMBER OF THE NOTE
+*/
+
+string Game::takeNoteRoom(string noun) {
+    if (currentRoom->getId() == "bathroom")
+        return noun = "note-2";
+    else if (currentRoom->getId() == "storageArea")
+        return noun = "note-1";
+    else if (currentRoom->getId() == "darkRoom")
+        return noun = "note-3";
+    else if (currentRoom->getObject("note-5") == alienNote)
+        return noun = "note-5";
+    else {
+        cout << "There is no paper" << endl;
+        return noun = "";
+    }
+}
+
+void Game::lightRevealing() {
+    if (!inventory.gotObject("flashlight")) {
+        cout << "You do not have a flashlight.\n";
+        return;
+    }
+
+    if (!inventory.gotObject("note-3")) {
+        cout << "What are you trying to do?\n";
+        return;
+    }
+    switch (flashlightCounter) {
+    case 0:
+        cout << "You shine the flashlight on the note.\n"
+            << "Something faint flickers... too blurry to read.\n";
+        darkText =
+            "INCIDENT REPORT - SUBJECT: (not readable)";
+        darkNote->setNoteText(darkText);
+        break;
+
+    case 1:
+        cout << "You shine again. More of the writing appears.\n";
+        darkText =
+            "INCIDENT REPORT - SUBJECT: (*heavily redacted*)\n"
+            "Date: 3 days prior...\n"
+            "Exposure to experimental (*not readable*)...";
+        darkNote->setNoteText(darkText);
+        break;
+
+    case 2:
+        cout << "You focus the flashlight one last time.\nThe full message reveals itself.\n";
+        darkText =
+            "INCIDENT REPORT - SUBJECT: (*heavily redacted*)\n"
+            "Date: 3 days prior to current date\n"
+            "Location: Research Lab (Dark Room)\n"
+            "\n"
+            "Exposure to experimental compound - molecular changes detected.\n"
+            "Subject volatile. Memory degradation observed.\n"
+            "\n"
+            "Possible reversal protocol exists but untested.\n"
+            "Required components located in:\n"
+            "\n"
+            "CryoStart medical (*smudged*)\n"
+            "Worker's Room secured (*not readable*)\n"
+            "\n"
+            "Transformation may be reversible if original (torn) recovered.\n"
+            "Subject dangerous but showed moments of clarity.\n"
+            "\n"
+            "Do not terminate on sight.\n"
+            "\n"
+            "Dr. Marcus Webb, Medical Officer";
+        darkNote->setNoteText(darkText);
+        increaseNoteCounter(darkNote);
+        break;
+
+    default:
+        cout << "You already revealed all the text.\n";
+        return;
+    }
+
+    flashlightCounter++;
+}
+
+
+void Game::createBathroomNote() {
+    if (currentRoom->getName() != "Bathroom") {
+        cout << "There is no mirror here\n";
+        return;
+    }
+    cout << "You are looking at yourself......\n"
+        "You look tired.......\n"
+        "You need to take a rest.......\n\n";
+    if (inventory.gotObject("note-2")) {
+        return;
+    }
+    if (currentRoom->getObject("note-2") != bathroomNote) {
+        currentRoom->addObject(bathroomNote);
+    }
+    cout << "You notice a piece of paper stuck in the right corner of the mirror.\n";
+}
+
+
+void Game::increaseNoteCounter(Object* obj) {
+    if (!obj->getNoteText().empty()) {
+        noteCounter++;
+        cout << endl << noteCounter << endl;
+    }
+}
+
+bool Game::isNote(string obj) {
+    return obj == "note" || obj == "note-2" || obj == "paper" || obj == "note-3";
+}
+
+bool Game::isMirror(string obj) {
+    return obj == "mirror";
+}
+
+bool Game::isFlashlight(string obj) {
+    return obj == "flashlight";
+}
+void Game::createDarkNote() {
+    if (currentRoom->getId() != "darkRoom") {
+        cout << "There are no papers here.\n";
+        return;
+    }
+
+    // Must have working flashlight
+    if (!flashlight->getIsWorking()) {
+        cout << "It is too dark to see anything.\n";
+        return;
+    }
+
+    // Description of the papers
+    cout << "You kneel down and sort through the scattered papers.\n"
+        "Most are torn or unreadableâ€”but one looks intact...\n";
+
+    if (currentRoom->getObject("note-3") != darkNote) {
+        currentRoom->addObject(darkNote);
+    }
+
+}
 
 void Game::process()
 {
@@ -822,6 +1010,9 @@ void Game::process()
                     cout << "It is too dark to see anything. Maybe you need a working flashlight.\n";
                     break; // stop further look processing
                 }
+                if (currentRoom->getId() == "darkRoom" && flashlight->getIsWorking()) {
+                    currentRoom->setDescription("The room is dark and quiet, with only a faint light seeping through a crack in the door.\nScattered across the floor, a mess of papers lies in disordered piles, as if someone left in a hurry.\n");
+                }
                 if (currentRoom) {
                     cout << currentRoom->getDescription() << endl;
                     cout << "Objects in room:" << endl;
@@ -878,6 +1069,21 @@ void Game::process()
             else if (noun.empty()) {
                 cout << "Look at what?\n";
             }
+
+            /* 
+            ================================
+             FOR MIRROR IN THE BATHROOM ROOM
+            ================================
+            */
+
+            else if (noun == "mirror") {
+                createBathroomNote();
+            }
+
+            else if (noun == "paper" || noun == "papers") {
+                createDarkNote();
+            }
+
             /*
             If none of the special 'look' cases matched (like book or stall),
             this block handles generic "look <object>" commands.
@@ -914,14 +1120,20 @@ void Game::process()
             }
 
             {
+                if (currentRoom->getId() == "bathroom" && noun == "mirror") {
+                    cout << "It seems that the mirror is fixed on the wall, I do not think I can take that" << endl;
+                    break;
+                }
+                //=====================================================================================================================
+                if (isNote(noun)) {
+                    noun = takeNoteRoom(noun);
+                }
                 Object* obj = currentRoom->getObject(noun);
-
 
                 // Take control panel doesnt show the right output so i have m
                 if (!obj) {
                     if (noun == "control" || noun == "panel")
                         obj = currentRoom->getObject("control panel");
-
                 }
                 if (!obj) {
                     cout << "There is no " << noun << " here.\n";
@@ -936,6 +1148,16 @@ void Game::process()
                 inventory.addObject(obj); // add to inventory, remove from room, tell player
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
+
+
+                /*========================================================================================
+                =======================================================================================
+                ======================================================================================*/
+
+                increaseNoteCounter(obj);
+
+                //ONLY TO CHECK IF THE COUNTER IS WORKING. WILL BE DELETED AFTER FINISHING
+                cout << endl << noteCounter << endl << endl;
             }
             break;
 
@@ -1041,6 +1263,19 @@ void Game::process()
             if (noun == "button") {
                 Object* button = currentRoom->getObject("button");
                 pressButton(button);
+                break;
+            }
+
+            //============================ USE MIRROR ON NOTE ============================
+
+            if ((isMirror(noun) && isNote(whatToUseOn)) || (isNote(noun) && isMirror(whatToUseOn))) {
+                useMirror(bathroomNote);
+                break;
+            }
+
+            //=======================================================USAGE FLASHLIGHT ON THE NOTE=====================================
+            if ((isFlashlight(noun) && isNote(whatToUseOn)) || (isNote(noun) && isFlashlight(whatToUseOn))) {
+                lightRevealing();
                 break;
             }
 
@@ -1155,7 +1390,7 @@ void Game::process()
 
                     // only allow valid input
                     if (year < 1000 || year > 9999) {
-                        cout << "Please enter a valid four–digit year (2000–2500).\n";
+                        cout << "Please enter a valid fourâ€“digit year (2000â€“2500).\n";
                         continue;
                     }
 
@@ -1267,7 +1502,7 @@ void Game::process()
             if (noun == "control panel") {
                 Object* panel = currentRoom->getObject("control panel");
                 if (!panel) {
-                    cout << "There’s no control panel here.\n";
+                    cout << "Thereâ€™s no control panel here.\n";
                     break;
                 }
                 if (controlPanelUnscrewed) {
@@ -1387,10 +1622,50 @@ void Game::process()
             break;
         }
 
-        case Actions::UNHIDE: // unhide anywhere
+        case Actions::UNHIDE: { // unhide anywhere
             unhide();
             break;
-
+        }
+        case Actions::READ: {
+            if (noun.empty()) {
+                cout << "Read what?\n";
+                break;
+            }
+            //===============================================================================================================================
+            if (noun == "note-2") {
+                if (bathroomNote->getNoteText() == "" && inventory.gotObject("note-2")) {
+                    cout << endl << "It seems like the text is reversed....\n I cannot read that" << endl;
+                    break;
+                }
+                else {
+                    cout << bathroomNote->getNoteText() << endl;
+                    break;
+                }
+                cout << "it did not go to any if statement" << endl;
+            }
+            else if (noun == "note-1" && inventory.gotObject("note-1")) {
+                cout << storageNote->getNoteText() << endl;
+                break;
+            }
+            else if (noun == "note-5" && inventory.gotObject("note-5")) {
+                cout << alienNote->getNoteText() << endl;
+                break;
+            }
+            else if (noun == "note-3" && inventory.gotObject("note-3")) {
+                if (flashlightCounter == 0) {
+                    cout << "Note is empty" << endl;
+                    break;
+                }
+                else {
+                    cout << darkNote->getNoteText() << endl;
+                    break;
+                }
+            }
+            else {
+                cout << "you do not have this to read" << endl;
+                break;
+            }
+        }
         default:
             cout << "You can not do that right now.\n";
             break;
@@ -1402,3 +1677,4 @@ void Game::process()
 
 
 
+////////////////////////////////

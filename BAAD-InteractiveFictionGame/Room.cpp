@@ -74,3 +74,7 @@ Room* Room::getNeighbour(const string& doorName) { // getter for neighbour
 void Room::setNeighbour(const string& doorName, Room* room) { // setter for neighbour
 	neighbours[doorName] = room; // set the Room pointer for the given doorName
 }
+
+void Room::setDescription(string des) {
+    description = des;
+}
