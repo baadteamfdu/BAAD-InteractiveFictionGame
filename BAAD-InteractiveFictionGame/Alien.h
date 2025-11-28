@@ -18,7 +18,7 @@ class Alien {
         void addRoom(Room* newRoom);
         void move(); //on first(alienCurrentRoom = nullptr) activate it goes to cryoHall set as AliencurrentRoom else leave()
         bool getSawPlayer(); //returns bool sawPlayer
-        void  killPlayer(Captain* captain); //tell player they lost and exit game (or captain saves once)
+        bool killPlayer(Captain* captain); //tell player they lost and exit game (or captain saves once)
         void setCurrentRoom(Room* room) { alienCurrentRoom = room; } // to change aliens location outside the class
         Room* getCurrentRoom() const { return alienCurrentRoom; }
 private:

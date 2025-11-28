@@ -89,7 +89,7 @@ void Alien::move() {
 }
 
 //function to exit the game if they idle too long OR captain doesn’t save them
-void Alien::killPlayer(Captain* captain) {
+bool Alien::killPlayer(Captain* captain) {
 	// if we have a captain and if it can protect the player once:
 	if (captain && captain->canProtectPlayer()) {
 
@@ -124,7 +124,7 @@ void Alien::killPlayer(Captain* captain) {
 			cout << "The alien flees into the station's depths, dragging the captain's body away.\n";
 			cout << "You are alone again... but alive.\n";
 	
-			return;
+			return true;
 		}
 		else {
 			cout << "You refuse to run.\n";

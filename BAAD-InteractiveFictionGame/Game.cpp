@@ -776,12 +776,18 @@ void Game::process()
 
         if (!parser.parse(input, action, noun, whatToUseOn)) { 
 
-            if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
+            if (inEscapeSequence) { //note, needs to reset properly
                 cout << "You hesitate... the alien catches you.\n"; //this is to prevent player surviving if they enter nonsense
-                inEscapeSequence = false;
-                runCount = 0;
-                alien.killPlayer(& captain);
-                continue;
+                bool survived = alien.killPlayer(&captain);
+                if (survived) {
+                    cout << "You must keep running\n";
+                    continue;
+                }
+                // tryna fix bugs
+               // inEscapeSequence = false;
+              //  runCount = 0;
+              //  alien.killPlayer(& captain);
+              //  continue;
             }
 
             cout << "Invalid command. Type 'help' for a list of commands.\n";
@@ -790,11 +796,17 @@ void Game::process()
 
         if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
             cout << "You hesitate... the alien catches you.\n";
-            inEscapeSequence = false;
-            runCount = 0;
+            bool survived = alien.killPlayer(&captain);
+            if (survived) {
+                cout << "You must keep running\n";
+                continue;
+            }
+           // inEscapeSequence = false; 
+           // runCount = 0;
   
-            alien.killPlayer(& captain);
-            continue;
+           // alien.killPlayer(& captain);
+           // continue;
+            return;
         }
 
         switch (action) {
