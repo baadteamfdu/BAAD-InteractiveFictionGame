@@ -49,8 +49,8 @@ int main ()
     cout << "An alien egg was in shipment but hatched during transport." << endl; 
     cout << "You have to make your way through the ship to an escape pod." << endl;
     cout << "Along the way, you should hide in vents, safe rooms, etc." << endl;
-    cout << "Type \"help\" for a list of commands." << endl;
-    cout << "To get started, try using the look command." << endl << endl;
+    cout << "Type \"help\" for a list of commands. They are not actually case sensitive." << endl;
+    cout << "To get started, try using the LOOK command on the room. (LOOK AROUND)" << endl << endl;
     //cout << game.getCurrentRoom()->getDescription() << endl;
 
 

@@ -32,6 +32,15 @@ private:
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
 
+    // tutorial checks
+    bool tutorialEnabled = true;
+    bool tutorialLook = true;
+    bool tutorialTake = true;
+    bool tutorialUnlock = true;
+    bool tutorialMove = true;
+    bool tutorialReminderToLookAndMove = true; // used after first entering CryoHall
+    bool tutorialHide = true;
+
 public:
 
     void init();

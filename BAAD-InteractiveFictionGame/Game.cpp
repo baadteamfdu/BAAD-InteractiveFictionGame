@@ -263,22 +263,28 @@ void Game::setCurrentRoom(Room* nextRoom) {
         alien.setActive(true);
         alien.move();
         cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
+        if (tutorialEnabled && tutorialReminderToLookAndMove) {
+            //hint to look around and figure out which door to go through
+            cout << "\nFirst, examine your surroundings with: LOOK Around\n";
+            cout << "Then, after you figure out which door is unlocked (read the room description), then go through it: OPEN or GO \n";
+            tutorialReminderToLookAndMove = false; //false means check no longer enabled
+        }
     }
 
 }
 
 void Game::getHelp() { // prints out available commands
     cout << "Available commands:\n";
-    cout << "go <door name>       : move between rooms\n";
+    cout << "look around / look room\n";
     cout << "take <item>\n";
     cout << "use <item> <door name> \n";
     cout << "open <door name> (or <object name>) \n";
-    cout << "look <item> (must be inside inventory)\n";
-    cout << "look around / look room\n";
     cout << "inventory / look inventory\n";
+    cout << "look <item> (must be inside inventory)\n";
+    cout << "hide <object name>\n";
+    cout << "go <door name>       : move between rooms\n";
     cout << "type <passcode>\n";
     cout << "peek <door name>\n";
-	cout << "hide <object name>\n";
 	cout << "unhide\n";
     cout << "help\n";
     cout << "note, some common synonyms are supported \n";
@@ -576,6 +582,11 @@ void Game::useKeycard(Object* door) {
         door->setIsLocked(false); 
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
       
+        // After they unlock their first door, give them a guide on how to 
+        if (tutorialEnabled && tutorialUnlock) {
+            cout << "Door unlocked. Enter with: OPEN cryo door or GO cryo door. (Reminder that capital letters are not required.) \n";
+            tutorialUnlock = false;
+            } 
     }
     else {
         cout << "The door is already unlocked.\n";
@@ -655,6 +666,18 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
          door->setIsLocked(true); // lock the door again after going through
+
+         if (tutorialEnabled && !tutorialMove && currentRoom->getName() == "cryoHall" && tutorialReminderToLookAndMove) { //now that player has entered cryo hall and moved, tell them to look around and then go through a door
+             cout << "You should look around and find the name of the door that is unlocked. LOOK Room or LOOK Around are always good first moves\n. Then you can GO or OPEN the door.\n";
+             tutorialReminderToLookAndMove = false;
+         }
+
+         // first time entering worker room, suggest hiding
+         if (tutorialEnabled && tutorialHide && nextRoom->getId() == "workersRoom") {
+             cout << "You should hide here to stay safe. Try: LOOK Around, then HIDE <object>.\n";
+             tutorialHide = false;
+         }
+
          if ((door->getName()) == "bathroom door" || door->getName() == "worker door") { //don't lock player in bathroom or worker room 
                 door->setIsLocked(false);
             
@@ -739,6 +762,18 @@ void Game::process()
 
         if (!parser.parse(input, action, noun, whatToUseOn)) { 
 
+            // On first entering cryoHall, remind the player to look around and move
+            if (tutorialEnabled & currentRoom->getId() == "cryoHall") {
+                    if (tutorialLook) {
+                        cout << "Try examining your surroundings with: look around\n";
+                        tutorialLook = false;
+                    } 
+                    if (!tutorialUnlock && tutorialMove) {// mark that player has moved after unlocking so we don't prompt again, even if they mispelled the door name, it still means they knew to try and move
+                        cout << "The door is unlocked. Enter with: open cryo door or go cryo door\n";
+                        tutorialMove = false;
+                    }
+                }
+
             if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
                 cout << "You hesitate... the alien catches you.\n"; //this is to prevent player surviving if they enter nonsense
                 inEscapeSequence = false;
@@ -775,6 +810,15 @@ void Game::process()
                     cout << "Objects in room:" << endl;
                     currentRoom->printAllObjects();
                     cout << endl;
+
+
+
+                    // after first look around in Cryo, suggest taking keycard
+                    if (tutorialEnabled && currentRoom->getId() == "cryo01") {
+                        if (!inventory.gotObject("keycard")) {
+                            cout << "Try picking up the keycard with: take keycard\n"; 
+                        }
+                    }
 
                 }
                 if (currentRoom->getName() == "CryoStart") {
@@ -880,6 +924,12 @@ void Game::process()
                 inventory.addObject(obj); // add to inventory, remove from room, tell player
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
+
+                // after taking keycard, suggest using it on the door
+                if (tutorialEnabled && tutorialTake && noun == "keycard") {
+                    cout << "Now unlock the door with: USE keycard cryo door.\nReminder: You can view your inventory with INVENTORY or LOOK inventory, and while an item is in your inventory, you can look at it.\nThere may be exceptions to this.\n";
+                    tutorialTake = false;
+                }
             }
             break;
 
@@ -1178,7 +1228,7 @@ void Game::process()
             cout << "You can not do that right now.\n";
             break;
         }
-
+        cout << endl;
         alien.increaseTurnCounter(currentRoom, playerIsHidden);
         }
     }
