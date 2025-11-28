@@ -43,6 +43,30 @@ private:
         "still... human... inside...\n"
         "\nG.S.\n";
 
+    string cryoHallText =
+        "\nBefore cryosleep... there was an accident. One of the "
+        "\ndoctors was (he pauses, struggling to remember) running "
+        "\nexperiments. Something went wrong in the lab. I heard "
+        "\nalarms but... (trails off) can't remember more...";
+
+    string kitchenText =
+        "\nI remember someone running past... frantic. They were "
+        "\nheading to the (he shakes his head) Dark Room, I think? "
+        "\nSaid something about testing on (memory gap). I tried "
+        "\nto stop them but... it's all foggy...";
+
+    string workerRoomText =
+        "The intercom... someone was screaming. No, not screaming. "
+        "(long pause) Changing. The voice got deeper, distorted. "
+        "They kept saying (he can't recall the exact words) "
+        "something like 'I'm sorry' over and over...";
+    string dockRoomText =
+        "Right before they froze me, I saw (struggles to focus) "
+        "security footage. Someone... transforming. They left notes "
+        "everywhere. Scratched something on the walls. Their ID badge "
+        "was (memory fades) somewhere in CryoStart. I cannot... "
+        "I cannot remember the name...";
+
     string darkText;
 
     int flashlightCounter = 0;
@@ -82,6 +106,13 @@ private:
     Object* darkNote;
     Object* alienNote;
 
+    Object* kitchenSpeech;
+    Object* workersSpeech;
+    Object* cryoHallSpeech;
+    Object* dockSpeech;
+
+    Object* captainNoteArr[4];
+    Object* captainNote;
 public:
 
     void init();
@@ -125,5 +156,7 @@ public:
     string takeNoteRoom(string noun); 
 
     void lightRevealing();
+
+    void revealInRoom(string roomId);
 
 };

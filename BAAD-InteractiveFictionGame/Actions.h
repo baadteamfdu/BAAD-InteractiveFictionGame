@@ -21,7 +21,8 @@ enum Actions
 	PRESS,
 	WAKE,        // to wake up captain
 	SERVE,       // to serve water to captain
-	READ
+	READ,
+	TALK
 };
 
 Actions stringToAction(string action);

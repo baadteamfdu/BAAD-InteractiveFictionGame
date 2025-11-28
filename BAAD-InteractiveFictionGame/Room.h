@@ -35,8 +35,8 @@ public:
 
 	//this code sets the positions for where the rooms are and the player
 	void setPosition(int x, int y);
-		int getX();
-		int getY();
+	int getX();
+	int getY();
 };
 
 

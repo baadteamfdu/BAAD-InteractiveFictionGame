@@ -9,10 +9,9 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <random>
 
 using namespace std;
-
-int noteCounter = 0;
 
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
@@ -29,7 +28,7 @@ void coolTyping(string text) {
 void Game::init() {
 
 
-
+    captainNote = new Object("note-4", "Notes that you heard from captain", true, false);
     
 
     // sets current room to the starting room and initializes the starting room to exist
@@ -281,6 +280,21 @@ void Game::init() {
     alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
     alienNote->setNoteText(alienText);
 
+    kitchenSpeech = new Object("kitchen-speech", "Captain's memory from kitchen", true, false);
+    workersSpeech = new Object("workers-speech", "Captain's memory from workers room", true, false);
+    cryoHallSpeech = new Object("cryo-speech", "Captain's memory from cryo hall", true, false);
+    dockSpeech = new Object("dock-speech", "Captain's memory from dock", true, false);
+
+    kitchenSpeech->setNoteText(kitchenText);
+    workersSpeech->setNoteText(workerRoomText);
+    cryoHallSpeech->setNoteText(cryoHallText);
+    dockSpeech->setNoteText(dockRoomText);
+
+    captainNoteArr[0] = cryoHallSpeech;
+    captainNoteArr[1] = kitchenSpeech;
+    captainNoteArr[2] = workersSpeech;
+    captainNoteArr[3] = dockSpeech;
+
     // JUST ADD FOR NOW MAYBE I WILL COME UP WITH BETTER IDEA TO HIDE IT IN THE FUTURE, HOWEVER I ASSUME THAT THE USING OF FLASHLIGHT IS GOOD ENOUGH
     //darkRoom->addObject(darkNote); 
 
@@ -301,7 +315,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
-        alien.setActive(true);
+        alien.setActive(false); //===================================================================== CHANGE IT!!!!===============================================================
         alien.move();
         cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
     }
@@ -945,6 +959,38 @@ void Game::createDarkNote() {
 
 }
 
+int noteCounter = 0;
+string specialRooms[4] = { "cryoHall", "kitchen", "workersRoom", "dock" };
+bool revealed[4] = { false, false, false, false };
+int revealCount = 0;
+
+string generic1 = "Captain: Oh my god… why did you wake me up? I was having the best dream.";
+string generic2 = "Captain: If you find my snacks, return them. Captains orders.";
+string generic3 = "Captain: I swear, if this ship beeps one more time, I am jumping out the airlock.";
+string generic4 = "Captain: All I want is five minutes to watch my show. FIVE minutes.";
+string generic5 = "Captain: If someone touches my chair again, I am writing them up.";
+
+string genericText[5] = { generic1, generic2, generic3, generic4, generic5 };
+
+void Game::revealInRoom(string roomId) {
+    for (int index = 0; index < 4; index++) {
+        if (specialRooms[index] == roomId) {
+            if (revealed[index] == false) {
+                revealed[index] = true;
+                revealCount++;
+            }
+            cout << captainNoteArr[index]->getNoteText() << endl;
+            if (revealCount == 4) {
+                inventory.addObject(captainNote);
+                return;
+            }
+            return;
+        }
+    }
+    cout << endl << genericText[rand() % 5] << endl;
+    return;
+}
+
 void Game::process()
 {
     string input, noun, whatToUseOn;
@@ -1418,10 +1464,10 @@ void Game::process()
             string dummy;
             getline(cin, dummy);
 
-            coolTyping  ("\He says: My name is Emaruv Santron.\n");
+            coolTyping  ("\nHe says: My name is Emaruv Santron.\n");
 
-            coolTyping  ("\Then he leans back against the pod frame, staring past the ceiling.\n");
-            coolTyping  ("\"Back then, this station was a frontier outpost,\" he begins.\n");
+            coolTyping  ("n\Then he leans back against the pod frame, staring past the ceiling.\n");
+            coolTyping  ("n\"Back then, this station was a frontier outpost,\" he begins.\n");
             coolTyping  ("\"We ferried colonists, cargo, and an egg we never should've taken aboard.\"\n");
             coolTyping  ("\"When things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n");
             coolTyping  ("\"Looks like that job landed on you.\"\n\n");
@@ -1626,6 +1672,33 @@ void Game::process()
             unhide();
             break;
         }
+        case Actions::TALK: {
+            if (noun.empty()) {
+                cout << "To who?\n";
+                break;
+            }
+            if (noun == "captain") {
+                if (captain.getIsAlive() && captain.getIsFollowing() && captain.getIsAwake()) {
+                    revealInRoom(currentRoom->getId());
+                    break;
+                }
+                else if (!captain.getIsAwake()) {
+                    cout << "Who are you trying to talk to?" << endl;
+                    break;
+                }
+                else if (!captain.getIsAlive() && !captain.getIsFollowing()) {
+                    cout << "You should forget him.....\n You did whay you did...." << endl;
+                    break;
+                }
+                else {
+                    cout << "Stop talking to yourself" << endl;
+                }
+            }
+            else {
+                cout << "What are you trying to do?" << endl;
+            }
+        }
+
         case Actions::READ: {
             if (noun.empty()) {
                 cout << "Read what?\n";
@@ -1660,6 +1733,29 @@ void Game::process()
                     cout << darkNote->getNoteText() << endl;
                     break;
                 }
+            }
+            else if (noun == "note-4" && inventory.gotObject("note-4")) {
+                cout << "Which part do you want to read?\nCryo Hall,\nKitchen,\nWorkers Room\nDock" << endl;
+                string choice;
+                getline(cin, choice);
+
+                // lowercase input
+                transform(choice.begin(), choice.end(), choice.begin(),::tolower); //https://www.geeksforgeeks.org/cpp/how-to-convert-std-string-to-lower-case-in-cpp/
+
+                string options[4] = {
+                    "cryo hall",
+                    "kitchen",
+                    "workers room",
+                    "dock"
+                };
+
+                for (int note = 0; note < 4; note++) {
+                    if (choice == to_string(note + 1) || choice == options[note]) { //choice == to_string(i + 1) because we cannot compare the string with the int so i had to turn index to string
+                        cout << captainNoteArr[note]->getNoteText() << endl;
+                        break;
+                    }
+                }
+                cout << "I don't recognize that part of the note.\n";
             }
             else {
                 cout << "you do not have this to read" << endl;

@@ -52,8 +52,12 @@ Actions stringToAction(string action) { //maybe
 	}
 	if (action == "serve" || action == "give") {
 		return Actions::SERVE;
+	}
 	if (action == "read") {
 		return Actions::READ;
 	}
-	return Actions::INVALID; //not yet sure if I need this
+	if (action == "talk" || action == "speak" || action == "ask") {
+		return Actions::TALK;
+	}
+		return Actions::INVALID; //not yet sure if I need this
 }
