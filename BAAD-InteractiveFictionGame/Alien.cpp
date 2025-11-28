@@ -123,6 +123,7 @@ void Alien::killPlayer(Captain* captain) {
 			leave();
 			cout << "The alien flees into the station's depths, dragging the captain's body away.\n";
 			cout << "You are alone again... but alive.\n";
+	
 			return;
 		}
 		else {

@@ -168,7 +168,7 @@ void Game::init() {
     passcodeDoor->setPasscode(passcode);
 
     Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, true);
-    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false); //
+    escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false); //
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
     Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
@@ -305,6 +305,7 @@ void Game::getHelp() { // prints out available commands
 	cout << "hide <object name>\n";
 	cout << "unhide\n";
     cout << "help\n";
+    cout << "wake captain\n";
     cout << "note, some common synonyms are supported \n";
 }
 
@@ -760,13 +761,18 @@ void Game::process()
 {
     string input, noun, whatToUseOn;
     Actions action;
-    alien.setActive(false);
+    
 
     cout << "Type 'help' for a list of commands.\n";
 
     while (true) {
         cout << "> ";
         if (!getline(cin, input)) break; // handle EOF cleanly
+
+        //Ignore empty input (ENTER alone)
+        if (input.size() == 0) {
+            continue;
+        }
 
         if (!parser.parse(input, action, noun, whatToUseOn)) { 
 
@@ -775,6 +781,7 @@ void Game::process()
                 inEscapeSequence = false;
                 runCount = 0;
                 alien.killPlayer(& captain);
+                continue;
             }
 
             cout << "Invalid command. Type 'help' for a list of commands.\n";
@@ -785,8 +792,9 @@ void Game::process()
             cout << "You hesitate... the alien catches you.\n";
             inEscapeSequence = false;
             runCount = 0;
-            ;
+  
             alien.killPlayer(& captain);
+            continue;
         }
 
         switch (action) {
