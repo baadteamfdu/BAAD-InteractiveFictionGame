@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Alien.h"
+#include "Captain.h"
 #include "Game.h"
 
 using namespace std;
@@ -40,7 +41,7 @@ bool Alien::isAlienInRoom(Room * playerCurrentRoom) {
 }
 
 //increases the turn counter and accounts for conditions of where player and alien are and if player is at risk: 
-void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden) {
+void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden, Captain* captain) {
 	if (isActive == true) {
 		turnCounter++;
 
@@ -65,12 +66,12 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden) {
 			}
 			if (alienCurrentRoom == playerCurrentRoom && chaseCounter >= chaseThreshold && isHidden) {	//keep increasing chase counter if player doesn't leave but if they hide on the last turn possible they die
 				cout << "The alien pulls you out of your hiding spot, if only you had hidden sooner." << endl;
-				killPlayer(); //past threshold kill player
+				killPlayer(captain); //past threshold kill player, but captain might save you
 				return;
 			}
 			if (alienCurrentRoom == playerCurrentRoom && chaseCounter >= chaseThreshold && !isHidden) {	//keep increasing chase counter if player doesn't hide
 				cout << "You failed to hide in time." << endl;
-				killPlayer(); //past threshold kill player
+				killPlayer(captain); //past threshold kill player or captain sacrifice
 				return;
 		}
 	}
@@ -91,11 +92,58 @@ void Alien::move() {
 	leave();
 }
 
-//function to exit the game if they idle too long
-void Alien::killPlayer() {
+//function to exit the game if they idle too long OR captain doesn�t save them
+bool Alien::killPlayer(Captain* captain) {
+	// if we have a captain and if it can protect the player once:
+	if (captain && captain->canProtectPlayer()) {
+
+		string playerName = captain->getPlayerName();
+		// If playername is empty fall back to kid
+		if (playerName == "") {
+			playerName = "kid";
+		}
+		cout << "The alien lunges toward you, claws outstretched.\n";
+		cout << "Captain Santron shoves you behind him, stepping between you and the creature.\n";
+		cout << "Captain: \"Looks like this is it, " << playerName << ".\"\n\n";
+
+		cout << "1. Let the captain sacrifice himself.\n";
+		cout << "2. Refuse and face the alien together.\n";
+		cout << "> ";
+
+		string choice;
+		if (!getline(cin, choice)) {
+			cout << "Input closed. Exiting game...\n";
+			exit(0);
+		}
+		if (choice == "1") {
+			cout << "You stumble back as the captain charges the alien.\n";
+			cout << "The two collide in a blur of claws and steel.\n";
+			cout << "There is a horrible screech, then silence.\n";
+			captain->setHasProtectedOnce(true);
+			captain->setIsAlive(false);
+			captain->setIsFollowing(false);
+
+			// Alien leaves with the captain
+			leave();
+			cout << "The alien flees into the station's depths, dragging the captain's body away.\n";
+			cout << "You are alone again... but alive.\n";
+	
+			return true;
+		}
+		else {
+			cout << "You refuse to run.\n";
+			cout << "You and the captain stand together against the alien.\n";
+			cout << "It tears through you both in moments.\n";
+			cout << "Game Over.\n";
+			exit(0);
+		}
+	}
+
+	// Normal death: no captain, or he can't protect anymore
 	cout << "You were caught by the alien." << endl;
-	cout << "Game Over" << endl;
+	cout << "Game Over." << endl;
 	exit(0); //exit function to end the game.
+	
 }
 
 //munction to make the alien pick a new room and reset the counters and thresholds (thresholds to random values)

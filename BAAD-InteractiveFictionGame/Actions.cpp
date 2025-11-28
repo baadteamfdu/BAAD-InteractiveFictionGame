@@ -47,6 +47,11 @@ Actions stringToAction(string action) { //maybe
 	if (action == "run") {
 		return Actions::RUN;
 	}
+	if (action == "wake" || action == "awaken") {
+		return Actions::WAKE;
+	}
+	if (action == "serve" || action == "give") {
+		return Actions::SERVE;
 	if (action == "read") {
 		return Actions::READ;
 	}

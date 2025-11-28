@@ -3,10 +3,12 @@
 #include "Actions.h"
 #include "Room.h"
 #include "Inventory.h"
+#include "Captain.h"
 #include "Object.h"
 #include "Parser.h"
 #include "Alien.h"
 #include <string>
+#include <vector>
 using namespace std;
 
 extern int noteCounter; //Global variable so it is possible to access it in the alien.h
@@ -49,6 +51,7 @@ private:
     Parser parser;
     Inventory inventory;
     Alien alien;
+    Captain captain;                    
     Object* flashlight;                  // Object flashlight is created here to have access in the gameProcess()
     Object* batteries;                   // Object batteries is created here to have access in the gamePorcess()
     Object* escPodChamDoor;              // To change the state of the door(if open or not) in the gameProcess()

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -15,6 +17,14 @@ int noteCounter = 0;
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
+
+// https://stackoverflow.com/questions/16884607/character-by-character-output-to-simulate-a-typing-effect
+void coolTyping(string text) {
+    for (char letter : text) {
+        cout << letter;
+            this_thread::sleep_for(chrono::milliseconds(50));
+    }
+}
 
 void Game::init() {
 
@@ -34,6 +44,7 @@ void Game::init() {
     foundcode2 = false;
 
 	playerIsHidden = false;          // player is not hidden at the start of the game.
+    captain.reset(); // captain resets each game.
 
     // Create rooms
     Room* cryoStart = new Room(
@@ -91,6 +102,13 @@ void Game::init() {
         "Dark Room",
         "The room is dark and quiet\ You cannot see anything"
     );
+      // captain's quarter
+    Room* captainRoom = new Room(
+        "captainRoom",
+        "Captain's Quarters",
+        "A small, private cabin dominated by a reinforced cryo pod A reinforced cryo pod rests at the center of the room,\n" 
+        "its frosted glass trembling with a faint breath from within and a worn chair sits nearby as if someone waited here long ago.\n"
+        );
 
     setCurrentRoom(cryoStart);
 
@@ -142,8 +160,7 @@ void Game::init() {
     //code halves inside objects 
   //  Object* codePart1 = new Object("code part 1", "Half of the passcode: '--" + to_string(passcode % 100) + "'", true);
   //  Object* codePart2 = new Object("code part 2", "Half of the passcode: '" + to_string(passcode / 100) + "--'", true);
-  //  stall->addContainedObject(codePart1);
-  //  book->addContainedObject(codePart2);
+  
 
     // Creating doors
     Object* cryoDoor = new Object("cryo door", "A door with a card reader", false, true); //cryo card door
@@ -153,15 +170,14 @@ void Game::init() {
     passcodeDoor->setPasscode(passcode);
 
     Object* dockDoor = new Object("dock door", "A door to the Dock Room", false, true);
-    Object* escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false);
+    escPodChamDoor = new Object("escape pod door", "A door to the Escape Pod Door", false, false); //
     Object* finalRoomDoor = new Object("pod door", "A door to the Final Room", false, true);
-    Object* workersDoor = new Object("worker door", "A door to the Worker’s Room", false, false);
+    Object* workersDoor = new Object("worker door", "A door to the Workerâ€™s Room", false, false);
     Object* bathroomDoor = new Object("bathroom door", "A door to the Bathroom", false, false);
-
-    // OMGGGGG I WILL SET THEM FALSE WHILE I AM MAKING STORY
-    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, false);
-    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, false);
-    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, false);
+    Object* cafeteriaDoor = new Object("cafeteria door", "A door to the Cafeteria", false, true);
+    Object* captainDoor = new Object("captain door", "A door to the Captain's Quarters", false, false);
+    Object* kitchenDoor = new Object("kitchen door", "A door to the Kitchen", false, true);
+    Object* darkDoor = new Object("dark door", "A door to the Dark Room", false, true);
 
     // Adding doors to rooms
 
@@ -195,6 +211,9 @@ void Game::init() {
     cafeteria->addObject(darkDoor);
     darkRoom->addObject(darkDoor);
 
+    cafeteria->addObject(captainDoor);
+    captainRoom->addObject(captainDoor);
+
     //Connect rooms
     cryoStart->setNeighbour("cryo door", cryoHall);
     cryoHall->setNeighbour("cryo door", cryoStart);
@@ -225,6 +244,9 @@ void Game::init() {
 
     cafeteria->setNeighbour("dark door", darkRoom);
     darkRoom->setNeighbour("dark door", cafeteria);
+
+    cafeteria->setNeighbour("captain door", captainRoom);
+    captainRoom->setNeighbour("captain door", cafeteria);
 
     allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom };
     cryoStart->setPosition(24, 0);
@@ -300,6 +322,7 @@ void Game::getHelp() { // prints out available commands
 	cout << "hide <object name>\n";
 	cout << "unhide\n";
     cout << "help\n";
+    cout << "wake captain\n";
     cout << "note, some common synonyms are supported \n";
 }
 
@@ -438,13 +461,13 @@ Handles the player's attempt to press a button in the game.
     {
         if (!button)
         {
-            cout << "There’s no button here to press.\n";
+            cout << "Thereâ€™s no button here to press.\n";
             return;
         }
 
         if (button->getName() != "button")
         {
-            cout << "You can’t press that.\n";
+            cout << "You canâ€™t press that.\n";
             return;
         }
 
@@ -498,14 +521,14 @@ Handles the player's action when using the screwdriver on an object.
 
 - Checks if the target object exists; if not, notifies the player.
 - If used on the "vent":
-    • Unlocks it if it’s closed and marks it as a safe zone where the player can hide.
-    • If already open, informs the player that nothing needs to be done.
+    â€¢ Unlocks it if itâ€™s closed and marks it as a safe zone where the player can hide.
+    â€¢ If already open, informs the player that nothing needs to be done.
 - If used on the "control panel":
-    • Ensures it hasn’t been opened before using the controlPanelUnscrewed flag.
-    • When first opened, a hidden "button" object is created and added to the room.
+    â€¢ Ensures it hasnâ€™t been opened before using the controlPanelUnscrewed flag.
+    â€¢ When first opened, a hidden "button" object is created and added to the room.
       (The button is created here because it represents a new interactive element
        that only becomes accessible after the player unscrews the control panel.)
-    • Displays a message indicating that the button has been revealed.
+    â€¢ Displays a message indicating that the button has been revealed.
 - If used on anything else, informs the player that the screwdriver has no effect.
 */
 
@@ -568,7 +591,7 @@ Handles using the screwdriver on different objects.
 - If used on the "control panel":
   Opens it only once by checking controlPanelUnscrewed.
   Reveals a new "button" object inside the panel and adds it to the room.
-- If used on anything else, informs the player that it’s not a valid use.
+- If used on anything else, informs the player that itâ€™s not a valid use.
 */
 
 
@@ -584,7 +607,7 @@ void Game::useKeycard(Object* door) {
     }
     // Prevent unlocking passcode doors with the keycard
     else if (door->getIsPasscodeLocked()) {
-        cout << "The keycard doesn’t work on this type of door. It requires a passcode.\n";
+        cout << "The keycard doesnâ€™t work on this type of door. It requires a passcode.\n";
         return;
     }
 
@@ -629,7 +652,7 @@ void Game::typeCode(int enteredCode)
     else {
         cout << "Incorrect code. Try again.\n";
         alien.setCurrentRoom(currentRoom);
-        cout << "A distant screech echoes… Something has been alerted.\n";
+        cout << "A distant screech echoesâ€¦ Something has been alerted.\n";
     }
 }
 
@@ -675,6 +698,12 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
          cout << "You go through the " << doorName << " and enter the next room.\n";
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
+
+         // IF captain is following and is alive cout the folllowng
+         if (captain.getIsFollowing() && captain.getIsAlive()) {
+             cout << "Captain Emaruv Santron steps in behind you, scanning the corners of the room.\n";
+         }
+
          door->setIsLocked(true); // lock the door again after going through
          if ((door->getName()) == "bathroom door" || door->getName() == "worker door") { //don't lock player in bathroom or worker room 
                 door->setIsLocked(false);
@@ -908,7 +937,7 @@ void Game::createDarkNote() {
 
     // Description of the papers
     cout << "You kneel down and sort through the scattered papers.\n"
-        "Most are torn or unreadable—but one looks intact...\n";
+        "Most are torn or unreadableâ€”but one looks intact...\n";
 
     if (currentRoom->getObject("note-3") != darkNote) {
         currentRoom->addObject(darkNote);
@@ -920,6 +949,7 @@ void Game::process()
 {
     string input, noun, whatToUseOn;
     Actions action;
+    
 
     cout << "Type 'help' for a list of commands.\n";
 
@@ -927,13 +957,25 @@ void Game::process()
         cout << "> ";
         if (!getline(cin, input)) break; // handle EOF cleanly
 
+        //Ignore empty input (ENTER alone)
+        if (input.size() == 0) {
+            continue;
+        }
+
         if (!parser.parse(input, action, noun, whatToUseOn)) { 
 
-            if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
+            if (inEscapeSequence) { //note, needs to reset properly
                 cout << "You hesitate... the alien catches you.\n"; //this is to prevent player surviving if they enter nonsense
-                inEscapeSequence = false;
-                runCount = 0;
-                alien.killPlayer();
+                bool survived = alien.killPlayer(&captain);
+                if (survived) {
+                    cout << "You must keep running\n";
+                    continue;
+                }
+                // tryna fix bugs
+               // inEscapeSequence = false;
+              //  runCount = 0;
+              //  alien.killPlayer(& captain);
+              //  continue;
             }
 
             cout << "Invalid command. Type 'help' for a list of commands.\n";
@@ -942,9 +984,17 @@ void Game::process()
 
         if (inEscapeSequence && action != Actions::RUN) { //note, needs to reset properly
             cout << "You hesitate... the alien catches you.\n";
-            inEscapeSequence = false;
-            runCount = 0;
-            alien.killPlayer();
+            bool survived = alien.killPlayer(&captain);
+            if (survived) {
+                cout << "You must keep running\n";
+                continue;
+            }
+           // inEscapeSequence = false; 
+           // runCount = 0;
+  
+           // alien.killPlayer(& captain);
+           // continue;
+            return;
         }
 
         switch (action) {
@@ -968,6 +1018,10 @@ void Game::process()
                     cout << "Objects in room:" << endl;
                     currentRoom->printAllObjects();
                     cout << endl;
+                    //show captain if following and alive
+                    if (captain.getIsFollowing() && captain.getIsAlive()) {
+                        cout << "Captain Santron stands nearby, watching the shadows.\n";
+                    }
 
                 }
                 if (currentRoom->getName() == "CryoStart") {
@@ -1247,6 +1301,153 @@ void Game::process()
             break;
         }
 
+        case Actions::WAKE:
+        {
+            if (noun.empty()) {
+                cout << "Wake who?\n";
+                break;
+            }
+
+            if (currentRoom->getId() != "captainRoom") {
+                cout << "There is no one here to wake.\n";
+                break;
+            }
+
+            if (noun != "captain") {
+                cout << "That doesn't seem to respond.\n";
+                break;
+            }
+
+            if (captain.getIsAwake()) {
+                cout << "The captain is already awake.\n";
+                break;
+            }
+
+            captain.setIsAwake(true);
+            cout << "You wipe frost from the cryo pod's glass and find an older man inside.\n";
+            cout << "You fumble with the manual release until the lid hisses open.\n";
+
+            cout << " \n";
+
+            coolTyping ("His eyes flutter, and he whispers, \"Wata... watah...\"\n");
+            cout << "Type: serve water to captain\n";
+            break;
+        }
+        case Actions::SERVE:
+        {
+            if (noun.empty()) {
+                cout << "Serve what?\n";
+                break;
+            }
+
+            if (noun != "water") {
+                cout << "You can't serve that right now.\n";
+                break;
+            }
+
+            if (whatToUseOn.empty() || whatToUseOn != "captain") {
+                cout << "Serve water to whom?\n";
+                break;
+            }
+
+            if (currentRoom->getId() != "captainRoom") {
+                cout << "The captain isn't here.\n";
+                break;
+            }
+
+            if (!captain.getIsAwake()) {
+                cout << "No one here seems awake enough to drink.\n";
+                break;
+            }
+
+            if (captain.getHasWater()) {
+                cout << "The captain has already had water.\n";
+                break;
+            }
+
+            // Conversation sequence
+            captain.setHasWater(true);
+
+            coolTyping  ("You find a bottle of water on a nearby shelf and bring it to the captain.\n");
+            coolTyping  ("He drinks greedily, some color returning to his face.\n\n");
+
+            cout << "Captain: \"Gh... thank you. It looks like u got yourself into some trouble..like i did....UMMM... what year is it?\"\n";
+
+            int year = 0;
+            while (true) {
+                cout << "> ";
+                string yearInput;
+                if (!getline(cin, yearInput)) {
+                    cout << "Input closed. Exiting game...\n";
+                    exit(0);
+                }
+                if (yearInput.size() == 0) {
+                    cout << "Please enter the year as numbers.\n";
+                    continue;
+                }
+                try {
+                    year = stoi(yearInput);
+
+                    // only allow valid input
+                    if (year < 1000 || year > 9999) {
+                        cout << "Please enter a valid fourâ€“digit year (2000â€“2500).\n";
+                        continue;
+                    }
+
+                    // pastYear is not negative
+                    if (year - 275 < 0) {
+                        cout << "That doesn't seem like a real year... try again.\n";
+                        continue;
+                    }
+
+                    break; //
+                }
+                catch (...) {
+                    cout << "Please enter the year as numbers (for example: 2025).\n";
+                }
+
+            }
+
+            int pastYear = year - 275;
+            cout <<"Captain: \"By the stars... that means the last time I was awake, it was around " << pastYear << ".\"\n";
+            coolTyping  ("Captain: \"Two hundred and seventy-five years... gone in a blink.\"\n\n");
+
+            cout << "Press ENTER to listen to the captain's story...\n";
+
+            // prompting the player to press enter but this would take anything as legal input
+            string dummy;
+            getline(cin, dummy);
+
+            coolTyping  ("\He says: My name is Emaruv Santron.\n");
+
+            coolTyping  ("\Then he leans back against the pod frame, staring past the ceiling.\n");
+            coolTyping  ("\"Back then, this station was a frontier outpost,\" he begins.\n");
+            coolTyping  ("\"We ferried colonists, cargo, and an egg we never should've taken aboard.\"\n");
+            coolTyping  ("\"When things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n");
+            coolTyping  ("\"Looks like that job landed on you.\"\n\n");
+
+            coolTyping  ("Captain: \"Enough about me. What's your name, kid?\"\n");
+            cout << "> My name is : ";
+            string name;
+            if (!getline(cin, name)) {
+                cout << "Input closed. Exiting game...\n";
+                exit(0);
+            }
+            if (name.empty()) {
+                name = "kid";
+            }
+
+            captain.setPlayerName(name);
+            captain.setIntroduced(true);
+            captain.setIsFollowing(true);
+
+            coolTyping("Captain: \"All right, "); cout << name << ".\"\n";
+            coolTyping("\"Stay close. I'll watch your back as long as I can.\"\n");
+
+            break;
+        }
+
+
         case Actions::RUN:
             if (inEscapeSequence) {
                 runCount++; //increase run count so after they pass 4 it ends
@@ -1265,7 +1466,21 @@ void Game::process()
                         break;
                     default:
                         cout << "You see one last working escape pod." << endl;
-                        cout << "With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination." << endl;
+
+                        // if the captain and the player made it out. 
+                        if (captain.getIsFollowing() && captain.getIsAlive()) {
+                            string nm = captain.getPlayerName();
+                            if (nm.empty()) nm = "kid";
+                            coolTyping ("Captain Santron slumps into the seat beside you and lets out a tired laugh.\n");
+                            coolTyping ("\"We made it out, "); cout << nm << ". Somehow.\"\n";
+                        }
+                        // if only the player has made it out
+                        else if (captain.getHasProtectedOnce() && !captain.getIsAlive()) {
+                            coolTyping ("As the pod drifts into the void, you remember Captain Santron's last stand.\n");
+                            coolTyping("His sacrifice bought you this one chance at survival.\n");
+                        }
+
+                        coolTyping("With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination.\n");
                         cout << "You win!" << endl;
                         exit(0);
                     }
@@ -1275,7 +1490,7 @@ void Game::process()
                      else if (inEscapeSequence) {
                          break;
                      }
-                }
+            }
         case Actions::GO:
         case Actions::OPEN:
             if (noun.empty()) {
@@ -1287,7 +1502,7 @@ void Game::process()
             if (noun == "control panel") {
                 Object* panel = currentRoom->getObject("control panel");
                 if (!panel) {
-                    cout << "There’s no control panel here.\n";
+                    cout << "Thereâ€™s no control panel here.\n";
                     break;
                 }
                 if (controlPanelUnscrewed) {
@@ -1456,7 +1671,7 @@ void Game::process()
             break;
         }
 
-        alien.increaseTurnCounter(currentRoom, playerIsHidden);
+        alien.increaseTurnCounter(currentRoom, playerIsHidden, & captain);
         }
     }
 

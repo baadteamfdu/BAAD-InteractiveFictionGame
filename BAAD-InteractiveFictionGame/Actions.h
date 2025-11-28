@@ -19,6 +19,8 @@ enum Actions
 	UNHIDE,
 	RUN,
 	PRESS,
+	WAKE,        // to wake up captain
+	SERVE,       // to serve water to captain
 	READ
 };
 
