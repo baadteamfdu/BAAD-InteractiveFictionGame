@@ -62,14 +62,27 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden, Captain*
 			}
 			if (alienCurrentRoom != playerCurrentRoom) { //alien and player not in same room but sawPlayer = true, this means player left room with alien in it
 				alienCurrentRoom = playerCurrentRoom; //alien follows player to new room
+				if (saveAlien == true) {
+					cout << "\nCaptain: \"It is a chance! Throw the cure!!!\"" << endl;
+				}
 				cout << "You hear the alien close behind you... run and hide!" << endl;
 			}
 			if (alienCurrentRoom == playerCurrentRoom && chaseCounter >= chaseThreshold && isHidden) {	//keep increasing chase counter if player doesn't leave but if they hide on the last turn possible they die
+				if (saveAlien == true) {
+					cout << "You could not throw a cure in time." << endl;
+					killPlayer(captain);
+					return;
+				}
 				cout << "The alien pulls you out of your hiding spot, if only you had hidden sooner." << endl;
 				killPlayer(captain); //past threshold kill player, but captain might save you
 				return;
 			}
 			if (alienCurrentRoom == playerCurrentRoom && chaseCounter >= chaseThreshold && !isHidden) {	//keep increasing chase counter if player doesn't hide
+				if (saveAlien == true) {
+					cout << "You could not throw a cure in time." << endl;
+					killPlayer(captain);
+					return;
+				}
 				cout << "You failed to hide in time." << endl;
 				killPlayer(captain); //past threshold kill player or captain sacrifice
 				return;

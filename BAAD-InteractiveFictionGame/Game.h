@@ -11,8 +11,8 @@
 #include <vector>
 using namespace std;
 
-extern int noteCounter; //Global variable so it is possible to access it in the alien.h
-
+extern int noteCounter;         //Global variable so it is possible to access it in the alien.h
+extern bool saveAlien;          //For checking the decision if the player whant to save the alien or not 
 class Game {
 private:
     //==============================NOTE VARIABLES===============================
@@ -45,12 +45,13 @@ private:
         "still... human... inside...\n"
         "\nG.S.\n";
 
-    string keycardText =
-        "\nA plastic ID card, partially melted and scratched."
+    string keycardText = "\nA plastic ID card, partially melted and scratched."
         "\nName: DR. (melted plastic obscures first name) SAMI"
-        "\nDepartment : XENO(scratched)"
-        "\nID : GS - (not readable)"
-        "\nClearance : LEVEL(damaged)";
+        "\nDepartment: XENO(scratched)"
+        "\nClearance: LEVEL(damaged)"
+        "\nID: GS - ";
+
+
 
     string cryoHallText =
         "\nBefore cryosleep... there was an accident. One of the "
@@ -127,7 +128,6 @@ private:
     =====================*/
 
     bool hasReadLastNote;   //To let the user talk to captain
-    bool saveAlien;         //For checking the decision if the player whant to save the alien or not 
     bool hasDecision;       //
 
     string captainMemoryDialogue =
@@ -169,6 +169,9 @@ private:
 
     Object* kitchenVentDoor;
 
+    int nanoLockerPasscode;
+
+    Captain gojo;
 
 
     Room* currentRoom = nullptr;
@@ -247,4 +250,9 @@ public:
 
 
     void specialDialogueCap();
+
+    void openNanoLocker();
+    void typeCodeNanoLocker(int passcode);
+
+    void throwCure();
 };

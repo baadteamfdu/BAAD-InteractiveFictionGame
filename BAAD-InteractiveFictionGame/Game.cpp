@@ -14,6 +14,7 @@
 using namespace std;
 
 int noteCounter = 5;
+bool saveAlien = false;
 
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
@@ -31,6 +32,7 @@ void Game::init() {
 
     // sets current room to the starting room and initializes the starting room to exist
     // Create rooms
+    nanoLockerPasscode = rand() % 900000 + 400000;
 
     passcode = rand() % 9000 + 1000; // since there could only be 9000 odds for a four digit passcode and it would start from 1000.
     passcode1 = passcode / 100;      // stores the first two digits for passcode1
@@ -42,6 +44,7 @@ void Game::init() {
 
 	playerIsHidden = false;          // player is not hidden at the start of the game.
     captain.reset(); // captain resets each game.
+    gojo.reset();
 
     // Create rooms
     Room* cryoStart = new Room(
@@ -290,7 +293,7 @@ void Game::init() {
     workersSpeech->setNoteText(workerRoomText);
     cryoHallSpeech->setNoteText(cryoHallText);
     dockSpeech->setNoteText(dockRoomText);
-    keycard->setNoteText(keycardText);
+    keycard->setNoteText(keycardText + to_string(nanoLockerPasscode));
 
     //Assiging the values for the arrays
     captainNoteArr[0] = cryoHallSpeech;
@@ -320,15 +323,15 @@ void Game::init() {
 
     //ENDING VARIABLES
     hasReadLastNote = false;
-    saveAlien = false;
     hasDecision = false;
 
     kitchenVent = new Room("kitchenVent", "Kitchen Vent",
         "A square metal vent sits low on the kitchen wall."
         "\nThe screws are old, rusted, and look recently disturbed, like something crawled through from the other side.");
-    kitchenVentDoor = new Object("vent grate", "A vent cover.", false, false);
+    kitchenVentDoor = new Object("vent grate", "A vent cover.", false, true);
     nanoLocker = new Object("nano locker", "A compact nanoLocker rests inside the vent. A tiny keypad blinks on its surface, waiting for a password.", false, true);
-    
+    cure = new Object("cure", "A glowing blue vial—the Cure-rests inside, sealed behind a pulsing genetic lock.", true, false);
+
     kitchenVent->addObject(kitchenVentDoor);
     kitchenVent->setNeighbour("vent grate", kitchen);
 
@@ -341,7 +344,9 @@ void Game::init() {
     captain.setIsFollowing(true);
 
     inventory.addObject(alienNote);
-
+    inventory.addObject(screwdriver);
+    inventory.addObject(keycard);
+    setCurrentRoom(kitchen);
 }
 
 Room* Game::getCurrentRoom() {
@@ -633,6 +638,11 @@ void Game::useScrewdriver(Object* obj)
 
         cout << "You unscrew the control panel and expose a small red button inside.\n";
     }
+    if (name == "vent grate" && currentRoom->getId() == "kitchen" && saveAlien) {
+        obj->setIsLocked(false);
+        cout << "You unscrew the grate." << endl;
+        return;
+    }
     else {
         cout << "You can't use the screwdriver on that.\n";
     }
@@ -736,7 +746,6 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
         cout << "You can not open this or go through it. \n";
         return;
     }
-
     // check for passcode locked door
     if (door->getIsPasscodeLocked()) {
         if (door->getIsLocked()) {
@@ -751,6 +760,10 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
             return;
         }
     }
+    else if (door->getIsLocked() && door->getName() == "vent grate") {
+        cout << "The metal vent cover is screwed shut, preventing you from entering." << endl;
+        return;
+    }
     // for usual keycard doors
     else if (door->getIsLocked()) {
         cout << "The door is locked.\n";
@@ -764,6 +777,15 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 			 playerIsHidden = false; // unhide player when they go through a door
 			 cout << "You step out from your hiding spot.\n";
          }
+         if (nextRoom->getName() == "kitchenVent")) {
+             cout << "\nYou take off the ventilation grate and crawl into the vent." << endl;;
+             setCurrentRoom(nextRoom); // move to the neighbouring room
+             cout << currentRoom->getDescription() << endl;
+             if (captain.getIsFollowing() && captain.getIsAlive()) {
+                 cout << "Captain Emaruv Santron pulls himself into the vent after you, scanning the tight passage with quick, sharp movements.\n";
+             }
+             return;
+         }
          cout << "You go through the " << doorName << " and enter the next room.\n";
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
@@ -771,6 +793,9 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
          // IF captain is following and is alive cout the folllowng
          if (captain.getIsFollowing() && captain.getIsAlive()) {
              cout << "Captain Emaruv Santron steps in behind you, scanning the corners of the room.\n";
+         }
+         if (gojo.getIsFollowing() && gojo.getIsAlive()) {
+             cout << "Dr. Gojo follows closely behind, still shaky but alive.\n";
          }
 
          door->setIsLocked(true); // lock the door again after going through
@@ -786,7 +811,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
              tutorialHide = false;
          }
 
-         if ((door->getName()) == "bathroom door" || door->getName() == "worker door") { //don't lock player in bathroom or worker room 
+         if ((door->getName()) == "bathroom door" || door->getName() == "worker door" || door->getName() == "vent grate") { //don't lock player in bathroom or worker room 
                 door->setIsLocked(false);
             
          }
@@ -1212,14 +1237,101 @@ void Game::specialDialogueCap() {
             coolTyping(captainYesDialogue);
             kitchen->addObject(kitchenVentDoor);
             kitchen->setNeighbour("vent grate", kitchenVent);
+            break;
         }
-        else {
+        else if(choice == "no" || choice == "2") {
             hasDecision = true;
             saveAlien = false;
             coolTyping(captainNoDialogue);
+            break;
+        }
+        else {
+            cout << "Hummmm, I think the question is pretty serious, maybe you will answer me?" << endl;
         }
 
     } while (!hasDecision);
+}
+
+void Game::openNanoLocker() {
+    if (!nanoLocker->getIsLocked() && currentRoom->getObject("cure") != cure) {
+        currentRoom->addObject(cure);
+        coolTyping("You open the nano locker. Inside rests the Cure, glowing faintly in its vial.\n");
+        return;
+    }
+    else if (!nanoLocker->getIsLocked() && currentRoom->getObject("cure") == cure) {
+        cout << "You already revealed the cure, why are you opening nano locker again and again?\n";
+        return;
+    }
+    else if (nanoLocker->getIsLocked()) {
+        cout << "Nano locker is closed, you should find a way to open it" << endl;
+        return;
+    }
+    else {
+        cout << "What are you trying to do?\n";
+        return;
+    }
+}
+
+void Game::typeCodeNanoLocker(int passcode) {
+    if (nanoLocker->getIsLocked()) {
+        if (passcode == nanoLockerPasscode) {
+            nanoLocker->setIsLocked(false);
+            cout << "With a loud beep, the nanoLocker unlocks.\n";
+            return;
+        }
+        if (passcode != nanoLockerPasscode) {
+            cout << "The password is incorrect, try again.\n";
+            return;
+        }
+        else {
+            cout << "what are you trying to do?" << endl;
+        }
+    }
+    else if (!nanoLocker->getIsLocked()) {
+        cout << "You already unlocked the nano locker.\n";
+        return;
+    }
+    else {
+        cout << "What are you trying to do?" << endl;
+    }
+}
+
+void Game::throwCure() {
+    if (alien.getIsActive() && alien.getSawPlayer() && alien.getCurrentRoom() == currentRoom && inventory.gotObject("cure") && saveAlien) {
+        coolTyping("You throw a cure to the alien...\n");
+        if (captain.getIsAlive() && captain.getIsFollowing()) {
+            coolTyping("\nThe alien staggers, claws scraping the floor. Light from the cure glows brightly as it splashes over its body.\n"
+                "A guttural scream echoes through the room. Skin ripples and twists, bones cracking audibly.\n"
+                "Limbs shrink, muscles reform, and the monstrous shape collapses into a trembling figure on the ground.\n"
+                "Captain Emaruv Santron rushes forward, kneeling beside the figure, eyes wide with relief.\n"
+                "The creature gasps, now human—Gojo lies panting, disoriented but alive.\n"
+                "Captain: \"You're back… you're back!\" he whispers, grasping Gojo's shoulder.\n"
+                "Gojo meets your gaze, wide with terror and recognition, and whispers hoarsely: \n"
+                "\"I… I didn’t want to hurt anyone…\"\n");
+        }
+        else if (!captain.getIsAlive() && !captain.getIsFollowing()) {
+            coolTyping("\nThe alien staggers, claws scraping the floor. Light from the cure glows brightly as it splashes over its body.\n"
+                "A guttural scream echoes through the room. Skin ripples and twists, bones cracking audibly.\n"
+                "Limbs shrink, muscles reform, and the monstrous shape collapses into a trembling figure on the ground.\n"
+                "Silence fills the room. The creature gasps, now human Gojo lies panting, disoriented but alive.\n"
+                "He looks around, realizing he is alone, and whispers hoarsely: \n"
+                "\"I… I didn’t want to hurt anyone…\"\n");
+        }
+        coolTyping("\nYou take a deep breath and say: \"Everything is okay now… you’re human again. We need to get out of here!\"\n");
+        alien.setActive(false);
+        gojo.setIsAlive(true);
+        gojo.setIsFollowing(true);
+        gojo.setIsAwake(true);
+        return;
+    }
+    else if (alien.getIsActive() && alien.getSawPlayer() && alien.getCurrentRoom() == currentRoom && !inventory.gotObject("cure") && saveAlien) {
+        cout << "YOU DO NOT HAVE A CURE, RUUUUUUUUN\n";
+        return;
+    }
+    else{
+        cout << "WHAT ARE YOU TRYING TO DO???? RUUUN....";
+        return;
+    }
 }
 
 /*=======================
@@ -1393,6 +1505,10 @@ void Game::process()
             If the object is not in the room, check if it's in the player's inventory
 
             */
+            else if ((noun == "nano" || noun == "locker" || noun == "nano locker") && currentRoom->getId() == "kitchenVent") {
+                cout << nanoLocker->getDescription() << endl;
+                break;
+            }
             else {
                 Object* obj = currentRoom->getObject(noun);
                 if (obj) {
@@ -1424,6 +1540,10 @@ void Game::process()
             {
                 if (currentRoom->getId() == "bathroom" && noun == "mirror") {
                     cout << "It seems that the mirror is fixed on the wall, I do not think I can take that" << endl;
+                    break;
+                }
+                if ((noun == "nano" || noun == "locker" || noun == "nano locker") && currentRoom->getId() == "kitchenVent") {
+                    cout << "It is too heavy to take it." << endl;
                     break;
                 }
                 if (isNote(noun)) {
@@ -1575,6 +1695,11 @@ void Game::process()
             //=======================================================USAGE FLASHLIGHT ON THE NOTE=====================================
             if ((isFlashlight(noun) && isNote(whatToUseOn)) || (isNote(noun) && isFlashlight(whatToUseOn))) {
                 lightRevealing();
+                break;
+            }
+            //=============================================================================================================================================
+            if ((noun == "cure" && whatToUseOn == "alien") || (whatToUseOn == "cure" && noun == "alien")) {
+                throwCure();
                 break;
             }
 
@@ -1853,6 +1978,10 @@ void Game::process()
                 }
                 break;
             }
+            if (noun == "nano locker") {
+                openNanoLocker();
+                break;
+            }
 
             // BUTTON
             if (noun == "button") {
@@ -1881,6 +2010,10 @@ void Game::process()
             }
             try {
                 int entered = std::stoi(noun);
+                if (currentRoom->getId() == "kitchenVent") { //////PASWORDD FOR NANO LOCKER
+                    typeCodeNanoLocker(entered);
+                    break;
+                }
                 typeCode(entered);
             }
             catch (...) {
