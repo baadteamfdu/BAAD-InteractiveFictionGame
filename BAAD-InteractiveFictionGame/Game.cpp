@@ -310,11 +310,28 @@ void Game::init() {
     generic4 = "Captain: All I want is just a jacuzzi and beautiful... (Ahem) .... company, just good company.";
     generic5 = "Captain: If someone touches my chair again, I am writing them up.";
 
+    genericGj1 = "I'm… still shaking. I can’t believe I almost tore you apart.";
+    genericGj2 = "Sorry for the whole ‘trying to kill you’ thing. I owe you a drink. A big one.";
+    genericGj3 = "Every sound makes me jump now. I hate this place.";
+    genericGj4 = "I can't thank you enough… you actually saved me.";
+    genericGj5 = "If I ever go monster mode again, just knock me out. Please.";
+    genericGj6 = "I still remember chasing you. God… I’m so sorry.";
+    genericGj7 = "I don't know how I'm still alive… but I'm glad you're here.";
+
+
     genericText[0] = generic1;
     genericText[1] = generic2;
     genericText[2] = generic3;
     genericText[3] = generic4;
     genericText[4] = generic5;
+
+    genericTextGj[0] = genericGj1;
+    genericTextGj[1] = genericGj2;
+    genericTextGj[2] = genericGj3;
+    genericTextGj[3] = genericGj4;
+    genericTextGj[4] = genericGj5;
+    genericTextGj[5] = genericGj6;
+    genericTextGj[6] = genericGj7;
 
     specialRooms[0] = "cryoHall";
     specialRooms[1] = "kitchen";
@@ -353,11 +370,15 @@ Room* Game::getCurrentRoom() {
     return currentRoom;
 }
 
-void Game::setCurrentRoom(Room* nextRoom) {
+void Game::setCurrentRoom(Room* nextRoom) { //=================================================================================
     if (nextRoom->getId() == "escapePodChamber" && inEscapeSequence == false) {
         inEscapeSequence = true;
         runCount = 0;
         alien.setActive(false);
+        if (gojo.getIsAlive() && gojo.getIsFollowing()) {
+            coolTyping("You are almost there....\n");
+            return;
+        }
         cout << "ENTER RUN! THE ALIEN IS RIGHT BEHIND YOU!" << endl;
     }
 
@@ -777,7 +798,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 			 playerIsHidden = false; // unhide player when they go through a door
 			 cout << "You step out from your hiding spot.\n";
          }
-         if (nextRoom->getName() == "kitchenVent")) {
+         if (nextRoom->getName() == "kitchenVent") {
              cout << "\nYou take off the ventilation grate and crawl into the vent." << endl;;
              setCurrentRoom(nextRoom); // move to the neighbouring room
              cout << currentRoom->getDescription() << endl;
@@ -1100,25 +1121,50 @@ void Game::revealInRoom(string roomId) {
         return;
     }
     else if (captain.getIsAlive() && captain.getIsFollowing() && captain.getIsAwake()) {
-        for (int index = 0; index < 4; index++) {
-            if (specialRooms[index] == roomId) {
-                if (revealed[index] == false) {
-                    revealed[index] = true;
-                    revealCount++;
-                }
-                //cout << captainNoteArr[index]->getNoteText() << endl;
-                coolTyping(captainNoteArr[index]->getNoteText());
-                cout << endl << endl;
-                if (revealCount == 4) {
-                    inventory.addObject(captainNote);
-                    cout << "\n \nYou found out a lot from the Captain......" << endl;
-                    noteCounter++;
+        if (hasDecision == false) {
+            for (int index = 0; index < 4; index++) {
+                if (specialRooms[index] == roomId) {
+                    if (revealed[index] == false) {
+                        revealed[index] = true;
+                        revealCount++;
+                    }
+                    //cout << captainNoteArr[index]->getNoteText() << endl;
+                    coolTyping(captainNoteArr[index]->getNoteText());
+                    cout << endl << endl;
+                    if (revealCount == 4 && !inventory.gotObject("note-4")) {
+                        inventory.addObject(captainNote);
+                        cout << "\n \nYou found out a lot from the Captain......" << endl;
+                        noteCounter++;
+                        return;
+                    }
                     return;
                 }
-                return;
             }
         }
         cout << endl << genericText[rand() % 5] << endl;
+        return;
+    }
+    else {
+        cout << "Stop talking to yourself" << endl;
+        return;
+    }
+}
+
+void Game::talkGojo() {
+    if (gojo.getIsAlive() && gojo.getIsFollowing()) {
+        cout << endl << genericText[rand() % 7] << endl;
+        return;
+    }
+    else if (!gojo.getIsAlive() && gojo.getIsFollowing() && hasDecision && saveAlien) {
+        cout << "You did not make him human yet, wait a bit" << endl;
+        return;
+    }
+    else if (!gojo.getIsAlive() && gojo.getIsFollowing() && hasDecision && !saveAlien) {
+        cout << "You decided not to help him.\nWhat are you trying to do now?" << endl;
+        return;
+    }
+    else if (!gojo.getIsAlive() && gojo.getIsFollowing() && !hasDecision) {
+        cout << "Who is even that?\n";
         return;
     }
     else {
@@ -1331,6 +1377,60 @@ void Game::throwCure() {
     else{
         cout << "WHAT ARE YOU TRYING TO DO???? RUUUN....";
         return;
+    }
+}
+
+void Game::happyEnding() {
+    if (gojo.getIsFollowing() && gojo.getIsAlive()) {
+        runCount++;
+        switch (runCount) {
+        case 1:
+            if (captain.getIsFollowing() && captain.getIsAlive()) {
+                coolTyping("You, Gojo, and Captain Santron step carefully through the corridor, each breath easing the tension slightly.\n");
+            }
+            else {
+                coolTyping("You and Gojo step carefully through the corridor, the shadows fading. You glance at his gaze searching, worried.\n");
+            }
+            break;
+        case 2:
+            if (captain.getIsFollowing() && captain.getIsAlive()) {
+                coolTyping("The lights flicker, but hope fills the air. Gojo walks just behind you, Captain Santron beside him, all three moving cautiously together.\n");
+            }
+            else {
+                coolTyping("The lights flicker, and Gojo shuffles beside you, trembling. He glances at you, and you can see the question in his eyes—where is the Captain?\n");
+            }
+            break;
+        case 3:
+            if (captain.getIsFollowing() && captain.getIsAlive()) {
+                coolTyping("Every step forward feels lighter. You share brief glances with Gojo and the Captain—they nod with quiet relief.\n");
+            }
+            else {
+                coolTyping("Each step feels heavy. You glance at Gojo; his lips part as if to ask something, and you just look back at him with silent sorrow.\n");
+            }
+            break;
+        case 4:
+            if (captain.getIsFollowing() && captain.getIsAlive()) {
+                coolTyping("The exit is near. The hum of the escape pod grows louder. The three of you walk together, cautiously smiling, hope returning.\n");
+            }
+            else {
+                coolTyping("The exit is near. Gojo walks close beside you, eyes wide and searching. You take a deep breath and hold his gaze, preparing for what comes next.\n");
+            }
+            break;
+        default:
+            if (captain.getIsFollowing() && captain.getIsAlive()) {
+                coolTyping("Finally, you reach the escape pod. Gojo and Captain Santron stand beside you, breathing deeply. Together, you are safe—for now.\n");
+                string nm = captain.getPlayerName();
+                if (nm.empty()) nm = "kid";
+                coolTyping("Captain Santron slumps into the seat beside you and lets out a tired laugh.\n");
+                coolTyping("\"We made it out, "); cout << nm << ". Somehow.\"\n";
+            }
+            else {
+                coolTyping("Finally, you reach the escape pod. Only Gojo stands beside you, breathing deeply. You both know the Captain didn't make it.\n");
+                coolTyping("Gojo turns to you, his voice trembling: \"Where... where is the Captain? I do remember he was there too.\"\n");
+                coolTyping("You look at him silently, your heart heavy, unable to answer.\n");
+            }
+            break;
+        }
     }
 }
 
@@ -1874,6 +1974,10 @@ void Game::process()
 
         case Actions::RUN:
             if (inEscapeSequence) {
+                if (gojo.getIsFollowing() && gojo.getIsFollowing()) {
+                    happyEnding();
+                    break;
+                }
                 runCount++; //increase run count so after they pass 4 it ends
                     switch (runCount) {
                     case (1):
@@ -1897,6 +2001,15 @@ void Game::process()
                             if (nm.empty()) nm = "kid";
                             coolTyping ("Captain Santron slumps into the seat beside you and lets out a tired laugh.\n");
                             coolTyping ("\"We made it out, "); cout << nm << ". Somehow.\"\n";
+                            if (!saveAlien && hasDecision) {
+                                coolTyping("As the escape pod detaches, you and the Captain turn to the viewport.\n");
+                                coolTyping("Through the glass, you see the alien standing alone in the fading lights of the ship.\n");
+                                coolTyping("Its silhouette grows smaller as the darkness of the void swallows the distance between you.\n");
+                                coolTyping("For a moment, the creature raises its head—as if it knows you're watching.\n");
+                                coolTyping("Neither you nor Captain Santron speak. The silence feels heavier than the vacuum outside.\n");
+                                coolTyping("Then the pod rotates, and the ship—along with the lonely figure you left behind—disappears into the infinite black.\n");
+                                coolTyping("The Captain exhales slowly. \"Some choices... stay with you,\" he murmurs.\n");
+                            }
                         }
                         // if only the player has made it out
                         else if (captain.getHasProtectedOnce() && !captain.getIsAlive()) {
@@ -2077,6 +2190,10 @@ void Game::process()
                     revealInRoom(currentRoom->getId());
                     break;
                 }
+            }
+            if (noun == "gojo") {
+                talkGojo();
+                break;
             }
             else {
                 cout << "Stop talking to yourself" << endl;

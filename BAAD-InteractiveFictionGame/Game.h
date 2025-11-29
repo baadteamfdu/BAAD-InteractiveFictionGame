@@ -173,6 +173,16 @@ private:
 
     Captain gojo;
 
+    string genericTextGj[7];
+
+    string genericGj1;
+    string genericGj2;
+    string genericGj3;
+    string genericGj4;
+    string genericGj5;
+    string genericGj6;
+    string genericGj7;
+
 
     Room* currentRoom = nullptr;
     Parser parser;
@@ -255,4 +265,8 @@ public:
     void typeCodeNanoLocker(int passcode);
 
     void throwCure();
+
+    void happyEnding();
+
+    void talkGojo();
 };
