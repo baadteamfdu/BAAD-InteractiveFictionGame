@@ -122,6 +122,55 @@ private:
 
     //================================================================================
 
+    /*====================
+    * ENDING VARIABLES
+    =====================*/
+
+    bool hasReadLastNote;   //To let the user talk to captain
+    bool saveAlien;         //For checking the decision if the player whant to save the alien or not 
+    bool hasDecision;       //
+
+    string captainMemoryDialogue =
+        "You approach the Captain. His eyes widen.\n"
+        "\"…You found them. All of them.\"\n\n"
+        "He slowly flips through the notes. With every page, his face drains of color.\n"
+        "\"Gojo… His name was Gojo. One of our lead genetic engineers.\n"
+        "Brilliant. Reckless. He volunteered for the genome tests—said he could push our evolution forward.\"\n\n"
+        "He presses a shaking hand to his forehead.\n"
+        "\"But the experiment failed. His body twisted… his mind fractured.\n"
+        "We locked him away, hoping the serum would work. Hoping he'd come back.\"\n\n"
+        "He looks directly at you.\n"
+        "\"That creature stalking us… it's Gojo. What’s left of him.\"\n\n"
+        "A long silence follows.\n"
+        "\"There *is* a cure—one final vial. Hidden in a locked chest inside the kitchen vent.\n"
+        "Gojo made me promise we'd try to save him if the worst happened.\"\n\n"
+        "The Captain steps closer.\n"
+        "\"So now you know the truth. And I need your answer. Right now.\"\n\n";
+
+    string captainYesDialogue =
+        "Captain: \"...You really want to save him?\"\n"
+        "He nods slowly. \"Alright. Then listen. I remembered something—there's a vent in the kitchen.\"\n"
+        "\"Inside it is a nanoLocker. We hid a genome-reversal serum inside before everything went to hell.\"\n"
+        "\"Unscrew the vent, find the locker, and use the password from the keycard to open it.\"\n"
+        "\"When the alien finds you, throw the cure at him. Aim center mass. You will only get one chance.\"\n"
+        "He meets your eyes. \"If Gojo is still in there... bring him back.\"";
+
+    string captainNoDialogue =
+        "Captain: \"...I see. You don’t want to risk it.\"\n"
+        "He looks away, jaw tight. \"Maybe you're right. Maybe Gojo is gone for good.\"\n"
+        "\"We focus on surviving now. When we reach the escape pod, we leave him behind.\"\n"
+        "\"Come on. Let's finish this.\"";
+
+    Room* kitchenVent;
+    Object* nanoLocker;
+    Object* cure;
+
+    Room* kitchen;
+
+    Object* kitchenVentDoor;
+
+
+
     Room* currentRoom = nullptr;
     Parser parser;
     Inventory inventory;
@@ -195,4 +244,7 @@ public:
     void increaseNoteCounter(Object* obj);
 
     string takeNoteRoom(string noun); 
+
+
+    void specialDialogueCap();
 };

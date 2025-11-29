@@ -13,7 +13,7 @@
 
 using namespace std;
 
-int noteCounter = 0;
+int noteCounter = 5;
 
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
@@ -23,7 +23,7 @@ int noteCounter = 0;
 void coolTyping(string text) {
     for (char letter : text) {
         cout << letter;
-            this_thread::sleep_for(chrono::milliseconds(50));
+            this_thread::sleep_for(chrono::milliseconds(0));
     }
 }
 
@@ -89,7 +89,7 @@ void Game::init() {
         "Cafeteria",
         "Rows of metal tables fill the room. Trays and utensils lie scattered, as if everyone left in a hurry.\n"
     );
-    Room* kitchen = new Room(
+    kitchen = new Room(
         "kitchen",
         "Galley Kitchen",
         "Metal counters are smeared with dried food paste. A broken vent hisses softly, filling the air with the smell of burnt plastic.\n"
@@ -245,7 +245,7 @@ void Game::init() {
     cafeteria->setNeighbour("captain door", captainRoom);
     captainRoom->setNeighbour("captain door", cafeteria);
 
-    allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom, captainRoom };
+    allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom, captainRoom, kitchenVent };
     cryoStart->setPosition(24, 0);
 
     cryoHall->setPosition(7, 2);
@@ -317,6 +317,31 @@ void Game::init() {
     specialRooms[1] = "kitchen";
     specialRooms[2] = "workersRoom";
     specialRooms[3] = "dock";
+
+    //ENDING VARIABLES
+    hasReadLastNote = false;
+    saveAlien = false;
+    hasDecision = false;
+
+    kitchenVent = new Room("kitchenVent", "Kitchen Vent",
+        "A square metal vent sits low on the kitchen wall."
+        "\nThe screws are old, rusted, and look recently disturbed, like something crawled through from the other side.");
+    kitchenVentDoor = new Object("vent grate", "A vent cover.", false, false);
+    nanoLocker = new Object("nano locker", "A compact nanoLocker rests inside the vent. A tiny keypad blinks on its surface, waiting for a password.", false, true);
+    
+    kitchenVent->addObject(kitchenVentDoor);
+    kitchenVent->setNeighbour("vent grate", kitchen);
+
+    kitchenVent->addObject(nanoLocker);
+
+
+    captain.setIntroduced(true);
+    captain.setIsAlive(true);
+    captain.setIsAwake(true);
+    captain.setIsFollowing(true);
+
+    inventory.addObject(alienNote);
+
 }
 
 Room* Game::getCurrentRoom() {
@@ -334,7 +359,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
-        alien.setActive(true);
+        alien.setActive(false); /////////////////////////////////////////////////////////////////////TO BE DELETED
         alien.move();
         cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
         if (tutorialEnabled && tutorialReminderToLookAndMove) {
@@ -1167,6 +1192,35 @@ string Game::takeNoteRoom(string noun) {
     }
 }
 
+/*==================================================
+* SPECIAL DIALOGUE WITH CAPTAIN
+================================*/
+
+void Game::specialDialogueCap() {
+    coolTyping(captainMemoryDialogue);
+    do {
+        coolTyping("\"Will you try to save the alien? Will you try to save Gojo?\" (1. yes / 2. no)\n");
+        string choice;
+        getline(cin, choice);
+
+        // lowercase input
+        transform(choice.begin(), choice.end(), choice.begin(), ::tolower); https://www.geeksforgeeks.org/cpp/how-to-convert-std-string-to-lower-case-in-cpp/
+
+        if (choice == "yes" || choice == "1") {
+            hasDecision = true;
+            saveAlien = true;
+            coolTyping(captainYesDialogue);
+            kitchen->addObject(kitchenVentDoor);
+            kitchen->setNeighbour("vent grate", kitchenVent);
+        }
+        else {
+            hasDecision = true;
+            saveAlien = false;
+            coolTyping(captainNoDialogue);
+        }
+
+    } while (!hasDecision);
+}
 
 /*=======================
 MAIN PROCESS OF THE GAME
@@ -1192,7 +1246,7 @@ void Game::process()
         if (!parser.parse(input, action, noun, whatToUseOn)) { 
 
             // On first entering cryoHall, remind the player to look around and move
-            if (tutorialEnabled & currentRoom->getId() == "cryoHall") {
+            if (tutorialEnabled && currentRoom->getId() == "cryoHall") { //===============================I ADDED ONE MORE & 
                     if (tutorialLook) {
                         cout << "Try examining your surroundings with: look around\n";
                         tutorialLook = false;
@@ -1882,8 +1936,14 @@ void Game::process()
                 break;
             }
             if (noun == "captain") {
-                revealInRoom(currentRoom->getId());
-                break;
+                if (hasReadLastNote && captain.getIsAlive() && captain.getIsFollowing() && !hasDecision) {
+                    specialDialogueCap();
+                    break;
+                }
+                else {
+                    revealInRoom(currentRoom->getId());
+                    break;
+                }
             }
             else {
                 cout << "Stop talking to yourself" << endl;
@@ -1944,7 +2004,21 @@ void Game::process()
 
          
             else if (noun == "note-5" && inventory.gotObject("note-5")) {
+
                 cout << alienNote->getNoteText() << endl;
+
+                if (!captain.getIsAlive() && !captain.getIsFollowing() && !hasReadLastNote) {
+                    coolTyping("\nThe fifth note trembles in your hand."
+                        "\nThe answers you need died with the Captain."
+                        "\nYou are on your own now.....");
+                    break;
+                }
+                if (!hasReadLastNote && captain.getIsAlive() && captain.getIsFollowing()) {
+                    hasReadLastNote = true;
+                    coolTyping("\nA cold shiver runs down your spine. These notes... they connect."
+                        "\nYou feel the Captain might know something.Maybe it is time to talk to him.");
+                    break;
+                }
                 break;
             }
 
