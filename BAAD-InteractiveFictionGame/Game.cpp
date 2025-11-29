@@ -1153,7 +1153,7 @@ void Game::revealInRoom(string roomId) {
 
 void Game::talkGojo() {
     if (gojo.getIsAlive() && gojo.getIsFollowing()) {
-        cout << endl << genericText[rand() % 7] << endl;
+        cout << endl << genericTextGj[rand() % 7] << endl;
         return;
     }
     else if (!gojo.getIsAlive() && gojo.getIsFollowing() && hasDecision && saveAlien) {
