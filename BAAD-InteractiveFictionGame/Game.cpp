@@ -355,15 +355,16 @@ void Game::init() {
     kitchenVent->addObject(nanoLocker);
 
 
-    captain.setIntroduced(true);
-    captain.setIsAlive(true);
-    captain.setIsAwake(true);
-    captain.setIsFollowing(true);
+    /* THIS IS FOR TESTING IF YOU WANT JUST DELETE THE COMMENTS SO YOU CAN TEST IT FASTER*/
+    //captain.setIntroduced(true);
+    //captain.setIsAlive(true);
+    //captain.setIsAwake(true);
+    //captain.setIsFollowing(true);
 
-    inventory.addObject(alienNote);
-    inventory.addObject(screwdriver);
-    inventory.addObject(keycard);
-    setCurrentRoom(kitchen);
+    //inventory.addObject(alienNote);
+    //inventory.addObject(screwdriver);
+    //inventory.addObject(keycard);
+    //setCurrentRoom(kitchen);
 }
 
 Room* Game::getCurrentRoom() {
@@ -385,7 +386,7 @@ void Game::setCurrentRoom(Room* nextRoom) { //==================================
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
-        alien.setActive(false); /////////////////////////////////////////////////////////////////////TO BE DELETED
+        alien.setActive(true);
         alien.move();
         cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
         if (tutorialEnabled && tutorialReminderToLookAndMove) {
