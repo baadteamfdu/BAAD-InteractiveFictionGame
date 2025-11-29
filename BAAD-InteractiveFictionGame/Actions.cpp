@@ -10,7 +10,7 @@ Actions stringToAction(string action) { //maybe
 	if (action == "take" || action == "grab" || action == "get") {
 		return Actions::TAKE; //saving for later
 	}
-	if (action == "use" || action == "utilize" || action == "apply" || action == "operate" || action == "wield" || action == "manipulate" || action == "combine" || action == "click") {
+	if (action == "use" || action == "utilize" || action == "apply" || action == "operate" || action == "wield" || action == "manipulate" || action == "combine" || action == "click" || action == "throw") {
 		return Actions::USE; // saving for later
 	}
 	if (action == "open") {

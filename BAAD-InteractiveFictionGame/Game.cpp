@@ -10,6 +10,8 @@
 #include <thread>
 #include <chrono>
 #include <random>
+#include <conio.h>
+
 
 using namespace std;
 
