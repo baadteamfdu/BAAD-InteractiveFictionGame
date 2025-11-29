@@ -27,10 +27,7 @@ void coolTyping(string text) {
     }
 }
 
-void Game::init() {
-
-    captainNote = new Object("note-4", "Notes that you heard from captain", true, false);
-    
+void Game::init() {    
 
     // sets current room to the starting room and initializes the starting room to exist
     // Create rooms
@@ -120,7 +117,7 @@ void Game::init() {
     Object* controlPanel = new Object("control panel", "A sealed control panel is mounted on the wall.", false, true);
     cryoStart->addObject(controlPanel);
 
-    Object* keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true, false);
+    keycard = new Object("keycard", "A Level A access card with a magnetic stripe.", true, false);
     cryoStart->addObject(keycard);
 
     // Book in worker's room
@@ -280,6 +277,7 @@ void Game::init() {
     storageNote->setNoteText(storageText);
     alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
     alienNote->setNoteText(alienText);
+    captainNote = new Object("note-4", "Notes that you heard from captain", true, false);
 
     // Assiging values for the speech
     kitchenSpeech = new Object("kitchen-speech", "Captain's memory from kitchen", true, false);
@@ -291,6 +289,7 @@ void Game::init() {
     workersSpeech->setNoteText(workerRoomText);
     cryoHallSpeech->setNoteText(cryoHallText);
     dockSpeech->setNoteText(dockRoomText);
+    keycard->setNoteText(keycardText);
 
     //Assiging the values for the arrays
     captainNoteArr[0] = cryoHallSpeech;
@@ -317,20 +316,7 @@ void Game::init() {
     specialRooms[1] = "kitchen";
     specialRooms[2] = "workersRoom";
     specialRooms[3] = "dock";
-
-    // JUST ADD FOR NOW MAYBE I WILL COME UP WITH BETTER IDEA TO HIDE IT IN THE FUTURE, HOWEVER I ASSUME THAT THE USING OF FLASHLIGHT IS GOOD ENOUGH
-    //darkRoom->addObject(darkNote); 
-
-        //FOR TESTINNNGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-    captain.setIsAwake(true);
-    captain.setIsAlive(true);
-    captain.setIsFollowing(true);
-    captain.setHasWater(true);
-    captain.setIntroduced(true);
-    captain.setPlayerName("lokka");
-
-
-    }
+}
 
 Room* Game::getCurrentRoom() {
     return currentRoom;
@@ -347,7 +333,7 @@ void Game::setCurrentRoom(Room* nextRoom) {
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
     if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
-        alien.setActive(false); //===================================================================== CHANGE IT!!!!===============================================================
+        alien.setActive(true);
         alien.move();
         cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
     }
@@ -1115,7 +1101,6 @@ Tracks how many notes the player has fully uncovered.
 void Game::increaseNoteCounter(Object* obj) {
     if (!obj->getNoteText().empty()) {
         noteCounter++;
-        cout << endl << noteCounter << endl; //TO BE DELETED=========================================================================
     }
 }
 
@@ -1339,7 +1324,6 @@ void Game::process()
                     cout << "It seems that the mirror is fixed on the wall, I do not think I can take that" << endl;
                     break;
                 }
-                //=====================================================================================================================
                 if (isNote(noun)) {
                     noun = takeNoteRoom(noun);
                 }
@@ -1364,15 +1348,7 @@ void Game::process()
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
 
-
-                /*========================================================================================
-                =======================================================================================
-                ======================================================================================*/
-
                 increaseNoteCounter(obj);
-
-                //ONLY TO CHECK IF THE COUNTER IS WORKING. WILL BE DELETED AFTER FINISHING
-                cout << endl << noteCounter << endl << endl;
             }
             break;
 
@@ -1872,8 +1848,12 @@ void Game::process()
                 break;
             }
 
+            if (noun == "keycard") {
+                cout << keycard->getNoteText() << endl;
+                break;
+            }
            
-            if (noun == "note-1" && inventory.gotObject("note-1")) {
+            else if (noun == "note-1" && inventory.gotObject("note-1")) {
                 cout << storageNote->getNoteText() << endl;
                 break;
             }

@@ -45,6 +45,13 @@ private:
         "still... human... inside...\n"
         "\nG.S.\n";
 
+    string keycardText =
+        "\nA plastic ID card, partially melted and scratched."
+        "\nName: DR. (melted plastic obscures first name) SAMI"
+        "\nDepartment : XENO(scratched)"
+        "\nID : GS - (not readable)"
+        "\nClearance : LEVEL(damaged)";
+
     string cryoHallText =
         "\nBefore cryosleep... there was an accident. One of the "
         "\ndoctors was (he pauses, struggling to remember) running "
@@ -77,6 +84,8 @@ private:
     Object* darkNote;
     Object* captainNote;
     Object* alienNote;
+
+    Object* keycard;
 
    //====================CAPTAIN'S SPEECH========================
 
