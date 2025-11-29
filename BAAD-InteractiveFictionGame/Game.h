@@ -15,20 +15,22 @@ extern int noteCounter; //Global variable so it is possible to access it in the 
 
 class Game {
 private:
-    // NOTE TEXTS
+    //==============================NOTE VARIABLES===============================
+
+    //Note text
     string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist"
         "\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case."
         "\nIf someone finds this, (*something unreadable*)."
         "\nNot everything is as it seems.\nG.S.";
 
     string mirrorText = "An accident.Could not stop it."
-        "\n They will never understand(not readable)"
+        "\nThey will never understand(not readable)"
         "\nThe answer exists in pieces."
         "\nBeginning holds(water damage)"
-        "\n Workers space holds(torn edge)"
-        "\n Records in the dark will(ink faded)"
-        "\n Someone might remember(blurred section)"
-        "\n Dont destroy what you dont(rest torn away)";
+        "\nWorkers space holds(torn edge)"
+        "\nRecords in the dark will(ink faded)"
+        "\nSomeone might remember(blurred section)"
+        "\nDont destroy what you dont(rest torn away)";
     
     string alienText =
         "[Barely legible, torn and bloodstained paper]\n"
@@ -56,20 +58,60 @@ private:
         "\nto stop them but... it's all foggy...";
 
     string workerRoomText =
-        "The intercom... someone was screaming. No, not screaming. "
-        "(long pause) Changing. The voice got deeper, distorted. "
-        "They kept saying (he can't recall the exact words) "
-        "something like 'I'm sorry' over and over...";
+        "\nThe intercom... someone was screaming. No, not screaming. "
+        "\n(long pause) Changing. The voice got deeper, distorted. "
+        "\nThey kept saying (he can't recall the exact words) "
+        "\nsomething like 'I'm sorry' over and over...";
     string dockRoomText =
-        "Right before they froze me, I saw (struggles to focus) "
-        "security footage. Someone... transforming. They left notes "
-        "everywhere. Scratched something on the walls. Their ID badge "
-        "was (memory fades) somewhere in CryoStart. I cannot... "
-        "I cannot remember the name...";
+        "\nRight before they froze me, I saw (struggles to focus) "
+        "\nsecurity footage. Someone... transforming. They left notes "
+        "\neverywhere. Scratched something on the walls. Their ID badge "
+        "\nwas (memory fades) somewhere in CryoStart. I cannot... "
+        "\nI cannot remember the name...";
 
     string darkText;
 
+    //Actual Note Objects
+    Object* storageNote;
+    Object* bathroomNote;
+    Object* darkNote;
+    Object* captainNote;
+    Object* alienNote;
+
+   //====================CAPTAIN'S SPEECH========================
+
+    //=======GENERIC SPEECH=====
+    string generic1;
+    string generic2;
+    string generic3;
+    string generic4;
+    string generic5;
+
+    // ARRAY TO SAVE ALL GENERIC SPEECH TO ONE PLACE, TO NOT TO USE A LOT OF IF STATEMENTS IN THE FUTURE. THIS VALUES MUST ALWAYS BE SO
+    string genericText[5];
+
+    //======SPECIAL SPEECH======
+    Object* kitchenSpeech;
+    Object* workersSpeech;
+    Object* cryoHallSpeech;
+    Object* dockSpeech;
+
+    //TO CHECK HOW MANY SECREET SPEECHES DID THE USER SEE
+    int revealCount;
+
+    //TO STORE IDS FOR SPECIAL ROOMS
+    string specialRooms[4];
+
+    //TO CHECK IF THE USER SAW THE SPECIAL SPEECH FROM CAPTAIN IN SPECIAL ROOMS
+    bool revealed[4];
+
+    //To store the captains special speech
+    Object* captainNoteArr[4];
+
+    //To track how many times the user used flashlight on the note
     int flashlightCounter = 0;
+
+    //================================================================================
 
     Room* currentRoom = nullptr;
     Parser parser;
@@ -93,26 +135,6 @@ private:
 
     bool playerIsHidden = false;     // flag to check if the player is hidden. Consider creating new player class later.
 
-
-    /* VARIABLES FOR NOTES 
-    
-    counter to check how many notes have been collected, and notes itself so
-    it is possible to manipulate them in the gameProcess()
-    ==================================
-    */
-
-    Object* bathroomNote;
-    Object* storageNote;
-    Object* darkNote;
-    Object* alienNote;
-
-    Object* kitchenSpeech;
-    Object* workersSpeech;
-    Object* cryoHallSpeech;
-    Object* dockSpeech;
-
-    Object* captainNoteArr[4];
-    Object* captainNote;
 public:
 
     void init();
@@ -138,25 +160,21 @@ public:
 
     bool getIsHidden(); // getter for playerIsHidden
 
-    bool useMirror(Object* note); // to reveal the first note in the bathroom
 
+    // Note manipulation functions
+    bool useMirror(Object* note);
     void createBathroomNote();
+    void createDarkNote();
+    void lightRevealing();
+    void revealInRoom(string roomId);
+    void readCapNote();
 
-    void increaseNoteCounter(Object* obj);
-
+    // Helper functions for item identification
     bool isNote(string note);
     bool isMirror(string mirror);
     bool isFlashlight(string flash);
 
-    void createDarkNote();
+    void increaseNoteCounter(Object* obj);
 
-    /*
-        Function to return exact note depending on the location of the player so user is able to write just take paper to take each note    
-    */
     string takeNoteRoom(string noun); 
-
-    void lightRevealing();
-
-    void revealInRoom(string roomId);
-
 };

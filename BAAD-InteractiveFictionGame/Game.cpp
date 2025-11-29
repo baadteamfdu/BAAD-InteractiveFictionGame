@@ -13,6 +13,8 @@
 
 using namespace std;
 
+int noteCounter = 0;
+
 // If your Actions enum lives elsewhere, include it there.
 // If not, uncomment this fallback:
 // enum class Actions { HELP, LOOK, TAKE, INVENTORY };
@@ -26,7 +28,6 @@ void coolTyping(string text) {
 }
 
 void Game::init() {
-
 
     captainNote = new Object("note-4", "Notes that you heard from captain", true, false);
     
@@ -280,6 +281,7 @@ void Game::init() {
     alienNote = new Object("note-5", "Note that felt from the Alien", true, false);
     alienNote->setNoteText(alienText);
 
+    // Assiging values for the speech
     kitchenSpeech = new Object("kitchen-speech", "Captain's memory from kitchen", true, false);
     workersSpeech = new Object("workers-speech", "Captain's memory from workers room", true, false);
     cryoHallSpeech = new Object("cryo-speech", "Captain's memory from cryo hall", true, false);
@@ -290,13 +292,43 @@ void Game::init() {
     cryoHallSpeech->setNoteText(cryoHallText);
     dockSpeech->setNoteText(dockRoomText);
 
+    //Assiging the values for the arrays
     captainNoteArr[0] = cryoHallSpeech;
     captainNoteArr[1] = kitchenSpeech;
     captainNoteArr[2] = workersSpeech;
     captainNoteArr[3] = dockSpeech;
 
+    fill(revealed, revealed + 4, false); //https://www.geeksforgeeks.org/cpp/fill-in-cpp-stl/ //to assign all elemnts of that array to false 
+    revealCount = 0;
+
+    generic1 = "Captain: Oh my God... Why did you wake me up?!!??? I was having the best dream.";
+    generic2 = "Captain: If you find my snacks, return them. Captains orders.";
+    generic3 = "Captain: I swear, if this ship beeps one more time, I am jumping out the airlock.";
+    generic4 = "Captain: All I want is just a jacuzzi and beautiful... (Ahem) .... company, just good company.";
+    generic5 = "Captain: If someone touches my chair again, I am writing them up.";
+
+    genericText[0] = generic1;
+    genericText[1] = generic2;
+    genericText[2] = generic3;
+    genericText[3] = generic4;
+    genericText[4] = generic5;
+
+    specialRooms[0] = "cryoHall";
+    specialRooms[1] = "kitchen";
+    specialRooms[2] = "workersRoom";
+    specialRooms[3] = "dock";
+
     // JUST ADD FOR NOW MAYBE I WILL COME UP WITH BETTER IDEA TO HIDE IT IN THE FUTURE, HOWEVER I ASSUME THAT THE USING OF FLASHLIGHT IS GOOD ENOUGH
     //darkRoom->addObject(darkNote); 
+
+        //FOR TESTINNNGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+    captain.setIsAwake(true);
+    captain.setIsAlive(true);
+    captain.setIsFollowing(true);
+    captain.setHasWater(true);
+    captain.setIntroduced(true);
+    captain.setPlayerName("lokka");
+
 
     }
 
@@ -792,14 +824,22 @@ bool Game::combine(Object* batt, Object* flash) {
 }
 
 /*======================================================================================================================================
-* ======================================================================================================================================
 * FUNCTIONS FOR NOTES 
-* ========================================================================================================================================
 ==========================================================================================================================================*/
 
-/*================================================================= 
-UseMirror FUNCTION TO REVEAL THE TEXT IN THE NOTE FROM THE BATHROOM 
-===================================================================*/
+/*==============================================================
+useMirror FUNCTION REVEALS HIDDEN TEXT ON THE BATHROOM NOTE
+Handles using the mirror to uncover the invisible text on note-2.
+
+- First checks if the player is actually in the Bathroom.
+- Ensures the player has "note-2" in their inventory.
+- Prevents revealing the text more than once by checking whether 
+    the note already contains visible text.
+- If conditions are met, replaces the note’s text with the
+    decoded mirrorText, displays a message, and updates the
+    note counter system.
+=================================================================*/
+
 bool Game::useMirror(Object* n) {
     if (currentRoom->getName() != "Bathroom") {
         cout << endl << "There is no mirror here" << endl;
@@ -819,24 +859,86 @@ bool Game::useMirror(Object* n) {
     return true;
 }
 
-/*
-*  IF STATEMENTS SO THE USER IS ABLE TO TAKE NOTES WITHOUT SPECIFYING THE NUMBER OF THE NOTE
-*/
+/*=======================================================================================
+createBathroomNote FUNCTION CREATES NOTE-2 WHEN PLAYER EXAMINES THE MIRROR
+=======================================================================================
+Triggers when the player types "look mirror" in the Bathroom.
 
-string Game::takeNoteRoom(string noun) {
-    if (currentRoom->getId() == "bathroom")
-        return noun = "note-2";
-    else if (currentRoom->getId() == "storageArea")
-        return noun = "note-1";
-    else if (currentRoom->getId() == "darkRoom")
-        return noun = "note-3";
-    else if (currentRoom->getObject("note-5") == alienNote)
-        return noun = "note-5";
-    else {
-        cout << "There is no paper" << endl;
-        return noun = "";
+- Confirms the player is inside the Bathroom.
+- If the player already has note-2 in their inventory, the function ends.
+- If the note is not yet present in the room, it adds the bathroomNote object
+    to the current room, making it discoverable.
+- Shows a hint that a piece of paper is stuck to the mirror.
+=======================================================================================*/
+
+void Game::createBathroomNote() {
+    if (currentRoom->getName() != "Bathroom") {
+        cout << "There is no mirror here\n";
+        return;
     }
+    cout << "You are looking at yourself......\n"
+        "You look tired.......\n"
+        "You need to take a rest.......\n\n";
+    if (inventory.gotObject("note-2")) {
+        return;
+    }
+    if (currentRoom->getObject("note-2") != bathroomNote) {
+        currentRoom->addObject(bathroomNote);
+    }
+    cout << "You notice a piece of paper stuck in the right corner of the mirror.\n";
 }
+
+/*===============================================================================================
+createDarkNote FUNCTION REVEALS NOTE-3 WHEN LOOKING AT PAPERS IN THE DARK ROOM
+===============================================================================================
+Executes when the player uses the command "look papers" while in the Dark Room.
+
+- Checks if the player is actually inside the Dark Room.
+- Requires a working flashlight.
+- Displays a description of the scattered documents and highlights
+    one intact note among the damaged papers.
+- If the darkNote object is not yet in the room, it is added so the
+    player can pick it up.
+===============================================================================================*/ 
+
+void Game::createDarkNote() {
+    if (currentRoom->getId() != "darkRoom") {
+        cout << "There are no papers here.\n";
+        return;
+    }
+
+    // Must have working flashlight
+    if (!flashlight->getIsWorking()) {
+        cout << "It is too dark to see anything.\n";
+        return;
+    }
+
+    if (currentRoom->getObject("note-3") != darkNote && !inventory.gotObject("note-3")) {
+        cout << "You kneel down and sort through the scattered papers.\nMost are torn or unreadable but one looks intact\n";
+        currentRoom->addObject(darkNote);
+        return;
+    }
+
+    cout << "You kneel down and sort through the scattered papers again, but you could not find anything interesting" << endl;
+}
+
+/*===========================================================
+lightRevealing FUNCTION REVEALS DARK ROOM NOTE IN STAGES
+============================================================
+Handles using the flashlight to gradually reveal the hidden
+text on note-3 found in the Dark Room.
+
+- First checks that the player owns the flashlight.
+- Then ensures the player already picked up note-3.
+- Uses a switch based on flashlightCounter to reveal the text
+  in multiple stages. Each stage updates the note text with
+  clearer information.
+- On the final stage (case 2), reveals the entire message and
+  increases the global note counter.
+Modifies:
+  flashlightCounter (increments each use)
+  darkNote text (updated at every stage)
+===========================================================*/
 
 void Game::lightRevealing() {
     if (!inventory.gotObject("flashlight")) {
@@ -900,31 +1002,127 @@ void Game::lightRevealing() {
     flashlightCounter++;
 }
 
+/*=================================================================================================
+revealInRoom FUNCTION OUTPUTS CAPTAIN DIALOGUE BASED ON CURRENT ROOM
+=================================================================================================
+Determines whether the captain should give a special line or a generic line depending on the
+player’s location and the captain’s current state.
 
-void Game::createBathroomNote() {
-    if (currentRoom->getName() != "Bathroom") {
-        cout << "There is no mirror here\n";
+Behavior:
+  - If captain is not awake: player cannot talk to him.
+  - If captain is dead and not following: displays a sad message.
+  - If captain is alive, awake, and following:
+      Checks if the current room is one of the four special rooms.
+      If so, outputs the corresponding unique dialogue from captainNoteArr.
+      Marks each special room as “revealed” only once.
+      When all four are revealed, adds the compiled captainNote to inventory.
+      If not a special room, outputs a random generic line.
+  - If none of the above states match, tells the player to stop talking to themselves.
+
+Modifies:
+  revealCount (increments)
+  revealed[index] (tracks which rooms were revealed)
+  inventory (adds captainNote when all clues are found)
+  noteCounter (increments on full completion)
+=================================================================================================*/
+
+void Game::revealInRoom(string roomId) {
+    if (!captain.getIsAwake()) {
+        cout << "Who are you trying to talk to?" << endl;
         return;
     }
-    cout << "You are looking at yourself......\n"
-        "You look tired.......\n"
-        "You need to take a rest.......\n\n";
-    if (inventory.gotObject("note-2")) {
+    else if (!captain.getIsAlive() && !captain.getIsFollowing()) {
+        cout << "You should forget him.....\n You did whay you did...." << endl;
         return;
     }
-    if (currentRoom->getObject("note-2") != bathroomNote) {
-        currentRoom->addObject(bathroomNote);
+    else if (captain.getIsAlive() && captain.getIsFollowing() && captain.getIsAwake()) {
+        for (int index = 0; index < 4; index++) {
+            if (specialRooms[index] == roomId) {
+                if (revealed[index] == false) {
+                    revealed[index] = true;
+                    revealCount++;
+                }
+                //cout << captainNoteArr[index]->getNoteText() << endl;
+                coolTyping(captainNoteArr[index]->getNoteText());
+                cout << endl << endl;
+                if (revealCount == 4) {
+                    inventory.addObject(captainNote);
+                    cout << "\n \nYou found out a lot from captain......" << endl;
+                    noteCounter++;
+                    return;
+                }
+                return;
+            }
+        }
+        cout << endl << genericText[rand() % 5] << endl;
+        return;
     }
-    cout << "You notice a piece of paper stuck in the right corner of the mirror.\n";
+    else {
+        cout << "Stop talking to yourself" << endl;
+        return;
+    }
 }
 
+/*==========================================
+readCapNote FUNCTION READS NOTE-4 PARTS
+==========================================
+Allows the player to read a specific section of note-4.
+
+- Ask the player to choose which part they want:
+    Cryo Hall, Kitchen, Workers Room, or Dock.
+- Accepts both numeric input ("1", "2", "3", "4") and
+  full text input ("cryo hall", "kitchen", etc.).
+- Converts the input to lowercase for flexible matching.
+- Searches through the options array and prints the
+  corresponding note from captainNoteArr.
+- If no valid option is matched, displays an error.
+==========================================*/
+
+void Game::readCapNote() {
+    cout << "Which part do you want to read?\n1. Cryo Hall,\n2. Kitchen,\n3. Workers Room\n4. Dock" << endl;
+    string choice;
+    getline(cin, choice);
+
+    // lowercase input
+    transform(choice.begin(), choice.end(), choice.begin(), ::tolower); https://www.geeksforgeeks.org/cpp/how-to-convert-std-string-to-lower-case-in-cpp/
+
+    string options[4] = {
+        "cryo hall",
+        "kitchen",
+        "workers room",
+        "dock"
+    };
+
+    for (int note = 0; note < 4; note++) {
+        if (choice == to_string(note + 1) || choice == options[note]) { //choice == to_string(i + 1) because we cannot compare the string with the int so i had to turn index to string
+            cout << captainNoteArr[note]->getNoteText() << endl;
+            break;
+        }
+    }
+    cout << "I don't recognize that part of the note.\n";
+}
+
+/*=======================================================================================
+increaseNoteCounter FUNCTION, INCREMENTS NOTE COUNTER WHEN TEXT IS FULLY REVEALED
+=======================================================================================
+Tracks how many notes the player has fully uncovered.
+
+- Checks if the provided note object contains non-empty text.
+  (Empty text means the note was not yet revealed.)
+- If text exists, increments the global noteCounter.
+=======================================================================================*/
 
 void Game::increaseNoteCounter(Object* obj) {
     if (!obj->getNoteText().empty()) {
         noteCounter++;
-        cout << endl << noteCounter << endl;
+        cout << endl << noteCounter << endl; //TO BE DELETED=========================================================================
     }
 }
+
+/*==========================================
+SIMPLE CHECKER FUNCTIONS FOR ITEM MATCHING
+============================================
+*/
 
 bool Game::isNote(string obj) {
     return obj == "note" || obj == "note-2" || obj == "paper" || obj == "note-3";
@@ -937,59 +1135,30 @@ bool Game::isMirror(string obj) {
 bool Game::isFlashlight(string obj) {
     return obj == "flashlight";
 }
-void Game::createDarkNote() {
-    if (currentRoom->getId() != "darkRoom") {
-        cout << "There are no papers here.\n";
-        return;
+
+/*==========================================================================================
+  takeNoteRoom FUNCTION - MAPS GENERIC NOTE NAMES TO ACTUAL NOTE IDs BASED ON ROOM LOCATION
+==========================================================================================*/
+
+string Game::takeNoteRoom(string noun) {
+    if (currentRoom->getId() == "bathroom")
+        return noun = "note-2";
+    else if (currentRoom->getId() == "storageArea")
+        return noun = "note-1";
+    else if (currentRoom->getId() == "darkRoom")
+        return noun = "note-3";
+    else if (currentRoom->getObject("note-5") == alienNote)
+        return noun = "note-5";
+    else {
+        cout << "There is no paper" << endl;
+        return noun = "";
     }
-
-    // Must have working flashlight
-    if (!flashlight->getIsWorking()) {
-        cout << "It is too dark to see anything.\n";
-        return;
-    }
-
-    // Description of the papers
-    cout << "You kneel down and sort through the scattered papers.\n"
-        "Most are torn or unreadable—but one looks intact...\n";
-
-    if (currentRoom->getObject("note-3") != darkNote) {
-        currentRoom->addObject(darkNote);
-    }
-
 }
 
-int noteCounter = 0;
-string specialRooms[4] = { "cryoHall", "kitchen", "workersRoom", "dock" };
-bool revealed[4] = { false, false, false, false };
-int revealCount = 0;
 
-string generic1 = "Captain: Oh my god… why did you wake me up? I was having the best dream.";
-string generic2 = "Captain: If you find my snacks, return them. Captains orders.";
-string generic3 = "Captain: I swear, if this ship beeps one more time, I am jumping out the airlock.";
-string generic4 = "Captain: All I want is five minutes to watch my show. FIVE minutes.";
-string generic5 = "Captain: If someone touches my chair again, I am writing them up.";
-
-string genericText[5] = { generic1, generic2, generic3, generic4, generic5 };
-
-void Game::revealInRoom(string roomId) {
-    for (int index = 0; index < 4; index++) {
-        if (specialRooms[index] == roomId) {
-            if (revealed[index] == false) {
-                revealed[index] = true;
-                revealCount++;
-            }
-            cout << captainNoteArr[index]->getNoteText() << endl;
-            if (revealCount == 4) {
-                inventory.addObject(captainNote);
-                return;
-            }
-            return;
-        }
-    }
-    cout << endl << genericText[rand() % 5] << endl;
-    return;
-}
+/*=======================
+MAIN PROCESS OF THE GAME
+========================*/
 
 void Game::process()
 {
@@ -1672,40 +1841,45 @@ void Game::process()
             unhide();
             break;
         }
+
+        /*==============================
+        CASE TO TALK TO CAPTAIN
+        ================================*/
+
         case Actions::TALK: {
             if (noun.empty()) {
                 cout << "To who?\n";
                 break;
             }
             if (noun == "captain") {
-                if (captain.getIsAlive() && captain.getIsFollowing() && captain.getIsAwake()) {
-                    revealInRoom(currentRoom->getId());
-                    break;
-                }
-                else if (!captain.getIsAwake()) {
-                    cout << "Who are you trying to talk to?" << endl;
-                    break;
-                }
-                else if (!captain.getIsAlive() && !captain.getIsFollowing()) {
-                    cout << "You should forget him.....\n You did whay you did...." << endl;
-                    break;
-                }
-                else {
-                    cout << "Stop talking to yourself" << endl;
-                }
+                revealInRoom(currentRoom->getId());
+                break;
             }
             else {
-                cout << "What are you trying to do?" << endl;
+                cout << "Stop talking to yourself" << endl;
+                break;
             }
         }
 
+        /*==================
+        CASE TO READ NOTES
+        ===================*/
+
         case Actions::READ: {
+
             if (noun.empty()) {
                 cout << "Read what?\n";
                 break;
             }
-            //===============================================================================================================================
-            if (noun == "note-2") {
+
+           
+            if (noun == "note-1" && inventory.gotObject("note-1")) {
+                cout << storageNote->getNoteText() << endl;
+                break;
+            }
+          
+          
+            else if (noun == "note-2") {
                 if (bathroomNote->getNoteText() == "" && inventory.gotObject("note-2")) {
                     cout << endl << "It seems like the text is reversed....\n I cannot read that" << endl;
                     break;
@@ -1714,16 +1888,9 @@ void Game::process()
                     cout << bathroomNote->getNoteText() << endl;
                     break;
                 }
-                cout << "it did not go to any if statement" << endl;
             }
-            else if (noun == "note-1" && inventory.gotObject("note-1")) {
-                cout << storageNote->getNoteText() << endl;
-                break;
-            }
-            else if (noun == "note-5" && inventory.gotObject("note-5")) {
-                cout << alienNote->getNoteText() << endl;
-                break;
-            }
+
+          
             else if (noun == "note-3" && inventory.gotObject("note-3")) {
                 if (flashlightCounter == 0) {
                     cout << "Note is empty" << endl;
@@ -1734,34 +1901,25 @@ void Game::process()
                     break;
                 }
             }
+
+          
             else if (noun == "note-4" && inventory.gotObject("note-4")) {
-                cout << "Which part do you want to read?\nCryo Hall,\nKitchen,\nWorkers Room\nDock" << endl;
-                string choice;
-                getline(cin, choice);
-
-                // lowercase input
-                transform(choice.begin(), choice.end(), choice.begin(),::tolower); //https://www.geeksforgeeks.org/cpp/how-to-convert-std-string-to-lower-case-in-cpp/
-
-                string options[4] = {
-                    "cryo hall",
-                    "kitchen",
-                    "workers room",
-                    "dock"
-                };
-
-                for (int note = 0; note < 4; note++) {
-                    if (choice == to_string(note + 1) || choice == options[note]) { //choice == to_string(i + 1) because we cannot compare the string with the int so i had to turn index to string
-                        cout << captainNoteArr[note]->getNoteText() << endl;
-                        break;
-                    }
-                }
-                cout << "I don't recognize that part of the note.\n";
+                readCapNote();
+                break;
             }
+
+         
+            else if (noun == "note-5" && inventory.gotObject("note-5")) {
+                cout << alienNote->getNoteText() << endl;
+                break;
+            }
+
             else {
                 cout << "you do not have this to read" << endl;
                 break;
             }
         }
+     
         default:
             cout << "You can not do that right now.\n";
             break;
@@ -1770,7 +1928,3 @@ void Game::process()
         alien.increaseTurnCounter(currentRoom, playerIsHidden, & captain);
         }
     }
-
-
-
-////////////////////////////////
