@@ -254,7 +254,7 @@ namespace BAADInteractiveFictionGameTest
 			alien.setActive(true); //add rooms and set active
 			game.hide("locker");
 			alien.setCurrentRoom(testRoom); //put in room while player hidden
-			alien.increaseTurnCounter(game.getCurrentRoom(), game.getIsHidden()); //since hiding it should leave
+			alien.increaseTurnCounter(game.getCurrentRoom(), game.getIsHidden(), nullptr); //since hiding it should leave
 			Assert::IsFalse(alien.getSawPlayer(), L"Player is hiding, Alien should not see them");
 			Assert::IsFalse((alien.getCurrentRoom() == testRoom), L"Alien should not be in the testRoom, as it should have gone out since the player hid");
 		}
