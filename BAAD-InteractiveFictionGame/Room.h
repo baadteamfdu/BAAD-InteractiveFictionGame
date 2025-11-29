@@ -24,6 +24,8 @@ public:
 	string getName();
 	string getDescription();
 
+	void setDescription(string des);
+
 	Object* getObject(string name); //gets the object but returns nullptr if the object couldn't be found
 	void addObject(Object* object); //adds an object to the roomObjects vector 
 	void removeObject(string name); //removes the object from the roomObjects vector   
@@ -33,8 +35,8 @@ public:
 
 	//this code sets the positions for where the rooms are and the player
 	void setPosition(int x, int y);
-		int getX();
-		int getY();
+	int getX();
+	int getY();
 };
 
 
