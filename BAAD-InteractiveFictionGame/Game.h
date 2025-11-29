@@ -18,19 +18,19 @@ private:
     //==============================NOTE VARIABLES===============================
 
     //Note text
-    string storageText = "SHIP LOG - Day 47\nDr.Gojo Sami, Lead Xenobiologist"
-        "\nThe sample is unstable.More than I anticipated.\nI have documented everything, just in case."
+    string storageText = "SHIP LOG - Day 47\nDr. Gojo Sami, Lead Xenobiologist"
+        "\nThe sample is unstable, more than I anticipated.\nI have documented everything just in case."
         "\nIf someone finds this, (*something unreadable*)."
         "\nNot everything is as it seems.\nG.S.";
 
-    string mirrorText = "An accident.Could not stop it."
+    string mirrorText = "An accident. Could not stop it."
         "\nThey will never understand(not readable)"
         "\nThe answer exists in pieces."
         "\nBeginning holds(water damage)"
         "\nWorkers space holds(torn edge)"
         "\nRecords in the dark will(ink faded)"
         "\nSomeone might remember(blurred section)"
-        "\nDont destroy what you dont(rest torn away)";
+        "\nDo not destroy what you dont(rest torn away)";
     
     string alienText =
         "[Barely legible, torn and bloodstained paper]\n"
@@ -41,7 +41,7 @@ private:
         "\n(*large section destroyed by claw marks*)\n"
         "\n you found... notes?\n"
         "YOU KNOW... what I (torn)\n"
-        "\nplease... donot run...\n"
+        "\nplease... do not run...\n"
         "still... human... inside...\n"
         "\nG.S.\n";
 

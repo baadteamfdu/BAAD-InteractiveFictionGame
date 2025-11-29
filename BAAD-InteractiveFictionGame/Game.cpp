@@ -97,7 +97,7 @@ void Game::init() {
     Room* darkRoom = new Room(
         "darkRoom",
         "Dark Room",
-        "The room is dark and quiet\ You cannot see anything"
+        "The room is dark and quiet, you cannot see anything."
     );
       // captain's quarter
     Room* captainRoom = new Room(
@@ -245,7 +245,7 @@ void Game::init() {
     cafeteria->setNeighbour("captain door", captainRoom);
     captainRoom->setNeighbour("captain door", cafeteria);
 
-    allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom };
+    allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom, captainRoom };
     cryoStart->setPosition(24, 0);
 
     cryoHall->setPosition(7, 2);
@@ -254,12 +254,13 @@ void Game::init() {
     dock->setPosition(5, 2);
 
     cafeteria->setPosition(12, 4);
-    bathroom->setPosition(13, 4);
+    bathroom->setPosition(22, 3);
     kitchen->setPosition(11, 4);
+    captainRoom->setPosition(13, 4);
     escapePodChamber->setPosition(5, 3);
 
     darkRoom->setPosition(25, 5);
-    finalRoom->setPosition(2, 4);
+    finalRoom->setPosition(5, 4);
     // Hiding Object
 	Object* safeZone = new Object("locker", "A metal locker large enough to hide inside", false, false, true); // creating a locker object as a safe zone
 
@@ -301,7 +302,7 @@ void Game::init() {
     revealCount = 0;
 
     generic1 = "Captain: Oh my God... Why did you wake me up?!!??? I was having the best dream.";
-    generic2 = "Captain: If you find my snacks, return them. Captains orders.";
+    generic2 = "Captain: If you find my snacks, return them. Captain's orders.";
     generic3 = "Captain: I swear, if this ship beeps one more time, I am jumping out the airlock.";
     generic4 = "Captain: All I want is just a jacuzzi and beautiful... (Ahem) .... company, just good company.";
     generic5 = "Captain: If someone touches my chair again, I am writing them up.";
@@ -684,7 +685,7 @@ void Game::typeCode(int enteredCode)
     else {
         cout << "Incorrect code. Try again.\n";
         alien.setCurrentRoom(currentRoom);
-        cout << "A distant screech echoes… Something has been alerted.\n";
+        cout << "A distant screech echoes... Something has been alerted.\n";
     }
 }
 
@@ -1037,7 +1038,7 @@ void Game::revealInRoom(string roomId) {
                 cout << endl << endl;
                 if (revealCount == 4) {
                     inventory.addObject(captainNote);
-                    cout << "\n \nYou found out a lot from captain......" << endl;
+                    cout << "\n \nYou found out a lot from the Captain......" << endl;
                     noteCounter++;
                     return;
                 }
@@ -1069,7 +1070,7 @@ Allows the player to read a specific section of note-4.
 ==========================================*/
 
 void Game::readCapNote() {
-    cout << "Which part do you want to read?\n1. Cryo Hall,\n2. Kitchen,\n3. Workers Room\n4. Dock" << endl;
+    cout << "Which part do you want to read?\n1. Cryo Hall,\n2. Kitchen,\n3. Workers Room,\n4. Dock" << endl;
     string choice;
     getline(cin, choice);
 
@@ -1089,7 +1090,7 @@ void Game::readCapNote() {
             break;
         }
     }
-    cout << "I don't recognize that part of the note.\n";
+    cout << "You do not recognize that part of the note.\n";
 }
 
 /*=======================================================================================
@@ -1130,17 +1131,16 @@ bool Game::isFlashlight(string obj) {
 ==========================================================================================*/
 
 string Game::takeNoteRoom(string noun) {
-    if (currentRoom->getId() == "bathroom")
+    if (currentRoom->getId() == "bathroom" && currentRoom->getObject("note-2"))
         return noun = "note-2";
-    else if (currentRoom->getId() == "storageArea")
+    else if (currentRoom->getId() == "storageArea" && currentRoom->getObject("note-1"))
         return noun = "note-1";
-    else if (currentRoom->getId() == "darkRoom")
+    else if (currentRoom->getId() == "darkRoom" && currentRoom->getObject("note-3"))
         return noun = "note-3";
-    else if (currentRoom->getObject("note-5") == alienNote)
+    else if (currentRoom->getObject("note-5") == alienNote && currentRoom->getObject("note-5"))
         return noun = "note-5";
     else {
-        cout << "There is no paper" << endl;
-        return noun = "";
+        return noun;
     }
 }
 
@@ -1176,10 +1176,10 @@ void Game::process()
                     continue;
                 }
                 // tryna fix bugs
-               // inEscapeSequence = false;
-              //  runCount = 0;
-              //  alien.killPlayer(& captain);
-              //  continue;
+                // inEscapeSequence = false;
+                //  runCount = 0;
+                //  alien.killPlayer(& captain);
+                //  continue;
             }
 
             cout << "Invalid command. Type 'help' for a list of commands.\n";
@@ -1615,11 +1615,11 @@ void Game::process()
 
             coolTyping  ("\nHe says: My name is Emaruv Santron.\n");
 
-            coolTyping  ("n\Then he leans back against the pod frame, staring past the ceiling.\n");
-            coolTyping  ("n\"Back then, this station was a frontier outpost,\" he begins.\n");
-            coolTyping  ("\"We ferried colonists, cargo, and an egg we never should've taken aboard.\"\n");
-            coolTyping  ("\"When things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n");
-            coolTyping  ("\"Looks like that job landed on you.\"\n\n");
+            coolTyping  ("\nThen he leans back against the pod frame, staring past the ceiling.\n");
+            coolTyping  ("\nBack then, this station was a frontier outpost,\" he begins.\n");
+            coolTyping  ("\nWe ferried colonists, cargo, and an egg we never should've taken aboard.\"\n");
+            coolTyping  ("\nWhen things went bad, I locked myself in cryo, hoping someone in the future would clean up the mess.\"\n");
+            coolTyping  ("\nLooks like that job landed on you.\"\n\n");
 
             coolTyping  ("Captain: \"Enough about me. What's your name, kid?\"\n");
             cout << "> My name is : ";
