@@ -936,6 +936,10 @@ void Game::lightRevealing() {
         cout << "What are you trying to do?\n";
         return;
     }
+    if (!flashlight->getIsWorking()) {
+        cout << "Your flashlight does not work" << endl;
+        return;
+    }
     switch (flashlightCounter) {
     case 0:
         cout << "You shine the flashlight on the note.\n"
