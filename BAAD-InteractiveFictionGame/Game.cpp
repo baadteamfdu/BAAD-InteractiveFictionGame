@@ -1,3 +1,4 @@
+#pragma comment(lib, "winmm.lib")
 #include "Game.h"
 #include "Room.h"
 #include "Object.h"
@@ -11,8 +12,8 @@
 #include <chrono>
 #include <random>
 #include <conio.h>
-
-
+#include <Windows.h>
+#include <mmsystem.h>
 using namespace std;
 
 int noteCounter = 0;
@@ -374,6 +375,9 @@ Room* Game::getCurrentRoom() {
 }
 
 void Game::setCurrentRoom(Room* nextRoom) { //=================================================================================
+    if (currentRoom != nullptr) {
+        PlaySound(TEXT("sfx/walking"), NULL, SND_FILENAME | SND_ASYNC);
+    }
     if (nextRoom->getId() == "escapePodChamber" && inEscapeSequence == false) {
         inEscapeSequence = true;
         runCount = 0;
@@ -384,11 +388,11 @@ void Game::setCurrentRoom(Room* nextRoom) { //==================================
             return;
         }
         cout << "ENTER RUN! THE ALIEN IS RIGHT BEHIND YOU!" << endl;
+        PlaySound(TEXT("sfx/alienchase"), NULL, SND_FILENAME | SND_ASYNC);
     }
-
     currentRoom = nextRoom;
     //activates alien once player enters cryohall for the first time, I don't know a better way
-    if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false)) {
+    if (currentRoom->getId() == "cryoHall" && (alien.getIsActive() == false) && tutorialReminderToLookAndMove == true) {
         alien.setActive(true);
         alien.move();
         cout << "You see a passcode door on one side, and a door with a broken keycard reader that is lodged open on the other. It leads to a room for workers. There is also a card locked door to the cafeteria." << endl; //hint to tell player to hide and they don't need to use keycard
@@ -425,14 +429,17 @@ void Game::peekDoor(const string& doorName) { //borrowed goDoor code
     Object* door = currentRoom->getObject(doorName); //check if the door exists in the current room
     if (!door) {
         cout << "There is no " << doorName << " here.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     if (door->isTakeable()) { //stop player trying to open or go a keycard
         cout << "You can not peek through this. \n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     if (alien.getIsActive() && alien.getSawPlayer()) {
         cout << "There is no time for that now!" << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
@@ -447,6 +454,7 @@ void Game::peekDoor(const string& doorName) { //borrowed goDoor code
     }
     else {
         cout << "There is no room connected to this door." << endl; //this is a silly check why do we have this in goDoor?
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
     }
 }
 
@@ -457,6 +465,7 @@ void Game::displayMap() const
     if (allRooms.empty()) 
     {
         cout << "No map available.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
@@ -556,12 +565,14 @@ Handles the player's attempt to press a button in the game.
         if (!button)
         {
             cout << "There's no button here to press.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             return;
         }
 
         if (button->getName() != "button")
         {
             cout << "You can't press that.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             return;
         }
 
@@ -571,11 +582,13 @@ Handles the player's attempt to press a button in the game.
             if (firstButtonPressed)
             {
                 cout << "You already pressed the control panel button. Nothing happens.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 return;
             }
 
             firstButtonPressed = true;
             cout << "You press the control panel button. A faint hum echoes through the station.\n";
+            PlaySound(TEXT("sfx/buttonpress"), NULL, SND_FILENAME | SND_ASYNC);
             checkBothButtons();
             return;
         }
@@ -585,17 +598,20 @@ Handles the player's attempt to press a button in the game.
         {
             if (flashlight->getIsWorking() == false) {
                 cout << "The room is too dark, you cannot see anything.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 return;
             }
 
             if (darkRoomButtonPressed)
             {
                 cout << "You already pressed the override button.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 return;
             }
 
             darkRoomButtonPressed = true;
             cout << "You press the override button. A mechanical hum echoes faintly.\n";
+            PlaySound(TEXT("sfx/buttonpress"), NULL, SND_FILENAME | SND_ASYNC);
 
             // Only open the escape pod if both buttons pressed
             checkBothButtons();
@@ -603,6 +619,7 @@ Handles the player's attempt to press a button in the game.
         }
 
         cout << "You press the button, but nothing seems to happen here.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
     }
 
 
@@ -632,6 +649,7 @@ void Game::useScrewdriver(Object* obj)
 {
     if (!obj) {
         cout << "There's nothing like that to use the screwdriver on.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
@@ -640,10 +658,12 @@ void Game::useScrewdriver(Object* obj)
     if (name == "vent") {
         if (!obj->getIsLocked()) {
             cout << "The vent is already open.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             return;
         }
         obj->setIsLocked(false);
         obj->setIsSafeZone(true);
+        PlaySound(TEXT("sfx/unscrew"), NULL, SND_FILENAME | SND_ASYNC);
         cout << "As you quietly unscrew the vent cover, a small piece of paper slips out and falls to the floor.\n You could probably hide inside now.\n";
         //ADD NOTE TO THE Room
         currentRoom->addObject(storageNote);
@@ -652,6 +672,7 @@ void Game::useScrewdriver(Object* obj)
     else if (name == "control panel") {
         if (controlPanelUnscrewed) {
             cout << "The control panel is already open.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             return;
         }
 
@@ -662,15 +683,19 @@ void Game::useScrewdriver(Object* obj)
         currentRoom->addObject(button);
 
         cout << "You unscrew the control panel and expose a small red button inside.\n";
+        PlaySound(TEXT("sfx/unscrew"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (name == "vent grate" && currentRoom->getId() == "kitchen" && saveAlien) {
         obj->setIsLocked(false);
         cout << "You unscrew the grate." << endl;
+        PlaySound(TEXT("sfx/unscrew"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else {
         cout << "You can't use the screwdriver on that.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
+
     }
 
 
@@ -699,14 +724,17 @@ Handles using the screwdriver on different objects.
 void Game::useKeycard(Object* door) {
     if (door->getName() == "pod door") {
         cout << "You cannot open that door with a keycard" << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (!door) {                                      
         cout << "There is no such door here.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;  // stops the function if door is not found
     }
     // Prevent unlocking passcode doors with the keycard
     else if (door->getIsPasscodeLocked()) {
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         cout << "The keycard doesn't work on this type of door. It requires a passcode.\n";
         return;
     }
@@ -718,6 +746,7 @@ void Game::useKeycard(Object* door) {
 
     if (door->getIsLocked()) {
         door->setIsLocked(false); 
+        PlaySound(TEXT("sfx/doorunlock"), NULL, SND_FILENAME | SND_ASYNC);
         cout << "You swipe the keycard, and the door unlocks with a loud beep.\n";
       
         // After they unlock their first door, give them a guide on how to 
@@ -728,6 +757,7 @@ void Game::useKeycard(Object* door) {
     }
     else {
         cout << "The door is already unlocked.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
     }
 }
 
@@ -741,17 +771,20 @@ void Game::typeCode(int enteredCode)
     {
         // if there are no such doors inform the player.
         cout << "There is no keypad door here.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     // Check if the player has discovered both halves of the passcode
     if (!foundcode1 || !foundcode2) {
         cout << "You cannot enter a passcode until you have discovered both halves.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     // Compare the entered code with the actual stored passcode
 
     if (enteredCode == passcode) {
         cout << "The keypad flashes green. The door unlocks.\n";
+        PlaySound(TEXT("sfx/passcodelock"), NULL, SND_FILENAME | SND_ASYNC);
         door->setIsLocked(false);
     }
     else {
@@ -768,16 +801,19 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
 	Object* door = currentRoom->getObject(doorName); //check if the door exists in the current room
 	if (!door) {
 		cout << "There is no " << doorName << " here.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
 		return;
 	}
     if (door->isTakeable()) { //stop player trying to open or go a keycard
         cout << "You can not open this or go through it. \n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     // check for passcode locked door
     if (door->getIsPasscodeLocked()) {
         if (door->getIsLocked()) {
             std::cout << "The door is locked. You must enter the passcode.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             return;
         }
     }
@@ -785,16 +821,19 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
     if (door->getName() == "escape pod door") {
         if (!(firstButtonPressed && darkRoomButtonPressed)) {
             cout << "The escape pod door is sealed tight. It seems two systems must be activated first.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             return;
         }
     }
     else if (door->getIsLocked() && door->getName() == "vent grate") {
         cout << "The metal vent cover is screwed shut, preventing you from entering." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     // for usual keycard doors
     else if (door->getIsLocked()) {
         cout << "The door is locked.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     
@@ -812,9 +851,11 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
              if (captain.getIsFollowing() && captain.getIsAlive()) {
                  cout << "Captain Emaruv Santron pulls himself into the vent after you, scanning the tight passage with quick, sharp movements.\n";
              }
+             PlaySound(TEXT("sfx/metalopen"), NULL, SND_FILENAME | SND_ASYNC);
              return;
          }
          cout << "You go through the " << doorName << " and enter the next room.\n";
+         PlaySound(TEXT("sfx/walking"), NULL, SND_FILENAME | SND_ASYNC);
          setCurrentRoom(nextRoom); // move to the neighbouring room
          cout << currentRoom->getDescription() << endl;
 
@@ -847,6 +888,7 @@ void Game::goDoor(const string& doorName) { // New method to go through a door
      }
      else {
          cout << "There is no room connected to this door.\n";
+         PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
      }
 }
 
@@ -855,12 +897,14 @@ void Game::hide(string noun) {
     if (hideSpot && hideSpot->getIsSafeZone()) {
         playerIsHidden = true;
         cout << "You hide inside the " << noun << ". Stay quiet...\n";
+        PlaySound(TEXT("sfx/metalopen"), NULL, SND_FILENAME | SND_ASYNC);
         if (noteCounter == 4) {
             currentRoom->addObject(alienNote);
         }
     }
     else {
         cout << "You can not hide there.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
     }
 }
 
@@ -868,9 +912,11 @@ void Game::unhide() {
 	if (playerIsHidden) {
 		playerIsHidden = false;
 		cout << "You step out from your hiding spot.\n";
+        PlaySound(TEXT("sfx/metalopen"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 	else {
 		cout << "You are not hiding.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 }
 
@@ -886,19 +932,23 @@ bool Game::getIsHidden() {
 bool Game::combine(Object* batt, Object* flash) {
     if (flash->getIsWorking()) {
         cout << "You already have a working flashlight." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return false;
     }
     bool hasBatt = inventory.gotObject(batt->getName());
     bool hasFlash = inventory.gotObject(flash->getName());
     if (!hasBatt && !hasFlash) {
         cout << "You do not have the flashlight and the batteries." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return false;
     }
     if (!hasBatt) {
         cout << "You do not have batteries." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return false;
     }
     if (!hasFlash) {
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         cout << "You do not have the flashlight." << endl;
         return false;
     }
@@ -931,13 +981,16 @@ Handles using the mirror to uncover the invisible text on note-2.
 bool Game::useMirror(Object* n) {
     if (currentRoom->getName() != "Bathroom") {
         cout << endl << "There is no mirror here." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return false;
     }
     if(!inventory.gotObject("note-2")) {
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         cout << endl << "What are you doing?" << endl;
         return false;
     }
     if (!bathroomNote->getNoteText().empty()) {
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         cout << "You have already revealed the text." << endl;
         return true;
     }
@@ -962,6 +1015,7 @@ Triggers when the player types "look mirror" in the Bathroom.
 void Game::createBathroomNote() {
     if (currentRoom->getName() != "Bathroom") {
         cout << "There is no mirror here\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     cout << "You are looking at yourself......\n"
@@ -992,11 +1046,13 @@ Executes when the player uses the command "look papers" while in the Dark Room.
 void Game::createDarkNote() {
     if (currentRoom->getId() != "darkRoom") {
         cout << "There are no papers here.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
     // Must have working flashlight
     if (!flashlight->getIsWorking()) {
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         cout << "It is too dark to see anything.\n";
         return;
     }
@@ -1004,10 +1060,12 @@ void Game::createDarkNote() {
     if (currentRoom->getObject("note-3") != darkNote && !inventory.gotObject("note-3")) {
         cout << "You kneel down and sort through the scattered papers.\nMost are torn or unreadable but one looks intact\n";
         currentRoom->addObject(darkNote);
+        PlaySound(TEXT("sfx/itempickup"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
     cout << "You kneel down and sort through the scattered papers again, but you could not find anything interesting" << endl;
+    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
 }
 
 /*===========================================================
@@ -1031,15 +1089,18 @@ Modifies:
 void Game::lightRevealing() {
     if (!inventory.gotObject("flashlight")) {
         cout << "You do not have a flashlight.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
     if (!inventory.gotObject("note-3")) {
         cout << "What are you trying to do?\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     if (!flashlight->getIsWorking()) {
-        cout << "Your flashlight does not work" << endl;
+        cout << "Your flashlight does not work." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     switch (flashlightCounter) {
@@ -1088,6 +1149,7 @@ void Game::lightRevealing() {
 
     default:
         cout << "You already revealed all the text.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 
@@ -1121,10 +1183,12 @@ Modifies:
 void Game::revealInRoom(string roomId) {
     if (!captain.getIsAwake()) {
         cout << "Who are you trying to talk to?" << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (!captain.getIsAlive() && !captain.getIsFollowing()) {
         cout << "You should forget him.....\n You said you would...." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (captain.getIsAlive() && captain.getIsFollowing() && captain.getIsAwake()) {
@@ -1153,6 +1217,7 @@ void Game::revealInRoom(string roomId) {
     }
     else {
         cout << "You talk to yourself." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 }
@@ -1164,18 +1229,22 @@ void Game::talkGojo() {
     }
     else if (!gojo.getIsAlive() && gojo.getIsFollowing() && hasDecision && saveAlien) {
         cout << "You did not make him human yet, wait a bit." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (!gojo.getIsAlive() && gojo.getIsFollowing() && hasDecision && !saveAlien) {
         cout << "You decided not to help him.\nWhat are you trying to do now?" << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (!gojo.getIsAlive() && gojo.getIsFollowing() && !hasDecision) {
         cout << "Who even is that?\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else {
-        cout << "You talk to yourself" << endl;
+        cout << "You talk to yourself." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 }
@@ -1216,6 +1285,7 @@ void Game::readCapNote() {
             break;
         }
     }
+    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
     cout << "You do not recognize that part of the note.\n";
 }
 
@@ -1300,6 +1370,7 @@ void Game::specialDialogueCap() {
         }
         else {
             cout << "Invalid answer, try again." << endl;
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         }
 
     } while (!hasDecision);
@@ -1307,20 +1378,24 @@ void Game::specialDialogueCap() {
 
 void Game::openNanoLocker() {
     if (!nanoLocker->getIsLocked() && currentRoom->getObject("cure") != cure) {
+        PlaySound(TEXT("sfx/metalopen"), NULL, SND_FILENAME | SND_ASYNC);
         currentRoom->addObject(cure);
         coolTyping("You open the Nano Locker. Inside rests the Cure, glowing faintly in its vial.\n");
         return;
     }
     else if (!nanoLocker->getIsLocked() && currentRoom->getObject("cure") == cure) {
         cout << "The cure is already revealed. \n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else if (nanoLocker->getIsLocked()) {
         cout << "The Nano Locker is closed, you should find a way to open it." << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else {
         cout << "What are you trying to do?\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 }
@@ -1329,29 +1404,35 @@ void Game::typeCodeNanoLocker(int passcode) {
     if (nanoLocker->getIsLocked()) {
         if (passcode == nanoLockerPasscode) {
             nanoLocker->setIsLocked(false);
+            PlaySound(TEXT("sfx/passcodelock"), NULL, SND_FILENAME | SND_ASYNC);
             cout << "With a loud beep, the Nano Locker unlocks.\n";
             return;
         }
         if (passcode != nanoLockerPasscode) {
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             cout << "The password is incorrect, try again.\n";
             return;
         }
         else {
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             cout << "What are you trying to do?" << endl;
         }
     }
     else if (!nanoLocker->getIsLocked()) {
         cout << "You already unlocked the Nano Locker.\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else {
         cout << "What are you trying to do?" << endl;
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
     }
 }
 
 void Game::throwCure() {
     if (alien.getIsActive() && alien.getSawPlayer() && alien.getCurrentRoom() == currentRoom && inventory.gotObject("cure") && saveAlien) {
         coolTyping("You throw a cure to the alien...\n");
+        PlaySound(TEXT("sfx/lose"), NULL, SND_FILENAME | SND_ASYNC);
         inventory.deleteObject(cure);
         if (captain.getIsAlive() && captain.getIsFollowing()) {
             coolTyping("\nThe alien staggers, claws scraping the floor. Light from the cure glows brightly as it splashes over its body.\n"
@@ -1381,10 +1462,12 @@ void Game::throwCure() {
     }
     else if (alien.getIsActive() && alien.getSawPlayer() && alien.getCurrentRoom() == currentRoom && !inventory.gotObject("cure") && saveAlien) {
         cout << "YOU DO NOT HAVE A CURE, RUUUUUUUUN\n";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
     else{
         cout << "WHAT ARE YOU TRYING TO DO???? RUUUN....";
+        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
         return;
     }
 }
@@ -1404,6 +1487,7 @@ void Game::happyEnding() {
                 coolTyping("You look at him silently, your heart heavy, unable to answer.\n");
             }
             coolTyping("With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination.\n");
+            PlaySound(TEXT("sfx/eject"), NULL, SND_FILENAME | SND_ASYNC);
             cout << "You win!" << endl;
             exit(0);
         }
@@ -1459,6 +1543,7 @@ void Game::process()
             }
 
             cout << "Invalid command. Type 'help' for a list of commands.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             continue;
         }
 
@@ -1518,6 +1603,7 @@ void Game::process()
                         cout << "The control panel is open. A small red button glows faintly inside.\n";
                     else if (controlPanelUnscrewed && firstButtonPressed)
                         cout << "The control panel is open, but the button has already been pressed.\n";
+                        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 }
 
                 if (currentRoom->getName() == "bathroom") {              // Find the stall object in the current room
@@ -1541,6 +1627,7 @@ void Game::process()
                 }
                 else {
                     cout << "There is no stall here.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 }
             }
             else if (noun == "book") {                                  // handle look book
@@ -1549,13 +1636,16 @@ void Game::process()
                     cout << "You flip through the book and find half a passcode: '" << passcode1 << "--'.\n";
                 }
                 else {
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     cout << "There is nothing to see.\n";
                 }
             }
             else if (noun == "inventory") {
+                PlaySound(TEXT("sfx/itempickup"), NULL, SND_FILENAME | SND_ASYNC);
                 inventory.showInventory();
             }
             else if (noun.empty()) {
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 cout << "Look at what?\n";
             }
 
@@ -1596,6 +1686,7 @@ void Game::process()
                 }
                 else {
                     cout << "You do not have the " << noun << ".\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 }
             }
             break;
@@ -1604,20 +1695,24 @@ void Game::process()
         case Actions::TAKE:
             if (noun.empty()) {
                 cout << "Take what?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (!currentRoom) {
                 cout << "There is nowhere to take that from.\n"; // if player somehow not in room
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             {
                 if (currentRoom->getId() == "bathroom" && noun == "mirror") {
                     cout << "It seems that the mirror is fixed on the wall, you cannot take that" << endl;
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 if ((noun == "nano" || noun == "locker" || noun == "nano locker") && currentRoom->getId() == "kitchenVent") {
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     cout << "It is too heavy to take." << endl;
                     break;
                 }
@@ -1633,15 +1728,18 @@ void Game::process()
                 }
                 if (!obj) {
                     cout << "There is no " << noun << " here.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 if (!obj->isTakeable()) {
                     cout << "You can't take the " << noun << ". It seems fixed in place.\n"; // object not takeable
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
 
 
                 inventory.addObject(obj); // add to inventory, remove from room, tell player
+                PlaySound(TEXT("sfx/itempickup"), NULL, SND_FILENAME | SND_ASYNC); //pickup sound
                 currentRoom->removeObject(noun);
                 cout << "You picked up the " << noun << ".\n";
 
@@ -1657,6 +1755,7 @@ void Game::process()
 
         case Actions::INVENTORY:
             inventory.showInventory();
+            PlaySound(TEXT("sfx/itempickup"), NULL, SND_FILENAME | SND_ASYNC);
             break;
 
         case Actions::MAP:
@@ -1667,6 +1766,7 @@ void Game::process()
         {
             if (noun.empty()) {
                 cout << "Use what?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
             // Control panel usage
@@ -1674,16 +1774,19 @@ void Game::process()
                 Object* panel = currentRoom->getObject("control panel");
                 if (!panel) {
                     cout << "There is no control panel here.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 // If unlocked & unscrewed 
                 if (controlPanelUnscrewed) {
                     cout << "The control panel is unlocked and ready to use.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 //check if set to locked
                 if (panel->getIsLocked()) {
                     cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
             }
@@ -1707,11 +1810,13 @@ void Game::process()
             if (noun == "keycard") {
                 if (!inventory.gotObject("keycard")) {
                     cout << "You do not have a keycard to use.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
 
                 if (whatToUseOn.empty()) {
                     cout << "Use on what?\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 // if the keycard exists in the current room
@@ -1719,6 +1824,7 @@ void Game::process()
                 Object* obj = currentRoom->getObject(whatToUseOn);
                 if (!obj) {
                     cout << "There is no " << whatToUseOn << " here to use the keycard on.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 // Only allow keycards on objects that are locked and not takeable (doors)
@@ -1727,6 +1833,7 @@ void Game::process()
                 }
                 else {
                     cout << "The keycard won't work on that.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 }
                 break;
 
@@ -1737,17 +1844,20 @@ void Game::process()
             if (noun == "screwdriver") {
                 if (!inventory.gotObject("screwdriver")) {
                     cout << "You do not have a screwdriver.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
 
                 if (whatToUseOn.empty()) {
                     cout << "Use on what?\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 // if the keycard exists in the current room
                 Object* obj = currentRoom->getObject(whatToUseOn);
                 if (!obj) {
                     cout << "There is no " << whatToUseOn << " here to use the screwdriver on.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
 
@@ -1780,6 +1890,7 @@ void Game::process()
 
             // Fallback for other items that arent applicable in use case scenario(e.g, door)
             cout << "You can't use that right now.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             break;
         }
 
@@ -1787,12 +1898,14 @@ void Game::process()
         {
             if (noun.empty()) {
                 cout << "Press what?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             Object* button = currentRoom->getObject(noun);
             if (!button) {
                 cout << "There is nothing like that to press here.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -1804,21 +1917,25 @@ void Game::process()
         {
             if (noun.empty()) {
                 cout << "Wake who?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (currentRoom->getId() != "captainRoom") {
                 cout << "There is no one here to wake.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (noun != "captain") {
                 cout << "That doesn't seem to respond.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (captain.getIsAwake()) {
                 cout << "The captain is already awake.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -1836,31 +1953,37 @@ void Game::process()
         {
             if (noun.empty()) {
                 cout << "Serve what?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (noun != "water") {
                 cout << "You can't serve that right now.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (whatToUseOn.empty() || whatToUseOn != "captain") {
                 cout << "Serve water to whom?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (currentRoom->getId() != "captainRoom") {
                 cout << "The captain isn't here.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (!captain.getIsAwake()) {
                 cout << "No one here seems awake enough to drink.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (captain.getHasWater()) {
                 cout << "The captain has already had water.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -1882,6 +2005,7 @@ void Game::process()
                 }
                 if (yearInput.size() == 0) {
                     cout << "Please enter the year as numbers.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     continue;
                 }
                 try {
@@ -1890,12 +2014,14 @@ void Game::process()
                     // only allow valid input
                     if (year < 1000 || year > 9999) {
                         cout << "Please enter a valid four–digit year (2000–2500).\n";
+                        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                         continue;
                     }
 
                     // pastYear is not negative
                     if (year - 275 < 0) {
                         cout << "That doesn't seem like a real year... try again.\n";
+                        PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                         continue;
                     }
 
@@ -1903,6 +2029,7 @@ void Game::process()
                 }
                 catch (...) {
                     cout << "Please enter the year as numbers (for example: 2025).\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 }
 
             }
@@ -1957,19 +2084,23 @@ void Game::process()
                     switch (runCount) {
                     case (1):
                         cout << "The alien is right behind you, type RUN, one of these escape pods has got to work!" << endl;
+                        PlaySound(TEXT("sfx/breathing"), NULL, SND_FILENAME | SND_ASYNC);
                         break;
                     case (2):
-                        cout << "Fierce sounds are coming from you. Type RUN, you need to keep going!" << endl;
+                        cout << "Fierce sounds are coming from behind you. Type RUN, you need to keep going!" << endl;
+                        PlaySound(TEXT("sfx/breathing"), NULL, SND_FILENAME | SND_ASYNC);
                         break;
                     case (3):
                         cout << "You see something in the distance, a working escape pod! Type RUN, keep going!" << endl;
+                        PlaySound(TEXT("sfx/breathing"), NULL, SND_FILENAME | SND_ASYNC);
                         break;
                     case (4):
                         cout << "You are almost at the working escape pod! Type RUN and keep going!" << endl;
+                        PlaySound(TEXT("sfx/breathing"), NULL, SND_FILENAME | SND_ASYNC);
                         break;
                     default:
                         cout << "You see one last working escape pod." << endl;
-
+                        PlaySound(NULL, 0, 0);
                         // if the captain and the player made it out. 
                         if (captain.getIsFollowing() && captain.getIsAlive()) {
                             string nm = captain.getPlayerName();
@@ -1993,6 +2124,7 @@ void Game::process()
                         }
 
                         coolTyping("With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination.\n");
+                        PlaySound(TEXT("sfx/eject"), NULL, SND_FILENAME | SND_ASYNC);
                         cout << "You win!" << endl;
                         exit(0);
                     }
@@ -2007,6 +2139,7 @@ void Game::process()
         case Actions::OPEN:
             if (noun.empty()) {
                 cout << "Where?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -2015,10 +2148,12 @@ void Game::process()
                 Object* panel = currentRoom->getObject("control panel");
                 if (!panel) {
                     cout << "There's no control panel here.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 if (controlPanelUnscrewed) {
                     cout << "The control panel is already open, revealing a red button inside.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 }
                 else if (panel->getIsLocked()) {
                     cout << "The control panel is screwed shut. Maybe you need a screwdriver to open it.\n";
@@ -2026,7 +2161,8 @@ void Game::process()
                 else {
                     // Player opens/unscrews it
                     controlPanelUnscrewed = true;
-                    cout << "You unscrew the control panel and expose a small red button inside.\n";
+                    PlaySound(TEXT("sfx/metalopen"), NULL, SND_FILENAME | SND_ASYNC);
+                    cout << "You open the control panel and expose a small red button inside.\n";
                 }
                 break;
             }
@@ -2036,11 +2172,14 @@ void Game::process()
                 Object* vent = currentRoom->getObject("vent");
                 if (!vent) {
                     cout << "There is no vent here.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
 
                 if (vent->getIsLocked()) {
                     cout << "The vent is locked. Maybe you need a tool to open it.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
+
                 }
                 else {
                     cout << "The vent is open now.\n";
@@ -2053,6 +2192,7 @@ void Game::process()
                 Object* stall = currentRoom->getObject("stall");
                 if (!stall) {
                     cout << "There's no stall here.\n";
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
 
@@ -2074,6 +2214,7 @@ void Game::process()
             // BUTTON
             if (noun == "button") {
                 cout << "You can not open a button.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -2084,6 +2225,7 @@ void Game::process()
         case Actions::PEEK://if they entered a door name peek otherwise not allowed
             if (noun.empty()) {
                 cout << "Peek through what? \n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
             else {
@@ -2094,6 +2236,7 @@ void Game::process()
         case Actions::TYPE:
             if (noun.empty()) {
                 cout << "Enter a code.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
             try {
@@ -2106,29 +2249,34 @@ void Game::process()
             }
             catch (...) {
                 cout << "Invalid code format.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             }
             break;
 
         case Actions::HIDE: { // hide in vent or locker
             if (noun.empty()) {
                 cout << "Hide where?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             Object* obj = currentRoom->getObject(noun);
             if (!obj) {
                 cout << "That object does not exist.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             // Only allow hiding in vent or locker
             if (obj->getName() != "vent" && obj->getName() != "locker") {
                 cout << "You can not hide there.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
             if (obj->getIsLocked()) {
                 cout << "The " << obj->getName() << " is locked. You can not hide in it yet.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -2138,6 +2286,7 @@ void Game::process()
             }
             else {
                 cout << "You are already hidden.\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             }
             break;
         }
@@ -2172,6 +2321,7 @@ void Game::process()
             }
             else {
                 cout << "Stop talking to yourself" << endl;
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
         }
@@ -2184,6 +2334,7 @@ void Game::process()
 
             if (noun.empty()) {
                 cout << "Read what?\n";
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
 
@@ -2213,6 +2364,7 @@ void Game::process()
             else if (noun == "note-3" && inventory.gotObject("note-3")) {
                 if (flashlightCounter == 0) {
                     cout << "The note is empty." << endl;
+                    PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                     break;
                 }
                 else {
@@ -2249,12 +2401,14 @@ void Game::process()
 
             else {
                 cout << "You do not have this to read." << endl;
+                PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
                 break;
             }
         }
      
         default:
             cout << "You can not do that right now.\n";
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
             break;
         }
 

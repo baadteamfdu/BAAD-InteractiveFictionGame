@@ -1,8 +1,10 @@
+#pragma comment(lib, "winmm.lib")
 #include <iostream>
 #include "Alien.h"
 #include "Captain.h"
 #include "Game.h"
-
+#include <Windows.h>
+#include <mmsystem.h>
 using namespace std;
 
 
@@ -53,11 +55,17 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden, Captain*
 		if (alienCurrentRoom == playerCurrentRoom && sawPlayer != true) { //if player and alien in same room but alien hasn't seen the player... now it has!
 			sawPlayer = true;
 			cout << "The alien notices you... run and hide!" << endl; //tell player
+			if (saveAlien == true) {
+				cout << "\nCaptain: \"It is a chance! Throw the cure!!!\"" << endl;
+			}
+			PlaySound(TEXT("sfx/alienchase"), NULL, SND_LOOP | SND_FILENAME | SND_ASYNC); //player chase sound loops
 		}
 		if (sawPlayer == true) { //factored out saw player
 			chaseCounter++;
 			if (alienCurrentRoom == playerCurrentRoom && isHidden && chaseCounter < chaseThreshold) { //same room and hid in time
 				cout << "The alien enters the room, looks around.... then leaves" << endl;
+				PlaySound(NULL, 0, 0); //stop the sound so playerchase sound stops
+				PlaySound(TEXT("sfx/holdbreath"), NULL, SND_FILENAME | SND_SYNC);
 				if (noteCounter == 4) {
 					cout << "As it limps toward the exit, something slips from its grasp.\n";
 					cout << "A small, crumpled piece of paper falls to the floor.\n";
@@ -67,10 +75,9 @@ void Alien::increaseTurnCounter(Room* playerCurrentRoom, bool isHidden, Captain*
 			}
 			if (alienCurrentRoom != playerCurrentRoom) { //alien and player not in same room but sawPlayer = true, this means player left room with alien in it
 				alienCurrentRoom = playerCurrentRoom; //alien follows player to new room
-				if (saveAlien == true) {
-					cout << "\nCaptain: \"It is a chance! Throw the cure!!!\"" << endl;
-				}
-				cout << "You hear the alien close behind you... run and hide!" << endl;
+							cout << "You hear the alien close behind you... run and hide!" << endl;
+							PlaySound(TEXT("sfx/breathing"), NULL, SND_FILENAME | SND_SYNC); //chase exertion
+							PlaySound(TEXT("sfx/alienchase"), NULL, SND_LOOP | SND_FILENAME | SND_ASYNC); //player chase sound loops
 			}
 			if (alienCurrentRoom == playerCurrentRoom && chaseCounter >= chaseThreshold && isHidden) {	//keep increasing chase counter if player doesn't leave but if they hide on the last turn possible they die
 				if (saveAlien == true) {
@@ -153,6 +160,7 @@ bool Alien::killPlayer(Captain* captain) {
 			cout << "You and the captain stand together against the alien.\n";
 			cout << "It tears through you both in moments.\n";
 			cout << "Game Over.\n";
+			PlaySound(TEXT("sfx/lose"), NULL, SND_FILENAME | SND_SYNC); //death sound
 			exit(0);
 		}
 	}
@@ -160,6 +168,7 @@ bool Alien::killPlayer(Captain* captain) {
 	// Normal death: no captain, or he can't protect anymore
 	cout << "You were caught by the alien." << endl;
 	cout << "Game Over." << endl;
+	PlaySound(TEXT("sfx/lose"), NULL, SND_FILENAME | SND_SYNC); //death sound
 	exit(0); //exit function to end the game.
 	
 }

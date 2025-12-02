@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Actions.h"
 #include "Room.h"
 #include "Inventory.h"
@@ -153,13 +152,13 @@ private:
         "\"Inside it is a Nano Locker. We hid a genome-reversal serum inside before everything went to hell.\"\n"
         "\"Unscrew the vent, find the locker, and use the password from the keycard to open it.\"\n"
         "\"When the alien finds you, throw the cure at him. Aim center mass. You will only get one chance.\"\n"
-        "He meets your eyes. \"If Gojo is still in there... bring him back.\n\"";
+        "He meets your eyes. \"If Gojo is still in there... bring him back.\"\n";
 
     string captainNoDialogue =
         "Captain: \"...I see. You don’t want to risk it.\"\n"
         "He looks away, jaw tight. \"Maybe you're right. Maybe Gojo is gone for good.\"\n"
         "\"We focus on surviving now. When we reach the escape pod, we leave him behind.\"\n"
-        "\"Come on. Let's finish this.\n\"";
+        "\"Come on. Let's finish this.\"\n";
 
     Room* kitchenVent;
     Object* nanoLocker;

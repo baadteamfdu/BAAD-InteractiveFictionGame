@@ -1,7 +1,9 @@
 // BAAD-InteractiveFictionGame.cpp : This file contains the 'main' function. Program execution begins and ends there.
-
+#pragma comment(lib, "winmm.lib")
 #include <iostream>
 #include "Game.h"
+#include <Windows.h>
+#include <mmsystem.h>
 #include <string>
 #include "Actions.h"
 # include <stdlib.h> 
@@ -31,6 +33,7 @@ int main ()
 
         if (choice == "1") {
             clearScreen();
+            PlaySound(TEXT("sfx/startgame"), NULL, SND_FILENAME | SND_ASYNC); //start sound
             break;   // continue into the game
         }
         else if (choice == "2") {
@@ -44,7 +47,7 @@ int main ()
     //setup for the game
 	Game game;
 	game.init();
-    cout << "Welcome to BAAD Alien Version 3." << endl; 
+    cout << "Welcome to BAAD Alien Version 4." << endl; 
     cout << "You wake up from cyrostasis, something has gone very wrong." << endl;  
     cout << "An alien egg was in shipment but hatched during transport." << endl; 
     cout << "You have to make your way through the ship to an escape pod." << endl;
