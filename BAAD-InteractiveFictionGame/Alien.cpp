@@ -12,7 +12,11 @@ Alien::Alien() {
 
 //sets isActive to active
 void Alien::setActive(bool active) {
-	isActive = active;
+    isActive = active;
+    if (!isActive) {
+		resetAlienState();
+        alienCurrentRoom = nullptr;
+    }
 }
 
 // LV - can do better on the comments - e.g. returns if Alien is actively trolling the dungeon
@@ -29,15 +33,16 @@ void Alien::setSawPlayer(bool seen) {
 
 //getter returns bool if alien has seen the player
 bool Alien::getSawPlayer() {
-	return sawPlayer;
+    return isActive && sawPlayer; //added safety for isactive, not taking risks
 }
 
 // LV - returns true if alien is in the passed room, false if not
 bool Alien::isAlienInRoom(Room * playerCurrentRoom) {
-	if (alienCurrentRoom == playerCurrentRoom)
-		return true;
-	else
+	if (!isActive)
+	{
 		return false;
+	}
+    return alienCurrentRoom == playerCurrentRoom;
 }
 
 //increases the turn counter and accounts for conditions of where player and alien are and if player is at risk: 
