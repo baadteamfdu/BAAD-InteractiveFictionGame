@@ -1487,7 +1487,7 @@ void Game::happyEnding() {
                 coolTyping("You look at him silently, your heart heavy, unable to answer.\n");
             }
             coolTyping("With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination.\n");
-            PlaySound(TEXT("sfx/eject"), NULL, SND_FILENAME | SND_ASYNC);
+            PlaySound(TEXT("sfx/eject"), NULL, SND_FILENAME | SND_SYNC);
             cout << "You win!" << endl;
             exit(0);
         }
@@ -2124,7 +2124,7 @@ void Game::process()
                         }
 
                         coolTyping("With a push of a button, your escape pod shoots off back to the nearest safe colony between you and your destination.\n");
-                        PlaySound(TEXT("sfx/eject"), NULL, SND_FILENAME | SND_ASYNC);
+                        PlaySound(TEXT("sfx/eject"), NULL, SND_FILENAME | SND_SYNC);
                         cout << "You win!" << endl;
                         exit(0);
                     }
