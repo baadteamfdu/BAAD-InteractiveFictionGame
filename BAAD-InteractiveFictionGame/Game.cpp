@@ -357,17 +357,6 @@ void Game::init() {
 
     kitchenVent->addObject(nanoLocker);
 
-
-    /* THIS IS FOR TESTING IF YOU WANT JUST DELETE THE COMMENTS SO YOU CAN TEST IT FASTER*/
-    captain.setIntroduced(true);
-    captain.setIsAlive(true);
-    captain.setIsAwake(true);
-    captain.setIsFollowing(true);
-
-    inventory.addObject(alienNote);
-    inventory.addObject(screwdriver);
-    inventory.addObject(keycard);
-    setCurrentRoom(kitchen);
 }
 
 Room* Game::getCurrentRoom() {
@@ -420,7 +409,8 @@ void Game::getHelp() { // prints out available commands
     cout << "peek <door name>\n";
 	cout << "unhide\n";
     cout << "help\n";
-    cout << "wake captain\n";
+    cout << "wake <person>\n";
+    cout << "talk <person>\n";
     cout << "note, some common synonyms are supported \n";
 }
 
