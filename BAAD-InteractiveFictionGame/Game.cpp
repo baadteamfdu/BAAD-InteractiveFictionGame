@@ -16,7 +16,7 @@
 #include <mmsystem.h>
 using namespace std;
 
-int noteCounter = 5; // CHANGE IT
+int noteCounter = 0;
 bool saveAlien = false;
 
 // If your Actions enum lives elsewhere, include it there.
@@ -27,7 +27,7 @@ bool saveAlien = false;
 void coolTyping(string text) {
     for (char letter : text) {
         cout << letter;
-            this_thread::sleep_for(chrono::milliseconds(0));
+            this_thread::sleep_for(chrono::milliseconds(30));
     }
 }
 
