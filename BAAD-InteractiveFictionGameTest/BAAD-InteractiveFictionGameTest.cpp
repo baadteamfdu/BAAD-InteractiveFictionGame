@@ -270,6 +270,7 @@ namespace BAADInteractiveFictionGameTest
 			Assert::IsTrue(testRoom->getNeighbour("testdoor") == testRoom2, L"Should have testRoom2 neighbor"); //testing precondition that rooms are connected
 			Assert::IsTrue(testRoom2->getNeighbour("testdoor") == testRoom, L"Should have testRoom neighbor");
 			Alien alien; //add the alien and rooms
+			alien.setActive(true); //alien not being active caused test case failure do to an added check i put in.
 			alien.addRoom(testRoom);
 			alien.addRoom(testRoom2);
 			Room* nextRoom1 = game.getCurrentRoom()->getNeighbour("testdoor"); // get the neighbouring room through the door
