@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -208,20 +209,18 @@ void Game::init() {
     darkRoom->setNeighbour("dark door", cafeteria);
 
     allRooms = { cryoStart, cryoHall, storageArea, dock, escapePodChamber, finalRoom, workersRoom, bathroom, cafeteria, kitchen, darkRoom };
-    cryoStart->setPosition(24, 0);
+    cryoHall->setPosition(2, 2);           // center
+    storageArea->setPosition(1, 2);
+    dock->setPosition(0, 2);
+    escapePodChamber->setPosition(0, 3);
+    finalRoom->setPosition(0, 4);
 
-    cryoHall->setPosition(7, 2);
-    workersRoom->setPosition(8, 2);
-    storageArea->setPosition(6, 2);
-    dock->setPosition(5, 2);
-
-    cafeteria->setPosition(12, 4);
-    bathroom->setPosition(13, 4);
-    kitchen->setPosition(11, 4);
-    escapePodChamber->setPosition(5, 3);
-
-    darkRoom->setPosition(25, 5);
-    finalRoom->setPosition(2, 4);
+    workersRoom->setPosition(3, 2);
+    bathroom->setPosition(3, 3);
+    cafeteria->setPosition(2, 3);
+    darkRoom->setPosition(2, 4);
+    kitchen->setPosition(1, 3);
+    cryoStart->setPosition(3, 1);
     // Hiding Object
 	Object* safeZone = new Object("locker", "A metal locker large enough to hide inside", false, false, true); // creating a locker object as a safe zone
 
@@ -345,7 +344,7 @@ void Game::destroyWorld()
 
     //clears inventory and rooms
     allRooms.clear();
-    //Clear the vector of door pointers
+    //Clear the vector of door pointersese
     allDoors.clear(); 
     inventory.clear();
 
@@ -370,27 +369,52 @@ void Game::generatePasscode()
 //
 void Game::displayMap() const
 {
-    if (allRooms.empty()) 
+    // If no rooms exist (e.g., the game world hasn’t been built), abort early.
+    if (allRooms.empty())
     {
-        cout << "No map available\n";
+        cout << "No map available.\n";
         return;
     }
 
-  
-    //builds the label for the room
-    auto labelFor = [&](Room* r) 
+    // Instead of cutting off names, we calculate the width dynamically
+    // based on the longest room name so that all labels fit nicely.
+    int maxNameLen = 0;
+    for (Room* r : allRooms)
+    {
+        if (!r) continue;
+        int len = (int)r->getName().size();
+        if (r == currentRoom) len += 1; // for the '*'
+        if (len > maxNameLen) maxNameLen = len;
+    }
+
+    // Add 2 for the [ ] around the name
+    int CELL_WIDTH = maxNameLen + 2;
+
+    // Clamp to a reasonable range so it’s not insanely wide or tiny
+    if (CELL_WIDTH < 12) CELL_WIDTH = 12;
+    if (CELL_WIDTH > 26) CELL_WIDTH = 26;
+
+    // Make a label for each room
+    auto labelFor = [&](Room* r)
         {
-        if (currentRoom && currentRoom->getId() == r->getId())
-            return "[" + r->getName() + "*]"; //adds the star if the player is in the room
-        else
-            return "[" + r->getName() + "]"; //no star means player is not in room
+            string base = (r == currentRoom ? "*" : "") + r->getName();
+
+            // Only crop if the name is REALLY longer than our max width
+            if ((int)base.size() > CELL_WIDTH - 2)
+                base = base.substr(0, CELL_WIDTH - 2);
+
+            string label = "[" + base + "]";
+            if ((int)label.size() < CELL_WIDTH)
+                label.append(CELL_WIDTH - label.size(), ' ');
+
+            return label;
         };
 
-    // Find the smallest and largest X & Y positions
-    // so the map prints only a little bit of used space
+    // Find coordinate bounds
     int minX = 1000000, minY = 1000000;
     int maxX = -1000000, maxY = -1000000;
-    for (Room* r : allRooms) 
+
+    for (Room* r : allRooms)
     {
         if (!r) continue;
         if (r->getX() < minX) minX = r->getX();
@@ -399,35 +423,33 @@ void Game::displayMap() const
         if (r->getY() > maxY) maxY = r->getY();
     }
 
-    //This code tells us how many rows and columns are needed for the grid
     int rows = maxY - minY + 1;
     int cols = maxX - minX + 1;
 
-    //This is the grid itself!
-    vector<vector<string>> grid(rows, vector<string>(cols, "."));
+    // Build grid of empty cells
+    vector<vector<string>> grid(rows, vector<string>(cols, string(CELL_WIDTH, ' ')));
 
-    // --- place labels ---
-    for (Room* r : allRooms) 
+    // Drop each room label in the right grid spot
+    for (Room* r : allRooms)
     {
         if (!r) continue;
-        // Convert actual game coordinates into grid indexes
         int gx = r->getX() - minX;
         int gy = r->getY() - minY;
         if (gx < 0 || gx >= cols || gy < 0 || gy >= rows) continue;
+
         grid[gy][gx] = labelFor(r);
     }
 
-    // This prints the grid from top to bottom!
+    // Print it, top row first
     cout << "\n--- MAP ---\n\n";
-    for (int rr = rows - 1; rr >= 0; --rr) 
+    for (int y = rows - 1; y >= 0; --y)
     {
-        for (int cc = 0; cc < cols; ++cc) 
-        {
-            cout << grid[rr][cc] << " ";
-        }
+        for (int x = 0; x < cols; ++x)
+            cout << grid[y][x];
         cout << "\n";
     }
-    cout << "\n* = You\n\n";
+
+    cout << "\n* = you\n\n";
 }
 
 
