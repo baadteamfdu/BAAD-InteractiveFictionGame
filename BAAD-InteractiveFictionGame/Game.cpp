@@ -16,7 +16,7 @@
 #include <mmsystem.h>
 using namespace std;
 
-int noteCounter = 0;
+int noteCounter = 5; // CHANGE IT
 bool saveAlien = false;
 
 // If your Actions enum lives elsewhere, include it there.
@@ -27,7 +27,7 @@ bool saveAlien = false;
 void coolTyping(string text) {
     for (char letter : text) {
         cout << letter;
-            this_thread::sleep_for(chrono::milliseconds(40));
+            this_thread::sleep_for(chrono::milliseconds(0));
     }
 }
 
@@ -359,15 +359,15 @@ void Game::init() {
 
 
     /* THIS IS FOR TESTING IF YOU WANT JUST DELETE THE COMMENTS SO YOU CAN TEST IT FASTER*/
-    //captain.setIntroduced(true);
-    //captain.setIsAlive(true);
-    //captain.setIsAwake(true);
-    //captain.setIsFollowing(true);
+    captain.setIntroduced(true);
+    captain.setIsAlive(true);
+    captain.setIsAwake(true);
+    captain.setIsFollowing(true);
 
-    //inventory.addObject(alienNote);
-    //inventory.addObject(screwdriver);
-    //inventory.addObject(keycard);
-    //setCurrentRoom(kitchen);
+    inventory.addObject(alienNote);
+    inventory.addObject(screwdriver);
+    inventory.addObject(keycard);
+    setCurrentRoom(kitchen);
 }
 
 Room* Game::getCurrentRoom() {
@@ -1350,6 +1350,14 @@ void Game::specialDialogueCap() {
         coolTyping("\"Will you try to save the alien? Will you try to save Gojo?\" (1. yes / 2. no)\n");
         string choice;
         getline(cin, choice);
+
+        if (cin.eof()) {  //https://stackoverflow.com/questions/15579257/ctrlz-makes-program-loop-infinitely-in-c
+            cin.clear(); //clear fail or eof state
+            cin.ignore(10000, '\n'); // flush broken input
+            cout << "Invalid answer, try again." << endl;
+            PlaySound(TEXT("sfx/invalid"), NULL, SND_FILENAME | SND_ASYNC);
+            continue;                 // restart loop https://stackoverflow.com/questions/12740268/how-can-i-restart-while-loop-after-certain-condition-if-satisfied-in-c
+        }
 
         // lowercase input
         transform(choice.begin(), choice.end(), choice.begin(), ::tolower); https://www.geeksforgeeks.org/cpp/how-to-convert-std-string-to-lower-case-in-cpp/
