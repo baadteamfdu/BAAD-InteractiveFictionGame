@@ -442,6 +442,8 @@ void Game::displayMap() const
 
     // Print it, top row first
     cout << "\n--- MAP ---\n\n";
+
+    cout << "\n[Captain's Room]\n";
     for (int y = rows - 1; y >= 0; --y)
     {
         for (int x = 0; x < cols; ++x)
